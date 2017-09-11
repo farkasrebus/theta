@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringJoiner;
 
 import com.google.common.collect.Iterables;
@@ -291,4 +292,7 @@ public final class ZoneState implements ExprState {
 		}
 	}
 
+	public static ZoneState top(Set<VarDecl<RatType>> vars) {
+		return new ZoneState(DBM.top(vars));
+	}
 }
