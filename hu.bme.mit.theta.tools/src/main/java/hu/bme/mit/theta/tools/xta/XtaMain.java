@@ -21,6 +21,7 @@ import hu.bme.mit.theta.common.visualization.Graph;
 import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.ActStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.BackwardsStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.BinItpStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaChecker;
 import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaStatistics;
@@ -46,7 +47,6 @@ public final class XtaMain {
 
 	@Parameter(names = { "-bm", "--benchmark" }, description = "Benchmark mode (only print metrics)")
 	Boolean benchmarkMode = false;
-
 	@Parameter(names = { "-v", "--visualize" }, description = "Write proof or counterexample to file in dot format")
 	String dotfile = null;
 
@@ -95,6 +95,13 @@ public final class XtaMain {
 			public AlgorithmStrategy<?> create(final XtaSystem system) {
 				return ActStrategy.create(system);
 			}
+		},
+		
+		BACKWARDS {
+			@Override
+			public AlgorithmStrategy<?> create(final XtaSystem system) {
+				return BackwardsStrategy.create(system);
+			}
 		};
 
 		public abstract LazyXtaChecker.AlgorithmStrategy<?> create(final XtaSystem system);
@@ -130,10 +137,22 @@ public final class XtaMain {
 		this.args = args;
 		this.writer = new SimpleTableWriter(System.out, ",", "\"", "\"");
 	}
-
+	
 	public static void main(final String[] args) {
 		final XtaMain mainApp = new XtaMain(args);
 		mainApp.run();
+	}
+	
+	public static XtaMain fromArgs(final String[] args) {
+		final XtaMain result = new XtaMain(args);
+		try {
+			JCommander.newBuilder().addObject(result).programName(JAR_NAME).build().parse(args);
+			return result;
+		} catch (final ParameterException ex) {
+			System.out.println(ex.getMessage());
+			ex.usage();
+			return null;
+		}
 	}
 
 	private void run() {

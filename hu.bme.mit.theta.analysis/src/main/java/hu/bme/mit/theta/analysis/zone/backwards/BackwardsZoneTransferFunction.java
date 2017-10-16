@@ -33,12 +33,12 @@ public class BackwardsZoneTransferFunction<A extends Action> implements Transfer
 		final Collection<? extends ZoneState> subSuccStates = transferFunction.getSuccStates(subState, action, prec);
 		
 		if (subSuccStates.isEmpty()) {
-			final BackwardsZoneState succState = new BackwardsZoneState(ZoneState.bottom());
+			final BackwardsZoneState succState = new BackwardsZoneState(ZoneState.bottom(),prec.getVars());
 			return Collections.singleton(succState);
 		} else {
 			final Collection<BackwardsZoneState> result=new ArrayList<>(subSuccStates.size());
 			for (final ZoneState subSuccState:subSuccStates) {
-				final BackwardsZoneState succState=new BackwardsZoneState(subSuccState);
+				final BackwardsZoneState succState=new BackwardsZoneState(subSuccState,prec.getVars());
 				result.add(succState);
 			}
 			return result;

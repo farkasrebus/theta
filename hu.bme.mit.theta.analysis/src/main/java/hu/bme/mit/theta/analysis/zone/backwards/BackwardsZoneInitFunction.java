@@ -27,7 +27,7 @@ public class BackwardsZoneInitFunction implements InitFunction<BackwardsZoneStat
 		final Collection<BackwardsZoneState> result = new ArrayList<>();
 		final Collection<? extends ZoneState> subInitStates = initFunction.getInitStates(prec);
 		for (final ZoneState subInitState : subInitStates) {
-			final BackwardsZoneState initState =new BackwardsZoneState(subInitState);
+			final BackwardsZoneState initState =new BackwardsZoneState(subInitState,prec.getVars());
 			result.add(initState);
 		}
 		return result;
