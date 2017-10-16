@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *  
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.core.dsl.impl;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -46,9 +61,7 @@ import com.google.common.collect.ImmutableList;
 import hu.bme.mit.theta.common.dsl.BasicScope;
 import hu.bme.mit.theta.common.dsl.Scope;
 import hu.bme.mit.theta.common.dsl.Symbol;
-import hu.bme.mit.theta.core.Decl;
-import hu.bme.mit.theta.core.Expr;
-import hu.bme.mit.theta.core.Type;
+import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.ParamDecl;
 import hu.bme.mit.theta.core.dsl.DeclSymbol;
 import hu.bme.mit.theta.core.dsl.gen.CoreDslBaseVisitor;
@@ -78,6 +91,8 @@ import hu.bme.mit.theta.core.dsl.gen.CoreDslParser.ParenExprContext;
 import hu.bme.mit.theta.core.dsl.gen.CoreDslParser.RatLitExprContext;
 import hu.bme.mit.theta.core.dsl.gen.CoreDslParser.RelationExprContext;
 import hu.bme.mit.theta.core.dsl.gen.CoreDslParser.TrueExprContext;
+import hu.bme.mit.theta.core.type.Expr;
+import hu.bme.mit.theta.core.type.Type;
 import hu.bme.mit.theta.core.type.abstracttype.AddExpr;
 import hu.bme.mit.theta.core.type.abstracttype.DivExpr;
 import hu.bme.mit.theta.core.type.abstracttype.MulExpr;
@@ -111,7 +126,7 @@ public final class ExprCreatorVisitor extends CoreDslBaseVisitor<Expr<?>> {
 	}
 
 	private void pop() {
-		checkState(currentScope.enclosingScope().isPresent());
+		checkState(currentScope.enclosingScope().isPresent(), "No enclosing scope is present.");
 		currentScope = currentScope.enclosingScope().get();
 	}
 

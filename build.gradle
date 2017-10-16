@@ -1,5 +1,6 @@
 allprojects  {
 	apply plugin: 'maven'
+<<<<<<< HEAD
 
 	group = 'hu.bme.mit.theta'
 	version = '1.0.0-SNAPSHOT'
@@ -11,23 +12,75 @@ subprojects {
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
 
+=======
+	apply plugin: 'java'
+	apply plugin: 'jacoco'
+
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+
+	group = 'hu.bme.mit.theta'
+	version = '1.0.0-SNAPSHOT'
+
+	repositories {
+		mavenCentral()
+	}
+}
+
+subprojects {
+>>>>>>> upstream/master
 	task packageSources(type: Jar) {
 		classifier = 'sources'
 		from sourceSets.main.allSource
 	}
 
 	artifacts.archives packageSources
+<<<<<<< HEAD
 	repositories {
 		mavenCentral()
 	}
+=======
+>>>>>>> upstream/master
 
 	test {
 		String libPath = ".." + File.separator + "lib"
 		environment.put('PATH', libPath)
 		environment.put('LD_LIBRARY_PATH', libPath)
 	}
+<<<<<<< HEAD
+=======
+
+	jacocoTestReport {
+		dependsOn tasks.test
+    reports {
+			xml.enabled false
+			csv.enabled false
+			html.enabled true
+    }
+	}
+}
+
+// aggregates jacoco results from all subprojects and core project and generate a report
+task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+    dependsOn = subprojects.test
+    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories =  files(subprojects.sourceSets.main.output)
+    executionData = files(subprojects.jacocoTestReport.executionData)
+    reports {
+        html.enabled = false
+        xml.enabled = true
+        csv.enabled = false
+    }
+>>>>>>> upstream/master
 }
 
 ext {
   antlrVersion = "4.5.3"
+<<<<<<< HEAD
+=======
+  guavaVersion = "21.0"
+  junitVersion = "4.12"
+  jcommanderVersion = "1.72"
+>>>>>>> upstream/master
 }

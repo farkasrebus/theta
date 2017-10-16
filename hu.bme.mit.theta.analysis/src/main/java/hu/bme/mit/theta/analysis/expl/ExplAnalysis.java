@@ -1,28 +1,43 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *  
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.analysis.expl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.Domain;
-import hu.bme.mit.theta.analysis.InitFunction;
-import hu.bme.mit.theta.analysis.TransferFunction;
+import hu.bme.mit.theta.analysis.InitFunc;
+import hu.bme.mit.theta.analysis.TransferFunc;
 import hu.bme.mit.theta.analysis.expr.ExprAction;
-import hu.bme.mit.theta.core.Expr;
+import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.solver.Solver;
 
 public final class ExplAnalysis implements Analysis<ExplState, ExprAction, ExplPrec> {
 
 	private final Domain<ExplState> domain;
-	private final InitFunction<ExplState, ExplPrec> initFunction;
-	private final TransferFunction<ExplState, ExprAction, ExplPrec> transferFunction;
+	private final InitFunc<ExplState, ExplPrec> initFunc;
+	private final TransferFunc<ExplState, ExprAction, ExplPrec> transferFunc;
 
 	private ExplAnalysis(final Solver solver, final Expr<BoolType> initExpr) {
 		checkNotNull(solver);
 		checkNotNull(initExpr);
 		this.domain = ExplDomain.getInstance();
-		this.initFunction = ExplInitFunction.create(solver, initExpr);
-		this.transferFunction = ExplTransferFunction.create(solver);
+		this.initFunc = ExplInitFunc.create(solver, initExpr);
+		this.transferFunc = ExplTransferFunc.create(solver);
 
 	}
 
@@ -36,13 +51,13 @@ public final class ExplAnalysis implements Analysis<ExplState, ExprAction, ExplP
 	}
 
 	@Override
-	public InitFunction<ExplState, ExplPrec> getInitFunction() {
-		return initFunction;
+	public InitFunc<ExplState, ExplPrec> getInitFunc() {
+		return initFunc;
 	}
 
 	@Override
-	public TransferFunction<ExplState, ExprAction, ExplPrec> getTransferFunction() {
-		return transferFunction;
+	public TransferFunc<ExplState, ExprAction, ExplPrec> getTransferFunc() {
+		return transferFunc;
 	}
 
 }

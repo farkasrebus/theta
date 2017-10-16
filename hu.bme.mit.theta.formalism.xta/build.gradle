@@ -1,10 +1,18 @@
 apply plugin: 'antlr'
+<<<<<<< HEAD
+=======
+apply from: "$rootDir/common-methods.gradle"
+>>>>>>> upstream/master
 
 dependencies {
   antlr group: 'org.antlr', name: 'antlr4', version: antlrVersion
   compile project(':hu.bme.mit.theta.common')
   compile project(':hu.bme.mit.theta.core')
   compile project(':hu.bme.mit.theta.analysis')
+<<<<<<< HEAD
+=======
+  compile group: 'com.beust', name: 'jcommander', version: jcommanderVersion
+>>>>>>> upstream/master
 }
 
 generateGrammarSource {
@@ -19,4 +27,11 @@ sourceSets {
             srcDirs = [ "src/main/java", "src/gen/java" ]
         }
     } 
+<<<<<<< HEAD
 }
+=======
+}
+
+createJarTask("theta-xta-cli", 'hu.bme.mit.theta.formalism.xta.tool.XtaCli', 'theta-xta-cli')
+createJarTask("theta-xta-gui", 'hu.bme.mit.theta.formalism.xta.tool.XtaGui', 'theta-xta-gui')
+>>>>>>> upstream/master

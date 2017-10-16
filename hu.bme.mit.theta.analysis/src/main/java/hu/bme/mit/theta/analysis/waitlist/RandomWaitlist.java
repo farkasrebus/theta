@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.analysis.waitlist;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -8,8 +23,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
-import hu.bme.mit.theta.common.ObjectUtils;
+import hu.bme.mit.theta.common.Utils;
 
+/**
+ * A waitlist where items are removed in a random order.
+ */
 public final class RandomWaitlist<T> implements Waitlist<T> {
 
 	private final List<T> items;
@@ -26,20 +44,19 @@ public final class RandomWaitlist<T> implements Waitlist<T> {
 
 	@Override
 	public void add(final T item) {
-		checkNotNull(item);
-		items.add(item);
+		items.add(checkNotNull(item));
 	}
 
 	@Override
 	public void addAll(final Collection<? extends T> items) {
-		checkNotNull(items);
-		items.forEach(i -> this.items.add(i));
+
+		this.items.addAll(checkNotNull(items));
 	}
 
 	@Override
 	public void addAll(final Stream<? extends T> items) {
 		checkNotNull(items);
-		items.forEach(i -> this.items.add(i));
+		items.forEach(this.items::add);
 	}
 
 	@Override
@@ -65,7 +82,7 @@ public final class RandomWaitlist<T> implements Waitlist<T> {
 
 	@Override
 	public String toString() {
-		return ObjectUtils.toStringBuilder(getClass().getSimpleName()).addAll(items).toString();
+		return Utils.toStringBuilder(getClass().getSimpleName()).addAll(items).toString();
 	}
 
 }

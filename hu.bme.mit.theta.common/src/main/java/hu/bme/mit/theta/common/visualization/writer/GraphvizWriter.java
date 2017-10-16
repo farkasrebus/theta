@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.common.visualization.writer;
 
 import java.awt.Color;
@@ -26,7 +41,7 @@ import hu.bme.mit.theta.common.visualization.Shape;
  */
 public final class GraphvizWriter extends AbstractGraphWriter {
 
-	public static enum Format {
+	public enum Format {
 		PDF("Tpdf"), PNG("Tpng"), SVG("Tsvg"), GIF("Tgif"), EPS("Teps"), JPG("Tjpg");
 
 		private final String option;
@@ -62,7 +77,8 @@ public final class GraphvizWriter extends AbstractGraphWriter {
 		for (final Node node : graph.getNodes()) {
 			printEdges(node, sb);
 		}
-		sb.append("}");
+
+		sb.append('}');
 		return sb.toString();
 	}
 
@@ -92,7 +108,7 @@ public final class GraphvizWriter extends AbstractGraphWriter {
 		final NodeAttributes attributes = node.getAttributes();
 
 		String style = mapLineStyleToString(attributes.getLineStyle());
-		if (!style.equals("")) {
+		if (!"".equals(style)) {
 			style += ",";
 		}
 		style += "filled";
@@ -114,10 +130,10 @@ public final class GraphvizWriter extends AbstractGraphWriter {
 		final String style = mapLineStyleToString(attributes.getLineStyle());
 
 		sb.append("\tsubgraph cluster_").append(node.getId()).append(" {").append(System.lineSeparator());
-		sb.append("\t\tcolor=").append(mapColorToString(attributes.getLineColor())).append(";")
+		sb.append("\t\tcolor=").append(mapColorToString(attributes.getLineColor())).append(';')
 				.append(System.lineSeparator());
-		if (!style.equals("")) {
-			sb.append("\t\tstyle=").append(style).append(";").append(System.lineSeparator());
+		if (!"".equals(style)) {
+			sb.append("\t\tstyle=").append(style).append(';').append(System.lineSeparator());
 		}
 		sb.append("\t\tlabel=\"").append(attributes.getLabel().replace("\n", "\\n")).append("\";")
 				.append(System.lineSeparator());
@@ -139,7 +155,7 @@ public final class GraphvizWriter extends AbstractGraphWriter {
 				sb.append(" [label=\"").append(attributes.getLabel().replace("\n", "\\n")).append("\"");
 				sb.append(",color=").append(mapColorToString(attributes.getColor()));
 				final String style = mapLineStyleToString(attributes.getLineStyle());
-				if (!style.equals("")) {
+				if (!"".equals(style)) {
 					sb.append(",style=").append(style);
 				}
 				if (!attributes.getFont().equals("")) {

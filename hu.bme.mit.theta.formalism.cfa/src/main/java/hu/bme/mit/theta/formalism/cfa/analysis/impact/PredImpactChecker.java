@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.formalism.cfa.analysis.impact;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -23,7 +38,7 @@ import hu.bme.mit.theta.formalism.cfa.analysis.CfaAction;
 import hu.bme.mit.theta.formalism.cfa.analysis.CfaAnalysis;
 import hu.bme.mit.theta.formalism.cfa.analysis.CfaPrec;
 import hu.bme.mit.theta.formalism.cfa.analysis.CfaState;
-import hu.bme.mit.theta.formalism.cfa.analysis.prec.ConstCfaPrec;
+import hu.bme.mit.theta.formalism.cfa.analysis.prec.GlobalCfaPrec;
 import hu.bme.mit.theta.solver.ItpSolver;
 
 public final class PredImpactChecker implements SafetyChecker<CfaState<PredState>, CfaAction, UnitPrec> {
@@ -38,7 +53,7 @@ public final class PredImpactChecker implements SafetyChecker<CfaState<PredState
 
 		final Analysis<PredState, ExprAction, PredPrec> predAnalysis = PredAnalysis.create(solver, True());
 
-		final CfaPrec<PredPrec> fixedPrec = ConstCfaPrec.create(SimplePredPrec.create(emptySet(), solver));
+		final CfaPrec<PredPrec> fixedPrec = GlobalCfaPrec.create(SimplePredPrec.create(emptySet(), solver));
 
 		final Analysis<CfaState<PredState>, CfaAction, CfaPrec<PredPrec>> cfaAnalysis = CfaAnalysis.create(initLoc,
 				predAnalysis);
@@ -53,7 +68,7 @@ public final class PredImpactChecker implements SafetyChecker<CfaState<PredState
 
 		final ImpactRefiner<CfaState<PredState>, CfaAction> refiner = PredImpactRefiner.create(solver);
 
-		checker = ImpactChecker.create(argBuilder, refiner, s -> s.getLoc());
+		checker = ImpactChecker.create(argBuilder, refiner, CfaState::getLoc);
 	}
 
 	public static PredImpactChecker create(final LTS<? super CfaState<PredState>, ? extends CfaAction> lts,

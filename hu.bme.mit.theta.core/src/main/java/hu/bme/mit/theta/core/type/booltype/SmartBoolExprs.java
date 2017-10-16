@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.core.type.booltype;
 
 import java.util.Collection;
@@ -7,7 +22,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableSet;
 
 import hu.bme.mit.theta.common.Utils;
-import hu.bme.mit.theta.core.Expr;
+import hu.bme.mit.theta.core.type.Expr;
 
 public final class SmartBoolExprs {
 
@@ -27,7 +42,7 @@ public final class SmartBoolExprs {
 	}
 
 	public static Expr<BoolType> And(final Collection<? extends Expr<BoolType>> ops) {
-		if (ops.size() == 0) {
+		if (ops.isEmpty()) {
 			return BoolExprs.True();
 		} else if (ops.contains(BoolExprs.False())) {
 			return BoolExprs.False();
@@ -36,7 +51,7 @@ public final class SmartBoolExprs {
 		final List<Expr<BoolType>> filteredOps = ops.stream().filter(o -> !o.equals(BoolExprs.True()))
 				.collect(Collectors.toList());
 
-		if (filteredOps.size() == 0) {
+		if (filteredOps.isEmpty()) {
 			return BoolExprs.True();
 		} else if (filteredOps.size() == 1) {
 			return Utils.anyElementOf(filteredOps);
@@ -46,7 +61,7 @@ public final class SmartBoolExprs {
 	}
 
 	public static Expr<BoolType> Or(final Collection<? extends Expr<BoolType>> ops) {
-		if (ops.size() == 0) {
+		if (ops.isEmpty()) {
 			return BoolExprs.True();
 		} else if (ops.contains(BoolExprs.True())) {
 			return BoolExprs.True();
@@ -55,7 +70,7 @@ public final class SmartBoolExprs {
 		final List<Expr<BoolType>> filteredOps = ops.stream().filter(o -> !o.equals(BoolExprs.False()))
 				.collect(Collectors.toList());
 
-		if (filteredOps.size() == 0) {
+		if (filteredOps.isEmpty()) {
 			return BoolExprs.False();
 		} else if (filteredOps.size() == 1) {
 			return Utils.anyElementOf(filteredOps);

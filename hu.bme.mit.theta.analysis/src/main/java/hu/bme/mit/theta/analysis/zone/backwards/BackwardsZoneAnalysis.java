@@ -5,20 +5,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import hu.bme.mit.theta.analysis.Action;
 import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.Domain;
-import hu.bme.mit.theta.analysis.InitFunction;
-import hu.bme.mit.theta.analysis.TransferFunction;
+import hu.bme.mit.theta.analysis.InitFunc;
+import hu.bme.mit.theta.analysis.TransferFunc;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
 
 public class BackwardsZoneAnalysis<A extends Action> implements Analysis<BackwardsZoneState, A, ZonePrec> {
 
-	private final InitFunction<BackwardsZoneState, ZonePrec> initFunction;
-	private final TransferFunction<BackwardsZoneState, A, ZonePrec> transferFunction;	
+	private final InitFunc<BackwardsZoneState, ZonePrec> initFunc;
+	private final TransferFunc<BackwardsZoneState, A, ZonePrec> transferFunc;	
 	
 	private BackwardsZoneAnalysis(final Analysis<ZoneState, ? super A, ZonePrec> analysis) {
 		checkNotNull(analysis);
-		initFunction = BackwardsZoneInitFunction.create(analysis.getInitFunction());
-		transferFunction = BackwardsZoneTransferFunction.create(analysis.getTransferFunction());
+		initFunc = BackwardsZoneInitFunc.create(analysis.getInitFunc());
+		transferFunc = BackwardsZoneTransferFunc.create(analysis.getTransferFunc());
 
 	}
 	
@@ -32,13 +32,13 @@ public class BackwardsZoneAnalysis<A extends Action> implements Analysis<Backwar
 	}
 
 	@Override
-	public InitFunction<BackwardsZoneState, ZonePrec> getInitFunction() {
-		return initFunction;
+	public InitFunc<BackwardsZoneState, ZonePrec> getInitFunc() {
+		return initFunc;
 	}
 
 	@Override
-	public TransferFunction<BackwardsZoneState, A, ZonePrec> getTransferFunction() {
-		return transferFunction;
+	public TransferFunc<BackwardsZoneState, A, ZonePrec> getTransferFunc() {
+		return transferFunc;
 	}
 
 

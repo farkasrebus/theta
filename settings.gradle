@@ -7,5 +7,9 @@ include ':hu.bme.mit.theta.formalism.cfa'
 include ':hu.bme.mit.theta.formalism.sts'
 include ':hu.bme.mit.theta.formalism.xta'
 include ':hu.bme.mit.theta.solver'
+<<<<<<< HEAD
 include ':hu.bme.mit.theta.solver.z3'
 include ':hu.bme.mit.theta.tools'
+=======
+include ':hu.bme.mit.theta.solver.z3'
+>>>>>>> upstream/master

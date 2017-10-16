@@ -1,3 +1,21 @@
+<<<<<<< HEAD
+=======
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *  
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+>>>>>>> upstream/master
 package hu.bme.mit.theta.solver.z3;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -15,6 +33,7 @@ import com.google.common.collect.ImmutableList;
 import com.microsoft.z3.FuncDecl;
 import com.microsoft.z3.Status;
 
+<<<<<<< HEAD
 import hu.bme.mit.theta.core.Decl;
 import hu.bme.mit.theta.core.Expr;
 import hu.bme.mit.theta.core.LitExpr;
@@ -22,6 +41,15 @@ import hu.bme.mit.theta.core.Type;
 import hu.bme.mit.theta.core.decl.ConstDecl;
 import hu.bme.mit.theta.core.model.AbstractModel;
 import hu.bme.mit.theta.core.model.Model;
+=======
+import hu.bme.mit.theta.core.decl.ConstDecl;
+import hu.bme.mit.theta.core.decl.Decl;
+import hu.bme.mit.theta.core.model.AbstractModel;
+import hu.bme.mit.theta.core.model.Model;
+import hu.bme.mit.theta.core.type.Expr;
+import hu.bme.mit.theta.core.type.LitExpr;
+import hu.bme.mit.theta.core.type.Type;
+>>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.solver.Solver;
 import hu.bme.mit.theta.solver.SolverStatus;
@@ -138,7 +166,11 @@ final class Z3Solver implements Solver {
 
 	@Override
 	public Model getModel() {
+<<<<<<< HEAD
 		checkState(status == SolverStatus.SAT);
+=======
+		checkState(status == SolverStatus.SAT, "Cannot get model if status is not SAT.");
+>>>>>>> upstream/master
 
 		if (model == null) {
 			model = extractModel();
@@ -160,7 +192,11 @@ final class Z3Solver implements Solver {
 
 	@Override
 	public Collection<Expr<BoolType>> getUnsatCore() {
+<<<<<<< HEAD
 		checkState(status == SolverStatus.UNSAT);
+=======
+		checkState(status == SolverStatus.UNSAT, "Cannot get unsat core if status is not UNSAT");
+>>>>>>> upstream/master
 
 		if (unsatCore == null) {
 			unsatCore = extractUnsatCore();
@@ -181,7 +217,11 @@ final class Z3Solver implements Solver {
 		for (int i = 0; i < z3UnsatCore.length; i = i + 1) {
 			final com.microsoft.z3.Expr term = z3UnsatCore[i];
 
+<<<<<<< HEAD
 			checkState(term.isConst());
+=======
+			checkState(term.isConst(), "Term is not constant.");
+>>>>>>> upstream/master
 
 			final String label = term.toString();
 			final Expr<BoolType> assumption = assumptions.get(label);

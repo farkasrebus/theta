@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *  
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.analysis.zone;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -412,7 +427,7 @@ final class DBM {
 		return true;
 	}
 
-	public boolean isLeq(final DBM that, final BoundFunction bound) {
+	public boolean isLeq(final DBM that, final BoundFunc bound) {
 		final Set<VarDecl<RatType>> vars = Sets.union(this.signature.toSet(), that.signature.toSet());
 
 		if (!this.isConsistent()) {
@@ -454,11 +469,11 @@ final class DBM {
 		return true;
 	}
 
-	private static final int LeqMinusUx(final VarDecl<RatType> x, final BoundFunction boundFunction) {
+	private static final int LeqMinusUx(final VarDecl<RatType> x, final BoundFunc boundFunction) {
 		return boundFunction.getUpper(x).map(Ux -> Leq(-Ux)).orElse(Inf());
 	}
 
-	private static final int LtMinusLy(final VarDecl<RatType> y, final BoundFunction boundFunction) {
+	private static final int LtMinusLy(final VarDecl<RatType> y, final BoundFunc boundFunction) {
 		return boundFunction.getLower(y).map(Ly -> Lt(-Ly)).orElse(Inf());
 	}
 

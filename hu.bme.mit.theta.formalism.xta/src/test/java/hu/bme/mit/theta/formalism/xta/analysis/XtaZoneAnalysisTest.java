@@ -1,3 +1,21 @@
+<<<<<<< HEAD
+=======
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+>>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta.analysis;
 
 import java.io.FileNotFoundException;
@@ -20,12 +38,17 @@ import hu.bme.mit.theta.analysis.algorithm.cegar.Abstractor;
 import hu.bme.mit.theta.analysis.algorithm.cegar.BasicAbstractor;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
+<<<<<<< HEAD
 import hu.bme.mit.theta.common.Tuple;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAnalysis;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaLts;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
+=======
+import hu.bme.mit.theta.common.product.Tuple;
+import hu.bme.mit.theta.formalism.xta.XtaSystem;
+>>>>>>> upstream/master
 import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaZoneAnalysis;
 import hu.bme.mit.theta.formalism.xta.dsl.XtaDslManager;
 
@@ -57,7 +80,11 @@ public final class XtaZoneAnalysisTest {
 		final InputStream inputStream = getClass().getResourceAsStream(filepath);
 		final XtaSystem system = XtaDslManager.createSystem(inputStream);
 
+<<<<<<< HEAD
 		final LTS<XtaState<?>, XtaAction> lts = XtaLts.create();
+=======
+		final LTS<XtaState<?>, XtaAction> lts = XtaLts.create(system);
+>>>>>>> upstream/master
 		final Analysis<XtaState<ZoneState>, XtaAction, ZonePrec> analysis = XtaAnalysis.create(system,
 				XtaZoneAnalysis.getInstance());
 		final ZonePrec prec = ZonePrec.of(system.getClockVars());

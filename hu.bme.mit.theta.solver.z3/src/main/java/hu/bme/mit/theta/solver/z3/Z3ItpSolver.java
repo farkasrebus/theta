@@ -1,3 +1,21 @@
+<<<<<<< HEAD
+=======
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+>>>>>>> upstream/master
 package hu.bme.mit.theta.solver.z3;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -10,8 +28,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+<<<<<<< HEAD
 import hu.bme.mit.theta.core.Expr;
 import hu.bme.mit.theta.core.model.Model;
+=======
+import hu.bme.mit.theta.core.model.Model;
+import hu.bme.mit.theta.core.type.Expr;
+>>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.solver.Interpolant;
 import hu.bme.mit.theta.solver.ItpMarker;
@@ -76,7 +99,11 @@ final class Z3ItpSolver implements ItpSolver {
 
 	@Override
 	public Interpolant getInterpolant(final ItpPattern pattern) {
+<<<<<<< HEAD
 		checkState(solver.getStatus() == SolverStatus.UNSAT);
+=======
+		checkState(solver.getStatus() == SolverStatus.UNSAT, "Cannot get interpolant if status is not UNSAT.");
+>>>>>>> upstream/master
 
 		final com.microsoft.z3.Expr proof = z3Solver.getProof();
 		final com.microsoft.z3.Expr term = patternToTerm(pattern);
@@ -108,7 +135,12 @@ final class Z3ItpSolver implements ItpSolver {
 			opTerms.add(childTerm);
 		}
 
+<<<<<<< HEAD
 		final com.microsoft.z3.BoolExpr andTerm = z3Context.mkAnd(opTerms.toArray(new com.microsoft.z3.BoolExpr[0]));
+=======
+		final com.microsoft.z3.BoolExpr andTerm = z3Context
+				.mkAnd(opTerms.toArray(new com.microsoft.z3.BoolExpr[opTerms.size()]));
+>>>>>>> upstream/master
 		final com.microsoft.z3.BoolExpr term = z3Context.MkInterpolant(andTerm);
 		return term;
 	}

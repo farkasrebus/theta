@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.core.utils;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -12,8 +27,8 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import hu.bme.mit.theta.common.ObjectUtils;
 import hu.bme.mit.theta.common.ToStringBuilder;
+import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.core.decl.IndexedConstDecl;
 import hu.bme.mit.theta.core.decl.VarDecl;
 
@@ -69,7 +84,8 @@ public final class IndexedVars {
 	 * @return Set of variables
 	 */
 	public Set<VarDecl<?>> getAllVars() {
-		final Set<VarDecl<?>> allVars = varSets.values().stream().flatMap(s -> s.stream()).collect(Collectors.toSet());
+		final Set<VarDecl<?>> allVars = varSets.values().stream().flatMap(Collection::stream)
+				.collect(Collectors.toSet());
 		return Collections.unmodifiableSet(allVars);
 	}
 
@@ -94,7 +110,7 @@ public final class IndexedVars {
 		}
 
 		public void add(final int i, final VarDecl<?> varDecl) {
-			checkState(!built);
+			checkState(!built, "Already built.");
 			if (!varSets.containsKey(i)) {
 				varSets.put(i, new HashSet<>());
 			}
@@ -102,9 +118,10 @@ public final class IndexedVars {
 		}
 
 		public void add(final int i, final Collection<? extends VarDecl<?>> varDecls) {
-			checkState(!built);
-			if (varDecls.isEmpty())
+			checkState(!built, "Already built.");
+			if (varDecls.isEmpty()) {
 				return;
+			}
 
 			if (!varSets.containsKey(i)) {
 				varSets.put(i, new HashSet<>());
@@ -113,12 +130,12 @@ public final class IndexedVars {
 		}
 
 		public void add(final IndexedConstDecl<?> indexedConstDecl) {
-			checkState(!built);
+			checkState(!built, "Already built.");
 			add(indexedConstDecl.getIndex(), indexedConstDecl.getVarDecl());
 		}
 
 		public IndexedVars build() {
-			checkState(!built);
+			checkState(!built, "Already built.");
 			built = true;
 			return new IndexedVars(varSets);
 		}
@@ -126,7 +143,7 @@ public final class IndexedVars {
 
 	@Override
 	public String toString() {
-		final ToStringBuilder builder = ObjectUtils.toStringBuilder(getClass().getSimpleName());
+		final ToStringBuilder builder = Utils.toStringBuilder(getClass().getSimpleName());
 
 		for (final Entry<Integer, Set<VarDecl<?>>> entry : varSets.entrySet()) {
 			final StringJoiner sj = new StringJoiner(", ", entry.getKey() + ": ", "");

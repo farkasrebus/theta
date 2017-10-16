@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.core.utils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -14,10 +29,10 @@ import java.util.Optional;
 
 import hu.bme.mit.theta.common.DispatchTable;
 import hu.bme.mit.theta.common.Utils;
-import hu.bme.mit.theta.core.Expr;
-import hu.bme.mit.theta.core.LitExpr;
-import hu.bme.mit.theta.core.Type;
 import hu.bme.mit.theta.core.model.Valuation;
+import hu.bme.mit.theta.core.type.Expr;
+import hu.bme.mit.theta.core.type.LitExpr;
+import hu.bme.mit.theta.core.type.Type;
 import hu.bme.mit.theta.core.type.anytype.IteExpr;
 import hu.bme.mit.theta.core.type.anytype.RefExpr;
 import hu.bme.mit.theta.core.type.booltype.AndExpr;
@@ -298,8 +313,9 @@ public final class ExprSimplifier {
 	private Expr<BoolType> simplifyAnd(final AndExpr expr) {
 		final List<Expr<BoolType>> ops = new ArrayList<>();
 
-		if (expr.getOps().size() == 0)
+		if (expr.getOps().isEmpty()) {
 			return True();
+		}
 
 		for (final Expr<BoolType> op : expr.getOps()) {
 			final Expr<BoolType> opVisited = simplify(op);
@@ -315,7 +331,7 @@ public final class ExprSimplifier {
 			}
 		}
 
-		if (ops.size() == 0) {
+		if (ops.isEmpty()) {
 			return True();
 		} else if (ops.size() == 1) {
 			return Utils.singleElementOf(ops);
@@ -327,8 +343,9 @@ public final class ExprSimplifier {
 	private Expr<BoolType> simplifyOr(final OrExpr expr) {
 		final List<Expr<BoolType>> ops = new ArrayList<>();
 
-		if (expr.getOps().size() == 0)
+		if (expr.getOps().isEmpty()) {
 			return True();
+		}
 
 		for (final Expr<BoolType> op : expr.getOps()) {
 			final Expr<BoolType> opVisited = simplify(op);
@@ -344,7 +361,7 @@ public final class ExprSimplifier {
 			}
 		}
 
-		if (ops.size() == 0) {
+		if (ops.isEmpty()) {
 			return False();
 		} else if (ops.size() == 1) {
 			return Utils.singleElementOf(ops);
@@ -382,7 +399,8 @@ public final class ExprSimplifier {
 			ops.add(sum);
 		}
 
-		if (ops.size() == 0) {
+
+		if (ops.isEmpty()) {
 			return Rat(0, 1);
 		} else if (ops.size() == 1) {
 			return Utils.singleElementOf(ops);
@@ -402,8 +420,9 @@ public final class ExprSimplifier {
 		}
 
 		if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+			if (leftOp.equals(rightOp)) {
 				return Rat(0, 1);
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -453,7 +472,7 @@ public final class ExprSimplifier {
 			ops.add(0, prod);
 		}
 
-		if (ops.size() == 0) {
+		if (ops.isEmpty()) {
 			return Rat(1, 1);
 		} else if (ops.size() == 1) {
 			return Utils.singleElementOf(ops);
@@ -497,8 +516,9 @@ public final class ExprSimplifier {
 		if (leftOp instanceof RatLitExpr && rightOp instanceof RatLitExpr) {
 			return Bool(!leftOp.equals(rightOp));
 		} else if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+			if (leftOp.equals(rightOp)) {
 				return False();
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -515,8 +535,9 @@ public final class ExprSimplifier {
 		}
 
 		if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+			if (leftOp.equals(rightOp)) {
 				return True();
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -533,8 +554,9 @@ public final class ExprSimplifier {
 		}
 
 		if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+			if (leftOp.equals(rightOp)) {
 				return False();
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -551,8 +573,10 @@ public final class ExprSimplifier {
 		}
 
 		if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+
+			if (leftOp.equals(rightOp)) {
 				return True();
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -569,8 +593,9 @@ public final class ExprSimplifier {
 		}
 
 		if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+			if (leftOp.equals(rightOp)) {
 				return False();
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -613,7 +638,7 @@ public final class ExprSimplifier {
 			ops.add(sum);
 		}
 
-		if (ops.size() == 0) {
+		if (ops.isEmpty()) {
 			return Int(0);
 		} else if (ops.size() == 1) {
 			return Utils.singleElementOf(ops);
@@ -633,8 +658,9 @@ public final class ExprSimplifier {
 		}
 
 		if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+			if (leftOp.equals(rightOp)) {
 				return Int(0);
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -681,7 +707,7 @@ public final class ExprSimplifier {
 			ops.add(0, prod);
 		}
 
-		if (ops.size() == 0) {
+		if (ops.isEmpty()) {
 			return Int(1);
 		} else if (ops.size() == 1) {
 			return Utils.singleElementOf(ops);
@@ -738,8 +764,10 @@ public final class ExprSimplifier {
 		if (leftOp instanceof IntLitExpr && rightOp instanceof IntLitExpr) {
 			return Bool(!leftOp.equals(rightOp));
 		} else if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+
+			if (leftOp.equals(rightOp)) {
 				return False();
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -756,8 +784,9 @@ public final class ExprSimplifier {
 		}
 
 		if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+			if (leftOp.equals(rightOp)) {
 				return True();
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -774,8 +803,9 @@ public final class ExprSimplifier {
 		}
 
 		if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+			if (leftOp.equals(rightOp)) {
 				return False();
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -792,8 +822,9 @@ public final class ExprSimplifier {
 		}
 
 		if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+			if (leftOp.equals(rightOp)) {
 				return True();
+			}
 		}
 
 		return expr.with(leftOp, rightOp);
@@ -810,8 +841,9 @@ public final class ExprSimplifier {
 		}
 
 		if (leftOp instanceof RefExpr && rightOp instanceof RefExpr) {
-			if (leftOp.equals(rightOp))
+			if (leftOp.equals(rightOp)) {
 				return False();
+			}
 		}
 
 		return expr.with(leftOp, rightOp);

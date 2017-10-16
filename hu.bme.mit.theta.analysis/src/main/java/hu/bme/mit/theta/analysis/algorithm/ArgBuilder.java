@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *  
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.analysis.algorithm;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -12,7 +27,7 @@ import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.LTS;
 import hu.bme.mit.theta.analysis.Prec;
 import hu.bme.mit.theta.analysis.State;
-import hu.bme.mit.theta.analysis.TransferFunction;
+import hu.bme.mit.theta.analysis.TransferFunc;
 
 /**
  * Helper class for building the ARG with a given analysis and precision.
@@ -46,7 +61,8 @@ public final class ArgBuilder<S extends State, A extends Action, P extends Prec>
 
 		final Collection<ArgNode<S, A>> newInitNodes = new ArrayList<>();
 
-		final Collection<? extends S> initStates = analysis.getInitFunction().getInitStates(prec);
+		final Collection<? extends S> initStates = analysis.getInitFunc().getInitStates(prec);
+
 		for (final S initState : initStates) {
 			if (arg.getInitStates().noneMatch(s -> analysis.getDomain().isLeq(initState, s))) {
 				final boolean isTarget = target.test(initState);
@@ -66,7 +82,9 @@ public final class ArgBuilder<S extends State, A extends Action, P extends Prec>
 		final Collection<ArgNode<S, A>> newSuccNodes = new ArrayList<>();
 		final S state = node.getState();
 		final Collection<? extends A> actions = lts.getEnabledActionsFor(state);
-		final TransferFunction<S, ? super A, ? super P> transferFunc = analysis.getTransferFunction();
+
+		final TransferFunc<S, ? super A, ? super P> transferFunc = analysis.getTransferFunc();
+
 		for (final A action : actions) {
 			final Collection<? extends S> succStates = transferFunc.getSuccStates(state, action, prec);
 			for (final S succState : succStates) {

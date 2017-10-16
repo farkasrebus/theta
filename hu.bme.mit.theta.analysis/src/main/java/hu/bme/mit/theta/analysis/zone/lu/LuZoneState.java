@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *  
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.analysis.zone.lu;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -19,11 +34,11 @@ import java.util.StringJoiner;
 import com.google.common.collect.Lists;
 
 import hu.bme.mit.theta.analysis.expr.ExprState;
-import hu.bme.mit.theta.analysis.zone.BoundFunction;
+import hu.bme.mit.theta.analysis.zone.BoundFunc;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
-import hu.bme.mit.theta.core.Expr;
 import hu.bme.mit.theta.core.decl.ParamDecl;
 import hu.bme.mit.theta.core.decl.VarDecl;
+import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.core.utils.ExprUtils;
@@ -32,17 +47,17 @@ public final class LuZoneState implements ExprState {
 	private static final int HASH_SEED = 5261;
 
 	private final ZoneState zone;
-	private final BoundFunction boundFunction;
+	private final BoundFunc boundFunction;
 
 	private volatile int hashCode = 0;
 	private volatile Expr<BoolType> expr = null;
 
-	private LuZoneState(final ZoneState zone, final BoundFunction boundFunction) {
+	private LuZoneState(final ZoneState zone, final BoundFunc boundFunction) {
 		this.zone = checkNotNull(zone);
 		this.boundFunction = checkNotNull(boundFunction);
 	}
 
-	public static LuZoneState of(final ZoneState zone, final BoundFunction boundFunction) {
+	public static LuZoneState of(final ZoneState zone, final BoundFunc boundFunction) {
 		return new LuZoneState(zone, boundFunction);
 	}
 
@@ -50,11 +65,11 @@ public final class LuZoneState implements ExprState {
 		return zone;
 	}
 
-	public BoundFunction getBoundFunction() {
+	public BoundFunc getBoundFunction() {
 		return boundFunction;
 	}
 
-	public LuZoneState withBoundFunction(final BoundFunction boundFunction) {
+	public LuZoneState withBoundFunction(final BoundFunc boundFunction) {
 		return LuZoneState.of(zone, boundFunction);
 	}
 

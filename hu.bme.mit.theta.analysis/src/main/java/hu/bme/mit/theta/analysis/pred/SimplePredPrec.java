@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.analysis.pred;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -15,9 +30,9 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 
-import hu.bme.mit.theta.common.ObjectUtils;
-import hu.bme.mit.theta.core.Expr;
+import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.core.model.Valuation;
+import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.booltype.BoolLitExpr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.utils.ExprUtils;
@@ -86,7 +101,8 @@ public final class SimplePredPrec implements PredPrec {
 			} else {
 				final Expr<BoolType> simplified0 = PathUtils.unfold(simplified, 0);
 
-				boolean ponValid, negValid;
+				boolean ponValid;
+				boolean negValid;
 				try (WithPushPop wpp = new WithPushPop(solver)) {
 					solver.add(Not(simplified0));
 					ponValid = solver.check().isUnsat();
@@ -124,7 +140,7 @@ public final class SimplePredPrec implements PredPrec {
 
 	@Override
 	public String toString() {
-		return ObjectUtils.toStringBuilder(getClass().getSimpleName()).addAll(predToNegMap.keySet()).toString();
+		return Utils.toStringBuilder(getClass().getSimpleName()).addAll(predToNegMap.keySet()).toString();
 	}
 
 	@Override

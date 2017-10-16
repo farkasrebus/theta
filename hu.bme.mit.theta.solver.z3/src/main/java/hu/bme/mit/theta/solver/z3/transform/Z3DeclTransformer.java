@@ -1,3 +1,21 @@
+<<<<<<< HEAD
+=======
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *  
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+>>>>>>> upstream/master
 package hu.bme.mit.theta.solver.z3.transform;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -7,6 +25,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.microsoft.z3.Context;
 
+<<<<<<< HEAD
 import hu.bme.mit.theta.common.Product2;
 import hu.bme.mit.theta.common.Tuple;
 import hu.bme.mit.theta.common.Tuple2;
@@ -14,6 +33,15 @@ import hu.bme.mit.theta.core.Decl;
 import hu.bme.mit.theta.core.Type;
 import hu.bme.mit.theta.core.decl.ConstDecl;
 import hu.bme.mit.theta.core.decl.ParamDecl;
+=======
+import hu.bme.mit.theta.common.product.Product2;
+import hu.bme.mit.theta.common.product.Tuple;
+import hu.bme.mit.theta.common.product.Tuple2;
+import hu.bme.mit.theta.core.decl.ConstDecl;
+import hu.bme.mit.theta.core.decl.Decl;
+import hu.bme.mit.theta.core.decl.ParamDecl;
+import hu.bme.mit.theta.core.type.Type;
+>>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.functype.FuncType;
 
 final class Z3DeclTransformer {

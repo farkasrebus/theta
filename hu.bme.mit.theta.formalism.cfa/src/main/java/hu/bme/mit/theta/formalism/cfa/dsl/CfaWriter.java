@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017 Budapest University of Technology and Economics
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package hu.bme.mit.theta.formalism.cfa.dsl;
 
 import java.io.BufferedWriter;
@@ -5,14 +20,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import hu.bme.mit.theta.core.Decl;
+import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.dsl.CoreDslManager;
 import hu.bme.mit.theta.core.stmt.Stmt;
 import hu.bme.mit.theta.formalism.cfa.CFA;
 import hu.bme.mit.theta.formalism.cfa.CFA.Edge;
 import hu.bme.mit.theta.formalism.cfa.CFA.Loc;
 
-public class CfaWriter {
+public final class CfaWriter {
+
+	private CfaWriter() {
+	}
+
 	public static void write(final CFA cfa, final OutputStream outStream) throws IOException {
 		final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outStream));
 
@@ -31,12 +50,15 @@ public class CfaWriter {
 		for (final Loc loc : cfa.getLocs()) {
 			final String locName = "L" + loc.getName();
 			String locPrefix = "";
-			if (loc == cfa.getErrorLoc())
+			if (loc == cfa.getErrorLoc()) {
 				locPrefix += "error ";
-			if (loc == cfa.getInitLoc())
+			}
+			if (loc == cfa.getInitLoc()) {
 				locPrefix += "init ";
-			if (loc == cfa.getFinalLoc())
+			}
+			if (loc == cfa.getFinalLoc()) {
 				locPrefix += "final ";
+			}
 			bw.write(String.format("\t%sloc %s", locPrefix, locName));
 			bw.newLine();
 		}
@@ -48,10 +70,8 @@ public class CfaWriter {
 			final String targetLoc = "L" + edge.getTarget().getName();
 			bw.write(String.format("\t%s -> %s {", sourceLoc, targetLoc));
 			bw.newLine();
-			for (final Stmt stmt : edge.getStmts()) {
-				bw.write(String.format("\t\t%s", writeStmt(stmt)));
-				bw.newLine();
-			}
+			bw.write(String.format("\t\t%s", writeStmt(edge.getStmt())));
+			bw.newLine();
 			bw.write("\t}");
 			bw.newLine();
 		}
