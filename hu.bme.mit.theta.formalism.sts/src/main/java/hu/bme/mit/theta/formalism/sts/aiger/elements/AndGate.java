@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.sts.aiger.elements;
 
 import static hu.bme.mit.theta.core.type.booltype.BoolExprs.And;
@@ -23,11 +20,7 @@ import static hu.bme.mit.theta.core.type.booltype.BoolExprs.Not;
 
 import java.util.List;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-=======
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 
 public final class AndGate extends HwElement {
@@ -46,14 +39,6 @@ public final class AndGate extends HwElement {
 	@Override
 	public Expr<BoolType> getExpr(final List<HwElement> elements) {
 		Expr<BoolType> expr1 = elements.get(rhs1 / 2).getExpr(elements);
-<<<<<<< HEAD
-		if (rhs1 % 2 != 0)
-			expr1 = Not(expr1);
-
-		Expr<BoolType> expr2 = elements.get(rhs2 / 2).getExpr(elements);
-		if (rhs2 % 2 != 0)
-			expr2 = Not(expr2);
-=======
 		if (rhs1 % 2 != 0) {
 			expr1 = Not(expr1);
 		}
@@ -62,7 +47,6 @@ public final class AndGate extends HwElement {
 		if (rhs2 % 2 != 0) {
 			expr2 = Not(expr2);
 		}
->>>>>>> upstream/master
 
 		return And(expr1, expr2);
 	}

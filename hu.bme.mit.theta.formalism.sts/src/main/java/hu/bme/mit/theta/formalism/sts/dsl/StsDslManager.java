@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-package hu.bme.mit.theta.formalism.sts.dsl;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -26,18 +19,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
->>>>>>> upstream/master
 import java.util.Arrays;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-=======
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.formalism.sts.dsl.gen.StsDslLexer;
 import hu.bme.mit.theta.formalism.sts.dsl.gen.StsDslParser;
 import hu.bme.mit.theta.formalism.sts.dsl.gen.StsDslParser.StsSpecContext;
@@ -47,10 +35,6 @@ public final class StsDslManager {
 	private StsDslManager() {
 	}
 
-<<<<<<< HEAD
-	public static StsSpec createStsSpec(final InputStream inputStream, final List<? extends Expr<?>> args)
-			throws FileNotFoundException, IOException {
-=======
 	public static StsSpec createStsSpec(final String inputString, final Expr<?>... params) throws IOException {
 		final InputStream stream = new ByteArrayInputStream(inputString.getBytes(StandardCharsets.UTF_8.name()));
 		return createStsSpec(stream, params);
@@ -58,7 +42,6 @@ public final class StsDslManager {
 
 	public static StsSpec createStsSpec(final InputStream inputStream, final List<? extends Expr<?>> args)
 			throws IOException {
->>>>>>> upstream/master
 		final ANTLRInputStream input = new ANTLRInputStream(inputStream);
 
 		final StsDslLexer lexer = new StsDslLexer(input);
@@ -72,12 +55,7 @@ public final class StsDslManager {
 		return stsSpec;
 	}
 
-<<<<<<< HEAD
-	public static StsSpec createStsSpec(final InputStream inputStream, final Expr<?>... params)
-			throws FileNotFoundException, IOException {
-=======
 	public static StsSpec createStsSpec(final InputStream inputStream, final Expr<?>... params) throws IOException {
->>>>>>> upstream/master
 		return createStsSpec(inputStream, Arrays.asList(params));
 	}
 

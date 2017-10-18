@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -79,14 +76,11 @@ public abstract class Update {
 			throw new ClassCastException();
 		}
 
-<<<<<<< HEAD
-=======
 		@Override
 		public String toString() {
 			return stmt.toString();
 		}
 
->>>>>>> upstream/master
 	}
 
 	public static final class ClockUpdate extends Update {
@@ -125,14 +119,11 @@ public abstract class Update {
 			return this;
 		}
 
-<<<<<<< HEAD
-=======
 		@Override
 		public String toString() {
 			return clockOp.toString();
 		}
 
->>>>>>> upstream/master
 	}
 
 }

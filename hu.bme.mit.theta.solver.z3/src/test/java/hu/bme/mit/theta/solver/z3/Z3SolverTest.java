@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *  
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.solver.z3;
 
 import static hu.bme.mit.theta.core.decl.Decls.Const;
@@ -26,16 +23,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-import hu.bme.mit.theta.core.decl.ConstDecl;
-import hu.bme.mit.theta.core.model.Model;
-=======
 import hu.bme.mit.theta.core.decl.ConstDecl;
 import hu.bme.mit.theta.core.model.Model;
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.solver.Solver;
 import hu.bme.mit.theta.solver.SolverStatus;

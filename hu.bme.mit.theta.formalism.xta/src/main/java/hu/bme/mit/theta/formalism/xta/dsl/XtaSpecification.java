@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *  
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta.dsl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -33,11 +30,7 @@ import hu.bme.mit.theta.common.dsl.Environment;
 import hu.bme.mit.theta.common.dsl.Scope;
 import hu.bme.mit.theta.common.dsl.Symbol;
 import hu.bme.mit.theta.common.dsl.SymbolTable;
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-=======
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.formalism.xta.XtaProcess;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.dsl.gen.XtaDslParser.ArrayIdContext;

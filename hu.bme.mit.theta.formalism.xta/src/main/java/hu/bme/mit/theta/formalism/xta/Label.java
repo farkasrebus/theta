@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,24 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-
-public final class Label {
-
-	public static enum Kind {
-=======
 import hu.bme.mit.theta.core.type.Expr;
 
 public final class Label {
 
 	public enum Kind {
->>>>>>> upstream/master
 		EMIT, RECEIVE
 	}
 

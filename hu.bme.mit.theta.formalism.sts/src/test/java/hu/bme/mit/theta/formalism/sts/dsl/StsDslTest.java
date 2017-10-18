@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.sts.dsl;
 
 import java.io.FileNotFoundException;
@@ -36,8 +33,6 @@ import hu.bme.mit.theta.formalism.sts.STS;
 @RunWith(Parameterized.class)
 public class StsDslTest {
 
-<<<<<<< HEAD
-=======
 	@Parameter(0)
 	public String filepath;
 
@@ -47,7 +42,6 @@ public class StsDslTest {
 	@Parameter(2)
 	public int varCount;
 
->>>>>>> upstream/master
 	@Parameters
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
@@ -59,18 +53,6 @@ public class StsDslTest {
 		});
 	}
 
-<<<<<<< HEAD
-	@Parameter(0)
-	public String filepath;
-
-	@Parameter(1)
-	public String propertyName;
-
-	@Parameter(2)
-	public int varCount;
-
-=======
->>>>>>> upstream/master
 	@Test
 	public void test() throws FileNotFoundException, IOException {
 		final InputStream inputStream = StsDslTest.class.getResourceAsStream(filepath);

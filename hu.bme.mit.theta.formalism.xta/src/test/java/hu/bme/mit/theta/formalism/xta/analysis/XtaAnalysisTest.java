@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta.analysis;
 
 import java.io.FileNotFoundException;
@@ -40,19 +37,9 @@ import hu.bme.mit.theta.analysis.unit.UnitAnalysis;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.unit.UnitState;
 import hu.bme.mit.theta.analysis.utils.ArgVisualizer;
-<<<<<<< HEAD
-import hu.bme.mit.theta.common.Tuple;
-import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
-import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
-import hu.bme.mit.theta.formalism.xta.analysis.XtaAnalysis;
-import hu.bme.mit.theta.formalism.xta.analysis.XtaLts;
-import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
-=======
 import hu.bme.mit.theta.common.product.Tuple;
 import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
->>>>>>> upstream/master
 import hu.bme.mit.theta.formalism.xta.dsl.XtaDslManager;
 
 @RunWith(Parameterized.class)
@@ -83,11 +70,7 @@ public final class XtaAnalysisTest {
 		final InputStream inputStream = getClass().getResourceAsStream(filepath);
 		final XtaSystem system = XtaDslManager.createSystem(inputStream);
 
-<<<<<<< HEAD
-		final LTS<XtaState<?>, XtaAction> lts = XtaLts.create();
-=======
 		final LTS<XtaState<?>, XtaAction> lts = XtaLts.create(system);
->>>>>>> upstream/master
 		final Analysis<XtaState<UnitState>, XtaAction, UnitPrec> analysis = XtaAnalysis.create(system,
 				UnitAnalysis.getInstance());
 		final ArgBuilder<XtaState<UnitState>, XtaAction, UnitPrec> argBuilder = ArgBuilder.create(lts, analysis,

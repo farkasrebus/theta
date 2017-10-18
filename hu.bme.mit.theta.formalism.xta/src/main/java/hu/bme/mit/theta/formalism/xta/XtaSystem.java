@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -37,11 +34,7 @@ public final class XtaSystem {
 
 	private XtaSystem(final List<XtaProcess> processes) {
 		checkNotNull(processes);
-<<<<<<< HEAD
-		checkArgument(processes.size() > 0);
-=======
 		checkArgument(!processes.isEmpty());
->>>>>>> upstream/master
 		this.processes = ImmutableList.copyOf(processes);
 		dataVars = processes.stream().flatMap(p -> p.getDataVars().stream()).collect(toImmutableSet());
 		clockVars = processes.stream().flatMap(p -> p.getClockVars().stream()).collect(toImmutableSet());

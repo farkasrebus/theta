@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *  
@@ -15,18 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta.analysis.zone;
 
 import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.Domain;
-<<<<<<< HEAD
-import hu.bme.mit.theta.analysis.InitFunction;
-import hu.bme.mit.theta.analysis.TransferFunction;
-=======
 import hu.bme.mit.theta.analysis.InitFunc;
 import hu.bme.mit.theta.analysis.TransferFunc;
->>>>>>> upstream/master
 import hu.bme.mit.theta.analysis.zone.ZoneDomain;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
@@ -49,15 +41,6 @@ public final class XtaZoneAnalysis implements Analysis<ZoneState, XtaAction, Zon
 	}
 
 	@Override
-<<<<<<< HEAD
-	public InitFunction<ZoneState, ZonePrec> getInitFunction() {
-		return XtaZoneInitFunction.getInstance();
-	}
-
-	@Override
-	public TransferFunction<ZoneState, XtaAction, ZonePrec> getTransferFunction() {
-		return XtaZoneTransferFunction.getInstance();
-=======
 	public InitFunc<ZoneState, ZonePrec> getInitFunc() {
 		return XtaZoneInitFunc.getInstance();
 	}
@@ -65,7 +48,6 @@ public final class XtaZoneAnalysis implements Analysis<ZoneState, XtaAction, Zon
 	@Override
 	public TransferFunc<ZoneState, XtaAction, ZonePrec> getTransferFunc() {
 		return XtaZoneTransferFunc.getInstance();
->>>>>>> upstream/master
 	}
 
 }

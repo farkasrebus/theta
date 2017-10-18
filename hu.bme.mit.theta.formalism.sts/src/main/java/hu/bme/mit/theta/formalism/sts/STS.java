@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.sts;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -27,13 +24,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-import hu.bme.mit.theta.core.decl.VarDecl;
-=======
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.AndExpr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.utils.ExprUtils;
@@ -106,11 +98,7 @@ public final class STS {
 		sb.append("\tVars:  ").append(vars).append(System.lineSeparator());
 		sb.append("\tInit:  ").append(init).append(System.lineSeparator());
 		sb.append("\tTrans: ").append(trans).append(System.lineSeparator());
-<<<<<<< HEAD
-		sb.append("\tProp: ").append(prop).append(System.lineSeparator()).append("]");
-=======
 		sb.append("\tProp: ").append(prop).append(System.lineSeparator()).append(']');
->>>>>>> upstream/master
 		return sb.toString();
 	}
 

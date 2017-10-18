@@ -1,18 +1,5 @@
 allprojects  {
 	apply plugin: 'maven'
-<<<<<<< HEAD
-
-	group = 'hu.bme.mit.theta'
-	version = '1.0.0-SNAPSHOT'
-	
-}
-
-subprojects {
-	apply plugin: 'java'
-	sourceCompatibility = 1.8
-	targetCompatibility = 1.8
-
-=======
 	apply plugin: 'java'
 	apply plugin: 'jacoco'
 
@@ -28,27 +15,18 @@ subprojects {
 }
 
 subprojects {
->>>>>>> upstream/master
 	task packageSources(type: Jar) {
 		classifier = 'sources'
 		from sourceSets.main.allSource
 	}
 
 	artifacts.archives packageSources
-<<<<<<< HEAD
-	repositories {
-		mavenCentral()
-	}
-=======
->>>>>>> upstream/master
 
 	test {
 		String libPath = ".." + File.separator + "lib"
 		environment.put('PATH', libPath)
 		environment.put('LD_LIBRARY_PATH', libPath)
 	}
-<<<<<<< HEAD
-=======
 
 	jacocoTestReport {
 		dependsOn tasks.test
@@ -72,15 +50,11 @@ task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
         xml.enabled = true
         csv.enabled = false
     }
->>>>>>> upstream/master
 }
 
 ext {
   antlrVersion = "4.5.3"
-<<<<<<< HEAD
-=======
   guavaVersion = "21.0"
   junitVersion = "4.12"
   jcommanderVersion = "1.72"
->>>>>>> upstream/master
 }

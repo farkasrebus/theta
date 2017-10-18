@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.sts.aiger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -26,17 +23,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
-<<<<<<< HEAD
-public class AigerVisualizer {
-
-	private AigerVisualizer() {
-	}
-=======
 /**
  * Utility class for visualizing AIGER files.
  */
 public final class AigerVisualizer {
->>>>>>> upstream/master
 
 	private static final String INPUTSHAPE = "invhouse";
 	private static final String LATCHSHAPE = "rectangle";
@@ -44,14 +34,6 @@ public final class AigerVisualizer {
 	private static final String ANDSHAPE = "ellipse";
 	private static final String INVHEAD = "odot";
 
-<<<<<<< HEAD
-	public static void visualize(final String fileName, final String output) throws IOException {
-		final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
-		final PrintWriter pw = new PrintWriter(output);
-
-		try {
-			int inputs, latches, outputs, andGates;
-=======
 	private AigerVisualizer() {
 	}
 
@@ -71,7 +53,6 @@ public final class AigerVisualizer {
 			int latches;
 			int outputs;
 			int andGates;
->>>>>>> upstream/master
 			// Parse header
 			final String[] header = checkNotNull(br.readLine(), "Header expected").split(" ");
 			inputs = Integer.parseInt(header[2]);
@@ -96,14 +77,9 @@ public final class AigerVisualizer {
 				pw.write("v" + v1 / 2 + "[label=\"L" + (i + 1) + "\", shape=\"" + LATCHSHAPE
 						+ "\", margin=\"0.05\", width=\"0\", height=\"0\"];\n");
 				pw.write("v" + v2 / 2 + ":s -> v" + v1 / 2 + ":n");
-<<<<<<< HEAD
-				if (v2 % 2 != 0)
-					pw.write(" [arrowhead=\"" + INVHEAD + "\"]");
-=======
 				if (v2 % 2 != 0) {
 					pw.write(" [arrowhead=\"" + INVHEAD + "\"]");
 				}
->>>>>>> upstream/master
 				pw.write(";\n");
 			}
 
@@ -113,14 +89,9 @@ public final class AigerVisualizer {
 				pw.write("o" + i + "[label=\"O" + (i + 1) + "\", shape=\"" + OUTPUTSHAPE
 						+ "\", margin=\"0\", width=\"0\", height=\"0\"];\n");
 				pw.write("v" + v / 2 + ":s -> o" + i + ":n");
-<<<<<<< HEAD
-				if (v % 2 != 0)
-					pw.write(" [arrowhead=\"" + INVHEAD + "\"]");
-=======
 				if (v % 2 != 0) {
 					pw.write(" [arrowhead=\"" + INVHEAD + "\"]");
 				}
->>>>>>> upstream/master
 				pw.write(";\n");
 			}
 
@@ -133,14 +104,6 @@ public final class AigerVisualizer {
 				pw.write("v" + vo / 2 + "[label=\"A" + (i + 1) + "\", shape=\"" + ANDSHAPE
 						+ "\", margin=\"0.02\", width=\"0\", height=\"0\"];\n");
 				pw.write("v" + vi1 / 2 + ":s -> v" + vo / 2 + ":nw");
-<<<<<<< HEAD
-				if (vi1 % 2 != 0)
-					pw.write(" [arrowhead=\"" + INVHEAD + "\"]");
-				pw.write("\n");
-				pw.write("v" + vi2 / 2 + ":s -> v" + vo / 2 + ":ne");
-				if (vi2 % 2 != 0)
-					pw.write(" [arrowhead=\"" + INVHEAD + "\"]");
-=======
 				if (vi1 % 2 != 0) {
 					pw.write(" [arrowhead=\"" + INVHEAD + "\"]");
 				}
@@ -149,7 +112,6 @@ public final class AigerVisualizer {
 				if (vi2 % 2 != 0) {
 					pw.write(" [arrowhead=\"" + INVHEAD + "\"]");
 				}
->>>>>>> upstream/master
 				pw.write(";\n");
 			}
 

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,20 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-import hu.bme.mit.theta.core.clock.constr.ClockConstr;
-import hu.bme.mit.theta.core.clock.constr.ClockConstrs;
-=======
 import hu.bme.mit.theta.core.clock.constr.ClockConstr;
 import hu.bme.mit.theta.core.clock.constr.ClockConstrs;
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 
 public abstract class Guard {
@@ -85,14 +76,11 @@ public abstract class Guard {
 		public ClockGuard asClockGuard() {
 			throw new ClassCastException();
 		}
-<<<<<<< HEAD
-=======
 
 		@Override
 		public String toString() {
 			return expr.toString();
 		}
->>>>>>> upstream/master
 	}
 
 	public static final class ClockGuard extends Guard {
@@ -130,15 +118,12 @@ public abstract class Guard {
 		public ClockGuard asClockGuard() {
 			return this;
 		}
-<<<<<<< HEAD
-=======
 
 		@Override
 		public String toString() {
 			return clockConstr.toString();
 		}
 
->>>>>>> upstream/master
 	}
 
 }

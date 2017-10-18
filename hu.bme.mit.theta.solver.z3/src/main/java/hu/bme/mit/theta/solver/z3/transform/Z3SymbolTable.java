@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *  
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.solver.z3.transform;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -57,11 +54,7 @@ public class Z3SymbolTable {
 	public void put(final ConstDecl<?> constDecl, final com.microsoft.z3.FuncDecl symbol) {
 		checkNotNull(constDecl);
 		checkNotNull(symbol);
-<<<<<<< HEAD
-		checkState(!constToSymbol.containsKey(constDecl));
-=======
 		checkState(!constToSymbol.containsKey(constDecl), "Constant not found.");
->>>>>>> upstream/master
 		constToSymbol.put(constDecl, symbol);
 	}
 

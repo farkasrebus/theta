@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-package hu.bme.mit.theta.formalism.xta.dsl;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -26,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
->>>>>>> upstream/master
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -41,16 +33,12 @@ public final class XtaDslManager {
 	private XtaDslManager() {
 	}
 
-<<<<<<< HEAD
-	public static XtaSystem createSystem(final InputStream inputStream) throws FileNotFoundException, IOException {
-=======
 	public static XtaSystem createSystem(final String inputString) throws IOException {
 		final InputStream stream = new ByteArrayInputStream(inputString.getBytes(StandardCharsets.UTF_8.name()));
 		return createSystem(stream);
 	}
 
 	public static XtaSystem createSystem(final InputStream inputStream) throws IOException {
->>>>>>> upstream/master
 		final ANTLRInputStream input = new ANTLRInputStream(inputStream);
 
 		final XtaDslLexer lexer = new XtaDslLexer(input);

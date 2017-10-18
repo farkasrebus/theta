@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.solver.z3;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -28,13 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-import hu.bme.mit.theta.core.model.Model;
-=======
 import hu.bme.mit.theta.core.model.Model;
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.solver.Interpolant;
 import hu.bme.mit.theta.solver.ItpMarker;
@@ -99,11 +91,7 @@ final class Z3ItpSolver implements ItpSolver {
 
 	@Override
 	public Interpolant getInterpolant(final ItpPattern pattern) {
-<<<<<<< HEAD
-		checkState(solver.getStatus() == SolverStatus.UNSAT);
-=======
 		checkState(solver.getStatus() == SolverStatus.UNSAT, "Cannot get interpolant if status is not UNSAT.");
->>>>>>> upstream/master
 
 		final com.microsoft.z3.Expr proof = z3Solver.getProof();
 		final com.microsoft.z3.Expr term = patternToTerm(pattern);
@@ -135,12 +123,8 @@ final class Z3ItpSolver implements ItpSolver {
 			opTerms.add(childTerm);
 		}
 
-<<<<<<< HEAD
-		final com.microsoft.z3.BoolExpr andTerm = z3Context.mkAnd(opTerms.toArray(new com.microsoft.z3.BoolExpr[0]));
-=======
 		final com.microsoft.z3.BoolExpr andTerm = z3Context
 				.mkAnd(opTerms.toArray(new com.microsoft.z3.BoolExpr[opTerms.size()]));
->>>>>>> upstream/master
 		final com.microsoft.z3.BoolExpr term = z3Context.MkInterpolant(andTerm);
 		return term;
 	}

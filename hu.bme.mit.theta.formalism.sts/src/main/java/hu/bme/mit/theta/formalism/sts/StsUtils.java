@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-package hu.bme.mit.theta.formalism.sts;
-
-import hu.bme.mit.theta.core.Expr;
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *  
@@ -21,7 +16,6 @@ import hu.bme.mit.theta.core.Expr;
 package hu.bme.mit.theta.formalism.sts;
 
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.utils.ExprUtils;
 

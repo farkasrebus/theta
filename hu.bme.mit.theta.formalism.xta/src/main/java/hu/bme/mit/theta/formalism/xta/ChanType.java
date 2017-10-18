@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-package hu.bme.mit.theta.formalism.xta;
-
-import hu.bme.mit.theta.core.Type;
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *  
@@ -21,7 +16,6 @@ import hu.bme.mit.theta.core.Type;
 package hu.bme.mit.theta.formalism.xta;
 
 import hu.bme.mit.theta.core.type.Type;
->>>>>>> upstream/master
 
 public final class ChanType implements Type {
 

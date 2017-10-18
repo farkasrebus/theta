@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -30,15 +27,9 @@ import java.util.Optional;
 
 import com.google.common.collect.ImmutableList;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-import hu.bme.mit.theta.core.decl.VarDecl;
-import hu.bme.mit.theta.core.stmt.Stmt;
-=======
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.stmt.Stmt;
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.core.utils.ExprUtils;
@@ -206,11 +197,7 @@ public final class XtaProcess {
 
 	////
 
-<<<<<<< HEAD
-	public static enum LocKind {
-=======
 	public enum LocKind {
->>>>>>> upstream/master
 		NORMAL, URGENT, COMMITTED;
 	}
 
@@ -295,8 +282,4 @@ public final class XtaProcess {
 		}
 	}
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> upstream/master

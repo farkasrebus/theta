@@ -1,13 +1,8 @@
 specification System {
 
 	system simple := {
-<<<<<<< HEAD
-		var x : integer
-		var r : boolean
-=======
 		var x : int
 		var r : bool
->>>>>>> upstream/master
 		
 		invariant x >= 1 and x <= 4
 		

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,17 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta.dsl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import hu.bme.mit.theta.common.dsl.Environment;
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-=======
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.utils.TypeUtils;
 import hu.bme.mit.theta.formalism.xta.ChanType;
 import hu.bme.mit.theta.formalism.xta.Label;
@@ -42,11 +35,7 @@ final class XtaSync {
 		syncKind = context.fReceive != null ? SyncKind.RECEIVE : SyncKind.EMIT;
 	}
 
-<<<<<<< HEAD
-	public static enum SyncKind {
-=======
 	public enum SyncKind {
->>>>>>> upstream/master
 		EMIT, RECEIVE
 	}
 

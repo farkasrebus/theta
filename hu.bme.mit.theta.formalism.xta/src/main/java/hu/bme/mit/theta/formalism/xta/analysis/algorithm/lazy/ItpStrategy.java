@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -93,11 +90,7 @@ public abstract class ItpStrategy implements LazyXtaChecker.AlgorithmStrategy<It
 
 	protected final void maintainCoverage(final ArgNode<XtaState<ItpZoneState>, XtaAction> node,
 			final Collection<ArgNode<XtaState<ItpZoneState>, XtaAction>> uncoveredNodes) {
-<<<<<<< HEAD
-		node.getCoveredNodes().forEach(n -> uncoveredNodes.add(n));
-=======
 		node.getCoveredNodes().forEach(uncoveredNodes::add);
->>>>>>> upstream/master
 		node.clearCoveredNodes();
 	}
 

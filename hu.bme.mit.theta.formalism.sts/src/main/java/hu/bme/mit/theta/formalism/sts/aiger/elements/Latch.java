@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.sts.aiger.elements;
 
 import static hu.bme.mit.theta.core.decl.Decls.Var;
@@ -26,13 +23,8 @@ import static hu.bme.mit.theta.core.type.booltype.BoolExprs.Not;
 
 import java.util.List;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-import hu.bme.mit.theta.core.decl.VarDecl;
-=======
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 
 public final class Latch extends HwElement {
@@ -60,14 +52,9 @@ public final class Latch extends HwElement {
 
 	public Expr<BoolType> getTransExpr(final List<HwElement> elements) {
 		Expr<BoolType> expr = elements.get(nextState / 2).getExpr(elements);
-<<<<<<< HEAD
-		if (nextState % 2 != 0)
-			expr = Not(expr);
-=======
 		if (nextState % 2 != 0) {
 			expr = Not(expr);
 		}
->>>>>>> upstream/master
 		return Iff(Prime(varDecl.getRef()), expr);
 	}
 

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *  
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 grammar StsDsl;
 
 // S P E C I F I C A T I O N
@@ -161,17 +158,6 @@ arrayType
 	;
 	
 BOOLTYPE
-<<<<<<< HEAD
-	:	'boolean'
-	;
-	
-INTTYPE
-	:	'integer'
-	;
-	
-RATTYPE
-	:	'real'
-=======
 	:	'bool'
 	;
 	
@@ -181,7 +167,6 @@ INTTYPE
 	
 RATTYPE
 	:	'rat'
->>>>>>> upstream/master
 	;
 	
 // E X P R E S S I O N S

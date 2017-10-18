@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *  
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.solver.z3.transform;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -25,15 +22,6 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.microsoft.z3.Context;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.common.Product2;
-import hu.bme.mit.theta.common.Tuple;
-import hu.bme.mit.theta.common.Tuple2;
-import hu.bme.mit.theta.core.Decl;
-import hu.bme.mit.theta.core.Type;
-import hu.bme.mit.theta.core.decl.ConstDecl;
-import hu.bme.mit.theta.core.decl.ParamDecl;
-=======
 import hu.bme.mit.theta.common.product.Product2;
 import hu.bme.mit.theta.common.product.Tuple;
 import hu.bme.mit.theta.common.product.Tuple2;
@@ -41,7 +29,6 @@ import hu.bme.mit.theta.core.decl.ConstDecl;
 import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.ParamDecl;
 import hu.bme.mit.theta.core.type.Type;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.functype.FuncType;
 
 final class Z3DeclTransformer {

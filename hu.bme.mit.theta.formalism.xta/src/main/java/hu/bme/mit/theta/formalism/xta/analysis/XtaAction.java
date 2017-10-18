@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta.analysis;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -27,28 +24,6 @@ import java.util.StringJoiner;
 import com.google.common.collect.ImmutableList;
 
 import hu.bme.mit.theta.analysis.Action;
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-import hu.bme.mit.theta.formalism.xta.ChanType;
-import hu.bme.mit.theta.formalism.xta.XtaProcess.Edge;
-import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
-
-public abstract class XtaAction implements Action {
-
-	private final List<Loc> sourceLocs;
-
-	private XtaAction(final List<Loc> source) {
-		this.sourceLocs = ImmutableList.copyOf(checkNotNull(source));
-	}
-
-	public static SimpleXtaAction simple(final List<Loc> sourceLocs, final Edge edge) {
-		return new SimpleXtaAction(sourceLocs, edge);
-	}
-
-	public static SyncedXtaAction synced(final List<Loc> sourceLocs, final Expr<ChanType> syncExpr,
-			final Edge emittingEdge, final Edge receivingEdge) {
-		return new SyncedXtaAction(sourceLocs, syncExpr, emittingEdge, receivingEdge);
-=======
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.formalism.xta.ChanType;
 import hu.bme.mit.theta.formalism.xta.Update;
@@ -74,7 +49,6 @@ public abstract class XtaAction implements Action {
 	static SyncedXtaAction synced(final XtaSystem system, final List<Loc> sourceLocs, final Expr<ChanType> syncExpr,
 			final Edge emittingEdge, final Edge receivingEdge) {
 		return new SyncedXtaAction(system, sourceLocs, syncExpr, emittingEdge, receivingEdge);
->>>>>>> upstream/master
 	}
 
 	public List<Loc> getSourceLocs() {
@@ -103,13 +77,8 @@ public abstract class XtaAction implements Action {
 		private final Edge edge;
 		private final List<Loc> targetLocs;
 
-<<<<<<< HEAD
-		private SimpleXtaAction(final List<Loc> sourceLocs, final Edge edge) {
-			super(sourceLocs);
-=======
 		private SimpleXtaAction(final XtaSystem system, final List<Loc> sourceLocs, final Edge edge) {
 			super(system, sourceLocs);
->>>>>>> upstream/master
 			this.edge = checkNotNull(edge);
 
 			final ImmutableList.Builder<Loc> builder = ImmutableList.builder();
@@ -152,11 +121,7 @@ public abstract class XtaAction implements Action {
 		public String toString() {
 			final StringJoiner sj = new StringJoiner("\n");
 			edge.getGuards().forEach(g -> sj.add("[" + g + "]"));
-<<<<<<< HEAD
-			edge.getUpdates().forEach(u -> u.toString());
-=======
 			edge.getUpdates().forEach(Update::toString);
->>>>>>> upstream/master
 			return sj.toString();
 		}
 
@@ -168,15 +133,9 @@ public abstract class XtaAction implements Action {
 		private final Expr<ChanType> syncExpr;
 		private final List<Loc> targetLocs;
 
-<<<<<<< HEAD
-		private SyncedXtaAction(final List<Loc> sourceLocs, final Expr<ChanType> syncExpr, final Edge emittingEdge,
-				final Edge receivingEdge) {
-			super(sourceLocs);
-=======
 		private SyncedXtaAction(final XtaSystem system, final List<Loc> sourceLocs, final Expr<ChanType> syncExpr,
 				final Edge emittingEdge, final Edge receivingEdge) {
 			super(system, sourceLocs);
->>>>>>> upstream/master
 			this.syncExpr = checkNotNull(syncExpr);
 			this.emittingEdge = checkNotNull(emittingEdge);
 			this.receivingEdge = checkNotNull(receivingEdge);
@@ -239,13 +198,8 @@ public abstract class XtaAction implements Action {
 			sj.add(syncExpr + "!");
 			emittingEdge.getGuards().forEach(g -> sj.add("[" + g + "]"));
 			receivingEdge.getGuards().forEach(g -> sj.add("[" + g + "]"));
-<<<<<<< HEAD
-			emittingEdge.getUpdates().forEach(u -> u.toString());
-			receivingEdge.getUpdates().forEach(u -> u.toString());
-=======
 			emittingEdge.getUpdates().forEach(Update::toString);
 			receivingEdge.getUpdates().forEach(Update::toString);
->>>>>>> upstream/master
 			return sj.toString();
 		}
 

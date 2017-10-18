@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.solver.z3.transform;
 
 import static hu.bme.mit.theta.core.type.abstracttype.AbstractExprs.Eq;
@@ -49,16 +46,9 @@ import com.google.common.cache.CacheBuilder;
 import com.microsoft.z3.FuncDecl;
 import com.microsoft.z3.IntNum;
 import com.microsoft.z3.RatNum;
-
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.Expr;
-import hu.bme.mit.theta.core.Type;
-import hu.bme.mit.theta.core.decl.ConstDecl;
-=======
 import hu.bme.mit.theta.core.decl.ConstDecl;
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.Type;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.arraytype.ArrayType;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.type.inttype.IntType;
@@ -81,11 +71,7 @@ public class Z3TermTransformer {
 
 	public Expr<?> toExpr(final com.microsoft.z3.Expr term) {
 		try {
-<<<<<<< HEAD
-			return termToExpr.get(term, (() -> transform(term)));
-=======
 			return termToExpr.get(term, () -> transform(term));
->>>>>>> upstream/master
 		} catch (final ExecutionException e) {
 			throw new AssertionError();
 		}

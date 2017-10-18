@@ -4,19 +4,19 @@ import java.util.Collection;
 
 import com.google.common.collect.ImmutableList;
 
-import hu.bme.mit.theta.analysis.TransferFunction;
+import hu.bme.mit.theta.analysis.TransferFunc;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 
-public class XtaBackwardsZoneTransferFunction implements TransferFunction<ZoneState, XtaAction, ZonePrec> {
+public class XtaBackwardsZoneTransferFunc implements TransferFunc<ZoneState, XtaAction, ZonePrec> {
 	
-	private final static XtaBackwardsZoneTransferFunction INSTANCE=new XtaBackwardsZoneTransferFunction();
+	private final static XtaBackwardsZoneTransferFunc INSTANCE=new XtaBackwardsZoneTransferFunc();
 	
-	private XtaBackwardsZoneTransferFunction() {
+	private XtaBackwardsZoneTransferFunc() {
 	}
 	
-	static XtaBackwardsZoneTransferFunction getInstance()  {
+	static XtaBackwardsZoneTransferFunc getInstance()  {
 		return INSTANCE;
 	}
 	

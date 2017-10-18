@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *  
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta.utils;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -23,13 +20,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.common.ObjectUtils;
-import hu.bme.mit.theta.core.Type;
-=======
 import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.core.type.Type;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.inttype.IntExprs;
 import hu.bme.mit.theta.core.type.inttype.IntLitExpr;
 
@@ -93,11 +85,7 @@ public final class RangeType implements Type {
 
 	@Override
 	public String toString() {
-<<<<<<< HEAD
-		return ObjectUtils.toStringBuilder("Range").add(lower).add(upper).toString();
-=======
 		return Utils.toStringBuilder("Range").add(lower).add(upper).toString();
->>>>>>> upstream/master
 	}
 
 }

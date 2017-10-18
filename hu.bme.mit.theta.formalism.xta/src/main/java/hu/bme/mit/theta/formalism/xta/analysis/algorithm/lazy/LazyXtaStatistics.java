@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -15,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
->>>>>>> upstream/master
 package hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -29,11 +26,7 @@ import com.google.common.base.Stopwatch;
 import hu.bme.mit.theta.analysis.algorithm.ARG;
 import hu.bme.mit.theta.analysis.algorithm.ArgNode;
 import hu.bme.mit.theta.analysis.algorithm.Statistics;
-<<<<<<< HEAD
-import hu.bme.mit.theta.common.Tuple;
-=======
 import hu.bme.mit.theta.common.product.Tuple;
->>>>>>> upstream/master
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
 
 public final class LazyXtaStatistics extends Statistics {
@@ -113,11 +106,7 @@ public final class LazyXtaStatistics extends Statistics {
 
 	public static final class Builder {
 
-<<<<<<< HEAD
-		private static enum State {
-=======
 		private enum State {
->>>>>>> upstream/master
 			CREATED, RUNNING, REFINING, INTERPOLATING, STOPPED, BUILT
 		}
 

@@ -5,18 +5,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Collection;
 import java.util.Collections;
 
-import hu.bme.mit.theta.analysis.InitFunction;
+import hu.bme.mit.theta.analysis.InitFunc;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
 
-public class XtaBackwardsZoneInitFunction implements InitFunction<ZoneState, ZonePrec>{
+public class XtaBackwardsZoneInitFunc implements InitFunc<ZoneState, ZonePrec>{
 
-	private static final XtaBackwardsZoneInitFunction INSTANCE=new XtaBackwardsZoneInitFunction();
+	private static final XtaBackwardsZoneInitFunc INSTANCE=new XtaBackwardsZoneInitFunc();
 	
-	private XtaBackwardsZoneInitFunction(){
+	private XtaBackwardsZoneInitFunc(){
 	}
 	
-	static XtaBackwardsZoneInitFunction getInstance() {
+	static XtaBackwardsZoneInitFunc getInstance() {
 		return INSTANCE;
 	}
 	
