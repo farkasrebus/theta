@@ -91,6 +91,11 @@ public class BackwardsStrategy implements LazyXtaChecker.AlgorithmStrategy<Backw
 		final BackwardsZoneState newState = node.getState().getState().withActiveVars(ImmutableSet.of());
 		node.setState(node.getState().withState(newState));
 	}
+
+	@Override
+	public boolean isForward() {
+		return false;
+	}
 	
 	/*private void propagateVars(final ArgNode<XtaState<BackwardsZoneState>, XtaAction> node,
 			final Set<VarDecl<RatType>> activeVars,

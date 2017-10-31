@@ -22,8 +22,8 @@ public class XtaBackwardsZoneTransferFunc implements TransferFunc<ZoneState, Xta
 	
 	@Override
 	public Collection<? extends ZoneState> getSuccStates(ZoneState state, XtaAction action, ZonePrec prec) {
-		final ZoneState preState=XtaZoneUtils.pre(state, action, prec);
 		
+		final ZoneState preState=XtaZoneUtils.pre(state, action, prec);
 		if (preState.isBottom()) {
 			return ImmutableList.of();
 		} else {

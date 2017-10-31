@@ -41,6 +41,7 @@ import hu.bme.mit.theta.common.product.Tuple2;
 import hu.bme.mit.theta.core.model.Valuation;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
+import hu.bme.mit.theta.formalism.xta.analysis.BackwardsXtaLts;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAnalysis;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaLts;
@@ -50,6 +51,8 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 
 	public interface AlgorithmStrategy<S extends State> {
 		Analysis<S, XtaAction, UnitPrec> getAnalysis();
+		
+		boolean isForward();
 
 		boolean covers(ArgNode<XtaState<S>, XtaAction> nodeToCover, ArgNode<XtaState<S>, XtaAction> coveringNode);
 
@@ -78,10 +81,20 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 
 		this.algorithm = checkNotNull(algorithm);
 		this.search = checkNotNull(search);
-
-		final LTS<XtaState<?>, XtaAction> lts = XtaLts.create(system);
-		final Analysis<XtaState<S>, XtaAction, UnitPrec> analysis = XtaAnalysis.create(system, algorithm.getAnalysis());
-		final Predicate<XtaState<?>> target = s -> errorLocs.test(s.getLocs());
+		
+		final LTS<XtaState<?>, XtaAction> lts;
+		final Predicate<XtaState<?>> target;
+		if (algorithm.isForward()){
+			lts= XtaLts.create(system); 
+			target= s -> errorLocs.test(s.getLocs());
+		} else {
+			lts=BackwardsXtaLts.create(system);
+			//Collection<? extends XtaState<S>> initStates=XtaAnalysis.create(system, algorithm.getAnalysis(), true).getInitFunc().getInitStates(UnitPrec.getInstance());
+			//target= s -> initStates.contains(s);//TODO: Ez még hibás
+			target= s -> errorLocs.test(s.getLocs());
+		}
+		final Analysis<XtaState<S>, XtaAction, UnitPrec> analysis = XtaAnalysis.create(system, algorithm.getAnalysis(), algorithm.isForward());
+		
 
 		argBuilder = ArgBuilder.create(lts, analysis, target);
 	}
@@ -131,27 +144,35 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 		private Optional<ArgNode<XtaState<S>, XtaAction>> searchForUnsafeNode() {
 
 			statistics.startAlgorithm();
-
+			
+			
 			while (!waitlist.isEmpty()) {
 				final ArgNode<XtaState<S>, XtaAction> v = waitlist.remove();
+				System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
 				assert v.isLeaf();
 
 				if (algorithm.shouldRefine(v)) {
+					System.out.println("Shouldrefine");//TODO
 					statistics.startRefinement();
 					final Collection<ArgNode<XtaState<S>, XtaAction>> uncoveredNodes = algorithm.refine(v, statistics);
 					statistics.stopRefinement();
+					System.out.println("Uncovered: "+uncoveredNodes);//TODO
 					waitlist.addAll(uncoveredNodes);
 				} else if (v.isTarget()) {
+					System.out.println("Target");//TODO
 					statistics.stopAlgorithm();
 					return Optional.of(v);
 				} else {
+					System.out.println("Else");//TODO
 					close(v);
 					if (!v.isCovered()) {
 						expand(v);
 					}
 				}
+				System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
 			}
 			statistics.stopAlgorithm();
+			System.out.println("Algorithm ends");//TODO
 			return Optional.empty();
 		}
 
@@ -191,6 +212,7 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 		private void expand(final ArgNode<XtaState<S>, XtaAction> v) {
 			argBuilder.expand(v, UnitPrec.getInstance());
 			reachedSet.add(v);
+			System.out.println("Expand called");//TODO
 			waitlist.addAll(v.getSuccNodes());
 		}
 	}

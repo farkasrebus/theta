@@ -72,7 +72,7 @@ public final class XtaAnalysisTest {
 
 		final LTS<XtaState<?>, XtaAction> lts = XtaLts.create(system);
 		final Analysis<XtaState<UnitState>, XtaAction, UnitPrec> analysis = XtaAnalysis.create(system,
-				UnitAnalysis.getInstance());
+				UnitAnalysis.getInstance(),true);
 		final ArgBuilder<XtaState<UnitState>, XtaAction, UnitPrec> argBuilder = ArgBuilder.create(lts, analysis,
 				s -> false);
 

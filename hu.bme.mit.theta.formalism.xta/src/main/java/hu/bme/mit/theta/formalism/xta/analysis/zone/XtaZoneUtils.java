@@ -133,7 +133,6 @@ public final class XtaZoneUtils {
 		applyInverseUpdates(preStateBuilder, edge);
 		applyGuards(preStateBuilder, edge);
 		applyInvariants(preStateBuilder, sourceLocs);
-
 		final ZoneState preState = preStateBuilder.build();
 		return preState;
 	}

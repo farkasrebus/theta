@@ -8,6 +8,7 @@ import java.io.InputStream;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.google.common.collect.ImmutableList;
 
 import hu.bme.mit.theta.analysis.algorithm.SafetyChecker;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
@@ -19,7 +20,9 @@ import hu.bme.mit.theta.common.table.TableWriter;
 import hu.bme.mit.theta.common.table.impl.SimpleTableWriter;
 import hu.bme.mit.theta.common.visualization.Graph;
 import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
+import hu.bme.mit.theta.formalism.xta.XtaProcess;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
+import hu.bme.mit.theta.formalism.xta.XtaVisualizer;
 import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.ActStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.BackwardsStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.BinItpStrategy;
@@ -147,10 +150,17 @@ public final class XtaMain {
 		final XtaMain result = new XtaMain(args);
 		try {
 			JCommander.newBuilder().addObject(result).programName(JAR_NAME).build().parse(args);
+			final XtaSystem xta = result.loadModel();
+			final XtaSystem resultSys=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xta, "fischer").result));
+			System.out.println(resultSys.getProcesses().get(0).getLocs().size());
 			return result;
 		} catch (final ParameterException ex) {
 			System.out.println(ex.getMessage());
 			ex.usage();
+			return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -170,7 +180,8 @@ public final class XtaMain {
 		}
 
 		try {
-			final XtaSystem xta = loadModel();
+			final XtaSystem xtacomplex = loadModel();
+			final XtaSystem xta=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xtacomplex, "fischer").result));
 			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
 			printResult(result);
@@ -178,6 +189,7 @@ public final class XtaMain {
 				writeVisualStatus(result, dotfile);
 			}
 		} catch (final Throwable ex) {
+			ex.printStackTrace();
 			printError(ex);
 		}
 		if (benchmarkMode) {

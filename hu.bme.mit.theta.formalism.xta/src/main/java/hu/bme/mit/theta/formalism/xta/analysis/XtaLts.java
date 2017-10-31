@@ -46,7 +46,7 @@ public final class XtaLts implements LTS<XtaState<?>, XtaAction> {
 	public Collection<XtaAction> getEnabledActionsFor(final XtaState<?> state) {
 		final Collection<XtaAction> result = new ArrayList<>();
 		for (final Loc loc : state.getLocs()) {
-			for (final Edge edge : loc.getOutEdges()) {
+			for (final Edge edge : loc.getOutEdges()) {				
 				addActionsForEdge(result, system, state, edge);
 			}
 		}
@@ -90,7 +90,7 @@ public final class XtaLts implements LTS<XtaState<?>, XtaAction> {
 
 				final Expr<?> receiveExpr = ExprUtils.simplify(receiveLabel.getExpr(), state.getVal());
 				if (emitExpr.equals(receiveExpr)) {
-					final XtaAction action = XtaAction.synced(system, state.getLocs(), emitExpr, emitEdge, recieveEdge);
+					final XtaAction action = XtaAction.synced(system, state.getLocs(), emitExpr, emitEdge, recieveEdge,true);
 					result.add(action);
 				}
 			}
@@ -99,7 +99,7 @@ public final class XtaLts implements LTS<XtaState<?>, XtaAction> {
 
 	private static void addSimpleActionsForEdge(final Collection<XtaAction> result, final XtaSystem system,
 			final XtaState<?> state, final Edge edge) {
-		final XtaAction action = XtaAction.simple(system, state.getLocs(), edge);
+		final XtaAction action = XtaAction.simple(system, state.getLocs(), edge, true);
 		result.add(action);
 	}
 

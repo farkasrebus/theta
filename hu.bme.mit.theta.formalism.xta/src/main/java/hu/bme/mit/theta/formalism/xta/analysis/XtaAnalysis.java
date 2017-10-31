@@ -30,17 +30,23 @@ public final class XtaAnalysis<S extends State, P extends Prec> implements Analy
 	private final InitFunc<XtaState<S>, P> initFunc;
 	private final TransferFunc<XtaState<S>, XtaAction, P> transferFunc;
 
-	private XtaAnalysis(final XtaSystem system, final Analysis<S, ? super XtaAction, ? super P> analysis) {
+	private XtaAnalysis(final XtaSystem system, final Analysis<S, ? super XtaAction, ? super P> analysis, boolean forwards) {
 		checkNotNull(system);
 		checkNotNull(analysis);
 		domain = XtaDomain.create(analysis.getDomain());
-		initFunc = XtaInitFunc.create(system, analysis.getInitFunc());
-		transferFunc = XtaTransferFunc.create(analysis.getTransferFunc());
+		if (forwards) {
+			initFunc = XtaInitFunc.create(system, analysis.getInitFunc());
+			transferFunc = XtaTransferFunc.create(analysis.getTransferFunc());
+		} else {
+			initFunc = XtaBackwardsInitFunc.create(system, analysis.getInitFunc());
+			transferFunc = XtaBackwardsTransferFunc.create(analysis.getTransferFunc());
+		}
+		
 	}
 
 	public static <S extends State, P extends Prec> XtaAnalysis<S, P> create(final XtaSystem system,
-			final Analysis<S, ? super XtaAction, ? super P> analysis) {
-		return new XtaAnalysis<>(system, analysis);
+			final Analysis<S, ? super XtaAction, ? super P> analysis, boolean forwards) {
+		return new XtaAnalysis<>(system, analysis, forwards);
 	}
 
 	@Override

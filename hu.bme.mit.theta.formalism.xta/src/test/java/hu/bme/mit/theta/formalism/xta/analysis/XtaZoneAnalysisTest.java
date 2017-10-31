@@ -70,7 +70,7 @@ public final class XtaZoneAnalysisTest {
 
 		final LTS<XtaState<?>, XtaAction> lts = XtaLts.create(system);
 		final Analysis<XtaState<ZoneState>, XtaAction, ZonePrec> analysis = XtaAnalysis.create(system,
-				XtaZoneAnalysis.getInstance());
+				XtaZoneAnalysis.getInstance(),true);
 		final ZonePrec prec = ZonePrec.of(system.getClockVars());
 
 		final ArgBuilder<XtaState<ZoneState>, XtaAction, ZonePrec> argBuilder = ArgBuilder.create(lts, analysis,

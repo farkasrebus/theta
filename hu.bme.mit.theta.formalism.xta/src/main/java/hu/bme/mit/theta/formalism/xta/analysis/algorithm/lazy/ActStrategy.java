@@ -146,4 +146,9 @@ public final class ActStrategy implements LazyXtaChecker.AlgorithmStrategy<ActZo
 		node.clearCoveredNodes();
 	}
 
+	@Override
+	public boolean isForward() {
+		return true;
+	}
+
 }

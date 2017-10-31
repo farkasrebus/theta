@@ -104,4 +104,9 @@ public final class SeqItpStrategy extends ItpStrategy {
 		}
 	}
 
+	@Override
+	public boolean isForward() {
+		return true;
+	}
+
 }

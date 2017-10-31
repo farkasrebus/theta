@@ -90,4 +90,9 @@ public final class BinItpStrategy extends ItpStrategy {
 		}
 	}
 
+	@Override
+	public boolean isForward() {
+		return true;
+	}
+
 }
