@@ -44,7 +44,7 @@ public class XtaBackwardsInitFunc<S extends State, P extends Prec> implements In
 	private static ImmutableList<Loc> creatInitLocs(final XtaSystem system) {
 		//TODO: ha már nem lesz kihajtogatósdi, akkor az egészet másképp kell
 		for (Loc l:system.getProcesses().get(0).getLocs()) {
-			if (l.getName().contains("error")) return ImmutableList.of(l);
+			if (l.getName().contains("errorloc")) return ImmutableList.of(l);
 		}
 		return ImmutableList.of();
 	}

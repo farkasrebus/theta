@@ -33,6 +33,7 @@ import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.SeqItpStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.ItpStrategy.ItpOperator;
 import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaChecker.AlgorithmStrategy;
 import hu.bme.mit.theta.formalism.xta.dsl.XtaDslManager;
+import hu.bme.mit.theta.tools.XtaExample;
 
 public final class XtaMain {
 	private static final String JAR_NAME = "theta-xta.jar";
@@ -151,8 +152,8 @@ public final class XtaMain {
 		try {
 			JCommander.newBuilder().addObject(result).programName(JAR_NAME).build().parse(args);
 			final XtaSystem xta = result.loadModel();
-			final XtaSystem resultSys=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xta, "fischer").result));
-			System.out.println(resultSys.getProcesses().get(0).getLocs().size());
+			final XtaSystem resultSys=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xta, XtaExample.getExampleBySource(result.model)).result));
+			System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(resultSys)));
 			return result;
 		} catch (final ParameterException ex) {
 			System.out.println(ex.getMessage());
@@ -181,7 +182,7 @@ public final class XtaMain {
 
 		try {
 			final XtaSystem xtacomplex = loadModel();
-			final XtaSystem xta=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xtacomplex, "fischer").result));
+			final XtaSystem xta=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xtacomplex, XtaExample.getExampleBySource(model)).result));
 			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
 			printResult(result);

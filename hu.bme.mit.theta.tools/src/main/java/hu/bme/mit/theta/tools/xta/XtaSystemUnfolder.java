@@ -4,6 +4,7 @@ import static hu.bme.mit.theta.core.stmt.Stmts.Assign;
 import static hu.bme.mit.theta.core.type.booltype.BoolExprs.Bool;
 import static hu.bme.mit.theta.core.type.inttype.IntExprs.Eq;
 import static hu.bme.mit.theta.core.type.inttype.IntExprs.Int;
+import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Gt;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +20,9 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import hu.bme.mit.theta.core.clock.constr.UnitLeqConstr;
 import hu.bme.mit.theta.core.clock.op.ResetOp;
+import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.model.MutableValuation;
 import hu.bme.mit.theta.core.model.Valuation;
@@ -47,6 +50,7 @@ import hu.bme.mit.theta.formalism.xta.XtaProcess;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Edge;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.LocKind;
+import hu.bme.mit.theta.tools.XtaExample;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import net.bytebuddy.implementation.bind.annotation.AllArguments.Assignment;
 
@@ -55,10 +59,12 @@ public class XtaSystemUnfolder {
 	public static class UnfoldedXtaSystem {
 		public XtaProcess result;
 		public Map<Loc,Map<XtaProcess, Loc>> locmap;
+		public Map<Loc,Valuation> valmap;
 		
-		public UnfoldedXtaSystem(XtaProcess proc, Map<Loc,Map<XtaProcess, Loc>> locs) {
+		public UnfoldedXtaSystem(XtaProcess proc, Map<Loc,Map<XtaProcess, Loc>> locs,Map<Loc,Valuation> vals) {
 			result=proc;
 			locmap=locs;
+			valmap=vals;
 		}
 	}
 	
@@ -259,7 +265,7 @@ public class XtaSystemUnfolder {
 				Edge flattran=result.createEdge(toExplore, next, guards, Optional.empty(),updates);
 			}
 		}
-		UnfoldedXtaSystem ret=new UnfoldedXtaSystem(result, locMap);
+		UnfoldedXtaSystem ret=new UnfoldedXtaSystem(result, locMap,null);
 		return ret;
 	}
 	
@@ -282,24 +288,34 @@ public class XtaSystemUnfolder {
 		return result;
 	}
 
-	public static UnfoldedXtaSystem getPureFlatSystem(XtaSystem system, String name) {
-		UnfoldedXtaSystem usys=getFlatSystem(system, name);
+	public static UnfoldedXtaSystem getPureFlatSystem(XtaSystem system, XtaExample input) {
+		UnfoldedXtaSystem usys=getFlatSystem(system, input.toString());
 		System.out.println("Locs before data unfold: "+usys.result.getLocs().size());
 		
-		UnfoldedXtaSystem result= unfoldDataVariables(usys, name);
+		UnfoldedXtaSystem result= unfoldDataVariables(usys, input.toString());
 		Map<Loc, Map<XtaProcess,Loc>> locmap=result.locmap;
+		System.out.println("Locs after data unfold: "+result.result.getLocs().size());
+		for (Loc l:locmap.keySet()) {
+			String name=l.getName();
+			String[] vsplit=name.split("V");
+			String loc=vsplit[0];
+			String vstring=vsplit[1];
+			char id=vstring.charAt(vstring.length()-2);//digit
+			String[] psplit=loc.split("P");
+			System.out.println(psplit[2].substring(3)+","+psplit[3].substring(3,psplit[3].length()-1)+","+psplit[1].substring(3)+","+id);
+		}
+			
 		//System.out.println(result.locmap);
-		addErrorLoc(result,name);
+		addErrorLoc(result,input);
 		return result;
 	}
 	
-	private static void addErrorLoc(UnfoldedXtaSystem result, String name) {
+	private static void addErrorLoc(UnfoldedXtaSystem result, XtaExample input) {
 		XtaProcess sys=result.result;
-		Loc errorLoc=sys.createLoc("error", LocKind.NORMAL, ImmutableSet.of());
+		Loc errorLoc=sys.createLoc("errorloc", LocKind.NORMAL, ImmutableSet.of());
 		Map<Loc, Map<XtaProcess, Loc>> locmap=result.locmap;
-		switch (name) {
-		case "fischer":
-			//System.out.println("In");
+		switch (input) {
+		case FISCHER:
 			for (Loc l:locmap.keySet()) {
 				Map<XtaProcess, Loc> origLocs=locmap.get(l);
 				int cntr=0;
@@ -310,11 +326,69 @@ public class XtaSystemUnfolder {
 				}
 				if (cntr>1) {
 					sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
-					//System.out.println("Edge created");
 				}
 			}
 			break;
-
+		case CRITICAL:
+			for (Loc l:locmap.keySet()) {
+				Map<XtaProcess, Loc> origLocs=locmap.get(l);
+				int cntr=0;
+				for (XtaProcess p:origLocs.keySet()) {
+					if (p.getName().contains("ProdCell")) {
+						if (origLocs.get(p).getName().contains("critical")) {
+							cntr++;
+						}
+					}
+				}
+				if (cntr>1) {
+					sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
+				}
+			}
+			break;
+		case CSMA:
+			for (Loc l:locmap.keySet()) {
+				Map<XtaProcess, Loc> origLocs=locmap.get(l);
+				List<XtaProcess> criticals=new ArrayList<XtaProcess>();
+				for (XtaProcess p:origLocs.keySet()) {
+					if (p.getName().contains("Station")) {
+						if (origLocs.get(p).getName().contains("transm")) {
+							criticals.add(p);
+						}
+					}
+				}
+				if (criticals.size()>1) {
+					XtaProcess firstcrit=criticals.get(0);
+					Expr<BoolType> guard=null;
+					Loc retry=null;
+					for (Loc loc:firstcrit.getLocs()) if (loc.getName().contains("retry")) retry=loc;
+					UnitLeqConstr inv=(UnitLeqConstr) retry.getInvars().iterator().next().asClockGuard().getClockConstr();
+					guard=Gt(inv.getVar(),inv.getBound()).toExpr();
+					sys.createEdge(l, errorLoc, ImmutableSet.of(guard), Optional.empty(), ImmutableList.of());
+				}
+			}
+			break;
+		case FDDI://intentionally empty
+			break;
+		case LYNCH:
+			/*Decl counter=null;
+			for (Decl d: result.valmap.entrySet().iterator().next().getValue().getDecls()){
+				if (d.getName().contains("count")) counter=d;
+			}
+			for (Loc l:locmap.keySet()) {
+				Map<XtaProcess, Loc> origLocs=locmap.get(l);
+				Valuation val=result.valmap.get(l);
+				boolean unsafe=false;
+				if ((Integer)val.eval(counter).get()>1) {
+					sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
+				}
+			}*/
+			break;
+		/*case SPLIT:
+			for (Loc l:locmap.keySet()) {
+				if (l.getName().contains("S3"))
+					sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
+			}
+			break;*/
 		default:
 			break;
 		}
@@ -347,7 +421,7 @@ public class XtaSystemUnfolder {
 			result.addClockVar(v);
 		}
 		
-		Loc pureinit=createUndoldedLoc(result,init);
+		Loc pureinit=createUnfoldedLoc(result,init);
 		locMap.put(init, pureinit);
 		result.setInitLoc(pureinit);
 		List<UnfoldedLoc> unfinished=new ArrayList<>();
@@ -398,7 +472,7 @@ public class XtaSystemUnfolder {
 						UnfoldedLoc next=new UnfoldedLoc();
 						next.loc=e.getTarget();
 						next.valuation=nextVal;
-						nextAutLoc=createUndoldedLoc(result, next);
+						nextAutLoc=createUnfoldedLoc(result, next);
 						locMap.put(next, nextAutLoc);
 						unfinished.add(next);
 					}
@@ -423,13 +497,15 @@ public class XtaSystemUnfolder {
 		}
 		Map<Loc, Map<XtaProcess, Loc>> resultMap=new HashMap<>();
 		Map<Loc, Map<XtaProcess, Loc>> origMap=usys.locmap;
+		Map<Loc,Valuation> valMap=new HashMap<>();
 		for (UnfoldedLoc l:locMap.keySet()) {
 			resultMap.put(locMap.get(l), origMap.get(l.loc));
+			valMap.put(l.loc, l.getValuation());
 		}
-		return new UnfoldedXtaSystem(result, resultMap);
+		return new UnfoldedXtaSystem(result, resultMap,valMap);
 	}
 	
-	private static Loc createUndoldedLoc(XtaProcess proc, UnfoldedLoc loc) {
+	private static Loc createUnfoldedLoc(XtaProcess proc, UnfoldedLoc loc) {
 		
 		//It has to be created
 		String name=loc.getName();

@@ -148,7 +148,8 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 			
 			while (!waitlist.isEmpty()) {
 				final ArgNode<XtaState<S>, XtaAction> v = waitlist.remove();
-				System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
+				System.out.println("Node: "+v.getState());//TODO
+				//System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
 				assert v.isLeaf();
 
 				if (algorithm.shouldRefine(v)) {
@@ -166,10 +167,12 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 					System.out.println("Else");//TODO
 					close(v);
 					if (!v.isCovered()) {
+						System.out.println("Not covered");//TODO
 						expand(v);
 					}
 				}
 				System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
+				//System.out.println("waitlist: "+waitlist);//TODO
 			}
 			statistics.stopAlgorithm();
 			System.out.println("Algorithm ends");//TODO
@@ -212,7 +215,7 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 		private void expand(final ArgNode<XtaState<S>, XtaAction> v) {
 			argBuilder.expand(v, UnitPrec.getInstance());
 			reachedSet.add(v);
-			System.out.println("Expand called");//TODO
+			//System.out.println("Expand called");//TODO
 			waitlist.addAll(v.getSuccNodes());
 		}
 	}

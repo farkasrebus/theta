@@ -99,11 +99,25 @@ public final class XtaState<S extends State> implements State {
 
 	@Override
 	public String toString() {
-		final StringJoiner sj = new StringJoiner("\n");
+		/*final StringJoiner sj = new StringJoiner("\n");
 		locs.forEach(l -> sj.add(l.getName()));
 		val.getDecls().forEach(d -> sj.add(d.getName() + " = " + val.eval(d).get()));
 		locs.forEach(l -> l.getInvars().forEach(i -> sj.add("[" + i + "]")));
-		sj.add(state.toString());
+		sj.add(state.toString());//TODO
+		return sj.toString();*/
+		final StringJoiner sj = new StringJoiner("\n");
+		Loc ul=locs.get(0);
+		String name=new String(ul.getName());
+		String[] vsplit=name.split("V");
+		if (vsplit.length<2) return name;
+		String loc=vsplit[0];
+		String vstring=vsplit[1];
+		char id=vstring.charAt(vstring.length()-2);//digit
+		String[] psplit=loc.split("P");
+		sj.add(psplit[2].substring(3)+","+psplit[3].substring(3,psplit[3].length()-1)+","+psplit[1].substring(3)+","+id);
+		locs.forEach(l -> l.getInvars().forEach(i -> sj.add("[" + i + "]")));
+		sj.add(state.toString());//TODO
 		return sj.toString();
+		
 	}
 }
