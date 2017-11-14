@@ -59,7 +59,7 @@ public class BackwardsStrategy implements LazyXtaChecker.AlgorithmStrategy<Backw
 				coveringNode.getState().getState().getActiveVars());
 	}
 
-	@Override
+	@Override //TODO: Ezt még mindig nem értem
 	public boolean shouldRefine(ArgNode<XtaState<BackwardsZoneState>, XtaAction> node) {
 		return node.getState().getState().getZone().isBottom();
 	}
@@ -68,22 +68,15 @@ public class BackwardsStrategy implements LazyXtaChecker.AlgorithmStrategy<Backw
 	public Collection<ArgNode<XtaState<BackwardsZoneState>, XtaAction>> forceCover(
 			ArgNode<XtaState<BackwardsZoneState>, XtaAction> nodeToCover,
 			ArgNode<XtaState<BackwardsZoneState>, XtaAction> coveringNode, Builder statistics) {
-		// TODO Ez így helyes?
 		final Collection<ArgNode<XtaState<BackwardsZoneState>, XtaAction>> uncoveredNodes = new ArrayList<>();
-		final Set<VarDecl<RatType>> activeVars = coveringNode.getState().getState().getActiveVars();
-		//propagateVars(nodeToCover, activeVars, uncoveredNodes, statistics, false);
-
 		return uncoveredNodes;
 	}
 
 	@Override
 	public Collection<ArgNode<XtaState<BackwardsZoneState>, XtaAction>> refine(
 			ArgNode<XtaState<BackwardsZoneState>, XtaAction> node, Builder statistics) {
-		final Collection<ArgNode<XtaState<BackwardsZoneState>, XtaAction>> uncoveredNodes = new ArrayList<>();
-		//final Set<VarDecl<RatType>> activeVars = ImmutableSet.of();
-		//propagateVars(node, activeVars, uncoveredNodes, statistics, true);
-
-		return uncoveredNodes;
+		throw new UnsupportedOperationException();
+		//return uncoveredNodes;
 	}
 
 	@Override
@@ -96,44 +89,5 @@ public class BackwardsStrategy implements LazyXtaChecker.AlgorithmStrategy<Backw
 	public boolean isForward() {
 		return false;
 	}
-	
-	/*private void propagateVars(final ArgNode<XtaState<BackwardsZoneState>, XtaAction> node,
-			final Set<VarDecl<RatType>> activeVars,
-			final Collection<ArgNode<XtaState<BackwardsZoneState>, XtaAction>> uncoveredNodes, final Builder statistics,
-			final boolean forcePropagate) {
-
-		final Set<VarDecl<RatType>> oldActiveVars = node.getState().getState().getActiveVars();
-
-		if (forcePropagate || !oldActiveVars.containsAll(activeVars)) {
-			statistics.refine();
-
-			strengthen(node, activeVars);
-			maintainCoverage(node, uncoveredNodes);
-
-			if (node.getInEdge().isPresent()) {
-				final ArgEdge<XtaState<BackwardsZoneState>, XtaAction> inEdge = node.getInEdge().get();
-				final XtaAction action = inEdge.getAction();
-				final ArgNode<XtaState<BackwardsZoneState>, XtaAction> parent = inEdge.getSource();
-				final Set<VarDecl<RatType>> preActiveVars = XtaActZoneUtils.pre(activeVars, action);
-				propagateVars(parent, preActiveVars, uncoveredNodes, statistics, false);
-			}
-		}
-		
-		
-	}//TODO
-	
-	private void strengthen(final ArgNode<XtaState<BackwardsZoneState>, XtaAction> node,
-			final Set<VarDecl<RatType>> activeVars) {
-		final Set<VarDecl<RatType>> oldActiveVars = node.getState().getState().getActiveVars();
-		final Set<VarDecl<RatType>> newActiveVars = Sets.union(oldActiveVars, activeVars);
-		final BackwardsZoneState newActState = node.getState().getState().withActiveVars(newActiveVars);
-		node.setState(node.getState().withState(newActState));
-	}
-
-	private void maintainCoverage(final ArgNode<XtaState<BackwardsZoneState>, XtaAction> node,
-			final Collection<ArgNode<XtaState<BackwardsZoneState>, XtaAction>> uncoveredNodes) {
-		node.getCoveredNodes().forEach(n -> uncoveredNodes.add(n));
-		node.clearCoveredNodes();
-	}*/
 
 }

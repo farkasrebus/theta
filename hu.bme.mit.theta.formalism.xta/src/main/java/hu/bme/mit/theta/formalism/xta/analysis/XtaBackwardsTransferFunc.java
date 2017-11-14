@@ -66,6 +66,7 @@ public class XtaBackwardsTransferFunc<S extends State, P extends Prec> implement
 
 		final List<Loc> succLocs = action.getSourceLocs();
 		final Valuation succVal = createSuccValForSimpleAction(val, action);//TODO: itt lesznek problémák
+		
 		final Collection<? extends S> succStates = transferFunc.getSuccStates(state, action, prec);
 
 		return XtaState.collectionOf(succLocs, succVal, succStates);

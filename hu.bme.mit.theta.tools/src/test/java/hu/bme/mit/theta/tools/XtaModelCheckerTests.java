@@ -46,7 +46,7 @@ public class XtaModelCheckerTests {
 	
 	@Test
 	public void analyze_run() {
-		String[] args={"-a","BACKWARDS","-m",input.getFileLocation(3),"-s","BFS"};
+		String[] args={"-a","BACKWARDS","-m",input.getFileLocation(2),"-s","BFS"};
 		System.out.println("Model: "+input.toString()+3);
 		XtaMain.main(args);
 	}

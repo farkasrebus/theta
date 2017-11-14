@@ -43,14 +43,14 @@ public class BackwardsZoneState implements ExprState{
 			return true;
 		} else if (obj instanceof BackwardsZoneState) {
 			final BackwardsZoneState that = (BackwardsZoneState) obj;
-			return this.zone.equals(that.zone);
+			return this.activeVars.containsAll(that.activeVars) && this.zone.equals(that.zone);
 		} else {
 			return false;
 		}
 	}
 
-	public boolean isLeq(BackwardsZoneState state2) {
-		return this.zone.isLeq(state2.zone);
+	public boolean isLeq(BackwardsZoneState that) {
+		return this.activeVars.equals(that.activeVars) && this.zone.isLeq(that.zone);
 	}
 	
 	@Override

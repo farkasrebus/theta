@@ -114,7 +114,7 @@ public final class XtaState<S extends State> implements State {
 		String vstring=vsplit[1];
 		char id=vstring.charAt(vstring.length()-2);//digit
 		String[] psplit=loc.split("P");
-		sj.add(psplit[2].substring(3)+","+psplit[3].substring(3,psplit[3].length()-1)+","+psplit[1].substring(3)+","+id);
+		sj.add(psplit[2].substring(3)+","+psplit[1].substring(3)+","+id);
 		locs.forEach(l -> l.getInvars().forEach(i -> sj.add("[" + i + "]")));
 		sj.add(state.toString());//TODO
 		return sj.toString();

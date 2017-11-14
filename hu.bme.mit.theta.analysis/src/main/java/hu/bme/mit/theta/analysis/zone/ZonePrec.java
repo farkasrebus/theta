@@ -29,7 +29,7 @@ import hu.bme.mit.theta.core.type.rattype.RatType;
 
 public final class ZonePrec implements Prec {
 
-	private final Set<VarDecl<RatType>> clocks;
+	private Set<VarDecl<RatType>> clocks;
 
 	private ZonePrec(final Collection<? extends VarDecl<RatType>> clocks) {
 		checkNotNull(clocks);
@@ -42,6 +42,11 @@ public final class ZonePrec implements Prec {
 
 	public Set<VarDecl<RatType>> getVars() {
 		return clocks;
+	}
+	
+	public void reset(final Collection<? extends VarDecl<RatType>> clocks) {
+		checkNotNull(clocks);
+		this.clocks = ImmutableSet.copyOf(clocks);
 	}
 
 	@Override

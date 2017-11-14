@@ -28,7 +28,7 @@ public class BackwardsZoneDomain implements Domain<BackwardsZoneState> {
 
 	@Override
 	public boolean isLeq(BackwardsZoneState state1, BackwardsZoneState state2) {
-		return state1.isLeq(state2);
+		return state1.isLeq(state2);//TODO: ha hozzáadoma downt, jobb lesz?
 	}
 
 }

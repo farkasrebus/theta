@@ -302,7 +302,7 @@ public class XtaSystemUnfolder {
 			String vstring=vsplit[1];
 			char id=vstring.charAt(vstring.length()-2);//digit
 			String[] psplit=loc.split("P");
-			System.out.println(psplit[2].substring(3)+","+psplit[3].substring(3,psplit[3].length()-1)+","+psplit[1].substring(3)+","+id);
+			System.out.println(psplit[2].substring(3)+","+psplit[1].substring(3)+","+id);
 		}
 			
 		//System.out.println(result.locmap);

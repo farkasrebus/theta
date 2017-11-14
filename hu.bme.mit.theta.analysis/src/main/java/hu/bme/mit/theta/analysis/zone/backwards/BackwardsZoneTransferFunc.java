@@ -5,11 +5,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import hu.bme.mit.theta.analysis.Action;
 import hu.bme.mit.theta.analysis.TransferFunc;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
+import hu.bme.mit.theta.core.decl.VarDecl;
+import hu.bme.mit.theta.core.type.rattype.RatType;
 
 public class BackwardsZoneTransferFunc<A extends Action> implements TransferFunc<BackwardsZoneState, A, ZonePrec> {
 	

@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import hu.bme.mit.theta.analysis.InitFunc;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
@@ -27,7 +28,7 @@ public class BackwardsZoneInitFunc implements InitFunc<BackwardsZoneState, ZoneP
 		final Collection<BackwardsZoneState> result = new ArrayList<>();
 		final Collection<? extends ZoneState> subInitStates = initFunc.getInitStates(prec);
 		for (final ZoneState subInitState : subInitStates) {
-			final BackwardsZoneState initState =new BackwardsZoneState(subInitState,prec.getVars());
+			final BackwardsZoneState initState =new BackwardsZoneState(subInitState,new HashSet<>());
 			result.add(initState);
 		}
 		return result;
