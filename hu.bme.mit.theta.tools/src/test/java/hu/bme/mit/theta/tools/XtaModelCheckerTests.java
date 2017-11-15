@@ -14,9 +14,9 @@ public class XtaModelCheckerTests {
 	
 	@Parameters
 	  public static XtaExample[] data() {
-	    //return XtaExample.values();
-		XtaExample[] result={XtaExample.FISCHER};
-		return result;
+	    return XtaExample.values();
+		//XtaExample[] result={XtaExample.CRITICAL};
+		//return result;
 	  }
 	
 	@Parameter
@@ -29,7 +29,7 @@ public class XtaModelCheckerTests {
 		XtaMain.fromArgs(args);
 	}
 	
-	@Ignore("Not benchmarking now")
+	//@Ignore("Not benchmarking now")
 	@Test
 	public void benchmark() throws InterruptedException {
 		for (int i=2;i<=input.getMaxThreads();i++) {
@@ -44,10 +44,11 @@ public class XtaModelCheckerTests {
 		}
 	}
 	
+	@Ignore("Works fine")
 	@Test
 	public void analyze_run() {
 		String[] args={"-a","BACKWARDS","-m",input.getFileLocation(2),"-s","BFS"};
-		System.out.println("Model: "+input.toString()+3);
+		System.out.println("Model: "+input.toString()+2);
 		XtaMain.main(args);
 	}
 

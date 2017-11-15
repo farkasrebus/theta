@@ -278,7 +278,7 @@ public class XtaSystemUnfolder {
 		for (XtaProcess p: location.keySet()) {
 			Loc l=location.get(p);
 			String lname = l.getName();
-			name+=lname;
+			name+=lname+"_";
 			if (l.getKind()!=LocKind.NORMAL) kind=LocKind.URGENT;
 			for (Guard g:l.getInvars()) {
 				invars.add(g.toExpr());
@@ -295,7 +295,7 @@ public class XtaSystemUnfolder {
 		UnfoldedXtaSystem result= unfoldDataVariables(usys, input.toString());
 		Map<Loc, Map<XtaProcess,Loc>> locmap=result.locmap;
 		System.out.println("Locs after data unfold: "+result.result.getLocs().size());
-		for (Loc l:locmap.keySet()) {
+		/*for (Loc l:locmap.keySet()) {
 			String name=l.getName();
 			String[] vsplit=name.split("V");
 			String loc=vsplit[0];
@@ -303,7 +303,7 @@ public class XtaSystemUnfolder {
 			char id=vstring.charAt(vstring.length()-2);//digit
 			String[] psplit=loc.split("P");
 			System.out.println(psplit[2].substring(3)+","+psplit[1].substring(3)+","+id);
-		}
+		}*/
 			
 		//System.out.println(result.locmap);
 		addErrorLoc(result,input);
@@ -523,7 +523,7 @@ public class XtaSystemUnfolder {
 		public MutableValuation valuation;
 		
 		public String getName() {
-			String result=new String(loc.getName()+ "_"+valuation);
+			String result=new String(loc.getName()+valuation);
 			return result;
 		}
 

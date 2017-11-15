@@ -49,7 +49,10 @@ public class BackwardsStrategy implements LazyXtaChecker.AlgorithmStrategy<Backw
 	@Override
 	public boolean covers(ArgNode<XtaState<BackwardsZoneState>, XtaAction> nodeToCover,
 			ArgNode<XtaState<BackwardsZoneState>, XtaAction> coveringNode) {
-		return nodeToCover.getState().getState().isLeq(coveringNode.getState().getState());
+		BackwardsZoneState s1=nodeToCover.getState().getState();
+		BackwardsZoneState s2=coveringNode.getState().getState();
+		boolean result=s1.isLeq(s2);//TODO
+		return result;
 	}
 
 	@Override
@@ -75,14 +78,14 @@ public class BackwardsStrategy implements LazyXtaChecker.AlgorithmStrategy<Backw
 	@Override
 	public Collection<ArgNode<XtaState<BackwardsZoneState>, XtaAction>> refine(
 			ArgNode<XtaState<BackwardsZoneState>, XtaAction> node, Builder statistics) {
-		throw new UnsupportedOperationException();
-		//return uncoveredNodes;
+		final Collection<ArgNode<XtaState<BackwardsZoneState>, XtaAction>> uncoveredNodes = new ArrayList<>();
+		return uncoveredNodes;
 	}
 
-	@Override
+	@Override//TODO: Ezt sem értem
 	public void resetState(ArgNode<XtaState<BackwardsZoneState>, XtaAction> node) {
-		final BackwardsZoneState newState = node.getState().getState().withActiveVars(ImmutableSet.of());
-		node.setState(node.getState().withState(newState));
+		//final BackwardsZoneState newState = node.getState().getState().withActiveVars(ImmutableSet.of());
+		//node.setState(node.getState().withState(newState));
 	}
 
 	@Override

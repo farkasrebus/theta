@@ -241,6 +241,20 @@ public final class XtaProcess {
 		public Collection<Guard> getInvars() {
 			return invars;
 		}
+		
+		@Override//TODO: Critical
+		public String toString() {
+			if (name.contains("errorloc")) return name;
+			String[] splitname=name.split("_");
+			//0-1-2 Arbiter2 V.
+			//3-4-5 PC1 II.
+			//6-7 Counter I.
+			//8-9-10 A1  III.
+			//11-12-13 PC2 IV.
+			//14 Valuation ...
+			String result=splitname[7]+","+splitname[5]+","+splitname[10]+","+splitname[13]+","+splitname[2]+","+splitname[14].charAt(splitname[14].length()-2);
+			return result;
+		}
 	}
 
 	////

@@ -3,6 +3,7 @@ package hu.bme.mit.theta.analysis.zone.backwards;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Set;
+import java.util.StringJoiner;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -55,7 +56,12 @@ public class BackwardsZoneState implements ExprState{
 	
 	@Override
 	public String toString() {
-		return zone.toString();
+		final StringJoiner sj = new StringJoiner(" ");
+		sj.add("Active vars:");
+		activeVars.forEach(c -> sj.add(c.getName()));
+		sj.add("\n");
+		sj.add(zone.toString());
+		return sj.toString();
 	}
 
 	public Set<VarDecl<RatType>> getActiveVars() {

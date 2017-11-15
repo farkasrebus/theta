@@ -34,6 +34,7 @@ public class BackwardsZoneTransferFunc<A extends Action> implements TransferFunc
 		checkNotNull(prec);
 		
 		final ZoneState subState = state.getZone();
+		prec.reset(state.getActiveVars());
 		final Collection<? extends ZoneState> subSuccStates = transferFunc.getSuccStates(subState, action, prec);
 		
 		if (subSuccStates.isEmpty()) {

@@ -32,24 +32,24 @@ public class XtaBackwardsZoneTransferFunc implements TransferFunc<ZoneState, Xta
 	
 	@Override
 	public Collection<? extends ZoneState> getSuccStates(ZoneState state, XtaAction action, ZonePrec prec) {
+		Set<VarDecl<RatType>> newActVars=new HashSet<>(prec.getVars());
+		if (action.isSimple()) {
+			Edge edge=action.asSimple().getEdge();
+			handleEdges(ImmutableSet.of(edge),newActVars);
+		} else {
+			Edge edge1=action.asSynced().getEmittingEdge();
+			Edge edge2=action.asSynced().getReceivingEdge();
+			handleEdges(ImmutableSet.of(edge1,edge2),newActVars);
+		}
+		List<Loc> srcLocs=action.getSourceLocs();
+		handleLocs(srcLocs,newActVars);
+		prec.reset(newActVars);
 		
 		final ZoneState preState=XtaZoneUtils.pre(state, action, prec);
 		
 		if (preState.isBottom()) {
 			return ImmutableList.of();
 		} else {
-			Set<VarDecl<RatType>> newActVars=new HashSet<>(prec.getVars());
-			if (action.isSimple()) {
-				Edge edge=action.asSimple().getEdge();
-				handleEdges(ImmutableSet.of(edge),newActVars);
-			} else {
-				Edge edge1=action.asSynced().getEmittingEdge();
-				Edge edge2=action.asSynced().getReceivingEdge();
-				handleEdges(ImmutableSet.of(edge1,edge2),newActVars);
-			}
-			List<Loc> srcLocs=action.getSourceLocs();
-			handleLocs(srcLocs,newActVars);
-			prec.reset(newActVars);
 			return ImmutableList.of(preState);
 		}
 	}

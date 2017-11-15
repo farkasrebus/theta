@@ -148,30 +148,32 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 			
 			while (!waitlist.isEmpty()) {
 				final ArgNode<XtaState<S>, XtaAction> v = waitlist.remove();
-				System.out.println("Node: "+v.getState());//TODO
+				//System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				//System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
 				assert v.isLeaf();
 
 				if (algorithm.shouldRefine(v)) {
-					System.out.println("Shouldrefine");//TODO
+					//System.out.println("Shouldrefine");//TODO
 					statistics.startRefinement();
 					final Collection<ArgNode<XtaState<S>, XtaAction>> uncoveredNodes = algorithm.refine(v, statistics);
 					statistics.stopRefinement();
-					System.out.println("Uncovered: "+uncoveredNodes);//TODO
+					//System.out.println("Uncovered: "+uncoveredNodes);//TODO
 					waitlist.addAll(uncoveredNodes);
 				} else if (v.isTarget()) {
-					System.out.println("Target");//TODO
+					//System.out.println("Target");//TODO
 					statistics.stopAlgorithm();
 					return Optional.of(v);
 				} else {
-					System.out.println("Else");//TODO
+					//System.out.println("Else");//TODO
 					close(v);
 					if (!v.isCovered()) {
-						System.out.println("Not covered");//TODO
+						//System.out.println("Not covered");//TODO
 						expand(v);
-					}
+					}/* else {//TODO
+						System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
+					}//TODO*/
 				}
-				System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
+				//System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
 				//System.out.println("waitlist: "+waitlist);//TODO
 			}
 			statistics.stopAlgorithm();
@@ -183,10 +185,12 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 
 		private void close(final ArgNode<XtaState<S>, XtaAction> nodeToCover) {
 			assert nodeToCover.isLeaf();
+			/*if (nodeToCover.getId()==8) {//TODO
+				System.out.println("Intereseting node");//TODO
+			}//TODO*/
 
 			final Collection<ArgNode<XtaState<S>, XtaAction>> candidates = reachedSet.get(nodeToCover);
-
-			if (!candidates.isEmpty()) {
+						if (!candidates.isEmpty()) {
 				for (final ArgNode<XtaState<S>, XtaAction> coveringNode : candidates) {
 					if (algorithm.covers(nodeToCover, coveringNode)) {
 						nodeToCover.setCoveringNode(coveringNode);
@@ -207,8 +211,10 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 						}
 					}
 				}
-
 				algorithm.resetState(nodeToCover);
+				/*if (nodeToCover.getId()==64) {//TODO
+					System.out.println("5.: "+nodeToCover.getState().getState());//TODO
+				}*/
 			}
 		}
 
