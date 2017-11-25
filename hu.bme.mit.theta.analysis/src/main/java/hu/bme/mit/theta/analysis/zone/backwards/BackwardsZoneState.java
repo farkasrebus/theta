@@ -30,7 +30,6 @@ public class BackwardsZoneState implements ExprState{
 	
 	@Override
 	public Expr<BoolType> toExpr() {
-		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("TODO: auto-generated method stub");
 	}
 
@@ -51,7 +50,8 @@ public class BackwardsZoneState implements ExprState{
 	}
 
 	public boolean isLeq(BackwardsZoneState that) {
-		return this.activeVars.equals(that.activeVars) && this.zone.isLeq(that.zone);
+		//return this.activeVars.equals(that.activeVars) && this.zone.isLeq(that.zone);
+		return this.activeVars.containsAll(that.activeVars) && this.zone.isLeq(that.zone);
 	}
 	
 	@Override
@@ -66,9 +66,5 @@ public class BackwardsZoneState implements ExprState{
 
 	public Set<VarDecl<RatType>> getActiveVars() {
 		return activeVars;
-	}
-
-	public BackwardsZoneState withActiveVars(Set<VarDecl<RatType>> newActiveVars) {
-		return new BackwardsZoneState(zone, newActiveVars);
 	}
 }

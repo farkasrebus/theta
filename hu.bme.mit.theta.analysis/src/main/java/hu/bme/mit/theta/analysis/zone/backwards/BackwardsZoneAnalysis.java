@@ -15,15 +15,15 @@ public class BackwardsZoneAnalysis<A extends Action> implements Analysis<Backwar
 	private final InitFunc<BackwardsZoneState, ZonePrec> initFunc;
 	private final TransferFunc<BackwardsZoneState, A, ZonePrec> transferFunc;	
 	
-	private BackwardsZoneAnalysis(final Analysis<ZoneState, ? super A, ZonePrec> analysis) {
+	private BackwardsZoneAnalysis(final Analysis<ZoneState, ? super A, ZonePrec> analysis, boolean enableAct) {
 		checkNotNull(analysis);
-		initFunc = BackwardsZoneInitFunc.create(analysis.getInitFunc());
+		initFunc = BackwardsZoneInitFunc.create(analysis.getInitFunc(),enableAct);
 		transferFunc = BackwardsZoneTransferFunc.create(analysis.getTransferFunc());
 
 	}
 	
-	public static <A extends Action> BackwardsZoneAnalysis<A> create(final Analysis<ZoneState, ? super A, ZonePrec> analysis) {
-		return new BackwardsZoneAnalysis<>(analysis);
+	public static <A extends Action> BackwardsZoneAnalysis<A> create(final Analysis<ZoneState, ? super A, ZonePrec> analysis, boolean enableAct) {
+		return new BackwardsZoneAnalysis<>(analysis, enableAct);
 	}
 	
 	@Override

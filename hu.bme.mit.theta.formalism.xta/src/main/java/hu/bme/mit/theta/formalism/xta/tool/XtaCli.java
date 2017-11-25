@@ -103,12 +103,16 @@ public final class XtaCli {
 	}
 
 	private void printHeader() {
+		writer.cell("Expected");
+		writer.cell("Model");
+		writer.cell("DataPreProc");
+		writer.cell("DiagPreProc");
+		writer.cell("Algorithm");
 		writer.cell("Result");
+		writer.cell("PreProcTimeInMs");
 		writer.cell("AlgorithmTimeInMs");
 		writer.cell("RefinementTimeInMs");
-		writer.cell("InterpolationTimeInMs");
-		writer.cell("RefinementSteps");
-		writer.cell("ArgDepth");
+		writer.cell("TimeMs");
 		writer.cell("ArgNodes");
 		writer.cell("ArgNodesFeasible");
 		writer.cell("ArgNodesExpanded");
@@ -127,10 +131,10 @@ public final class XtaCli {
 		if (benchmarkMode) {
 			writer.cell(result.isSafe());
 			writer.cell(stats.getAlgorithmTimeInMs());
-			writer.cell(stats.getRefinementTimeInMs());
+			/*writer.cell(stats.getRefinementTimeInMs());
 			writer.cell(stats.getInterpolationTimeInMs());
 			writer.cell(stats.getRefinementSteps());
-			writer.cell(stats.getArgDepth());
+			writer.cell(stats.getArgDepth());*/
 			writer.cell(stats.getArgNodes());
 			writer.cell(stats.getArgNodesFeasible());
 			writer.cell(stats.getArgNodesExpanded());

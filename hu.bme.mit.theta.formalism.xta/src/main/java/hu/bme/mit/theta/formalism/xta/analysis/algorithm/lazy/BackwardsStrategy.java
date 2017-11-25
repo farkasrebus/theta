@@ -4,41 +4,33 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
 import hu.bme.mit.theta.analysis.Analysis;
-import hu.bme.mit.theta.analysis.algorithm.ArgEdge;
 import hu.bme.mit.theta.analysis.algorithm.ArgNode;
 import hu.bme.mit.theta.analysis.impl.PrecMappingAnalysis;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
-import hu.bme.mit.theta.analysis.zone.act.ActZoneState;
 import hu.bme.mit.theta.analysis.zone.backwards.BackwardsZoneAnalysis;
 import hu.bme.mit.theta.analysis.zone.backwards.BackwardsZoneState;
-import hu.bme.mit.theta.core.decl.VarDecl;
-import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
 import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaStatistics.Builder;
-import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaActZoneUtils;
 import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaBackwardsZoneAnalysis;
 
 public class BackwardsStrategy implements LazyXtaChecker.AlgorithmStrategy<BackwardsZoneState> {
-	
+	public static boolean act;
 	private final Analysis<BackwardsZoneState,XtaAction,UnitPrec> analysis; 
 	
-	private BackwardsStrategy(final XtaSystem system) {
+	private BackwardsStrategy(final XtaSystem system, boolean enableAct) {
 		checkNotNull(system);
+		act=enableAct;
 		final ZonePrec prec = ZonePrec.of(system.getClockVars());
-		analysis=PrecMappingAnalysis.create(BackwardsZoneAnalysis.create(XtaBackwardsZoneAnalysis.getInstance()), u -> prec);
+		analysis=PrecMappingAnalysis.create(BackwardsZoneAnalysis.create(XtaBackwardsZoneAnalysis.getInstance(act),act), u -> prec);
 	}
 	
-	public static BackwardsStrategy create(final XtaSystem system) {
-		return new BackwardsStrategy(system);
+	public static BackwardsStrategy create(final XtaSystem system, boolean enableAct) {
+		return new BackwardsStrategy(system,enableAct);
 	}
 	
 	@Override
@@ -51,7 +43,7 @@ public class BackwardsStrategy implements LazyXtaChecker.AlgorithmStrategy<Backw
 			ArgNode<XtaState<BackwardsZoneState>, XtaAction> coveringNode) {
 		BackwardsZoneState s1=nodeToCover.getState().getState();
 		BackwardsZoneState s2=coveringNode.getState().getState();
-		boolean result=s1.isLeq(s2);//TODO
+		boolean result=s1.isLeq(s2);
 		return result;
 	}
 

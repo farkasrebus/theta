@@ -21,29 +21,35 @@ import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 
 public class XtaBackwardsZoneTransferFunc implements TransferFunc<ZoneState, XtaAction, ZonePrec> {
 	
-	private final static XtaBackwardsZoneTransferFunc INSTANCE=new XtaBackwardsZoneTransferFunc();
+	private final boolean act;
+	private final static XtaBackwardsZoneTransferFunc INSTANCE=new XtaBackwardsZoneTransferFunc(false);
+	private final static XtaBackwardsZoneTransferFunc ACTINSTANCE=new XtaBackwardsZoneTransferFunc(true);
 	
-	private XtaBackwardsZoneTransferFunc() {
+	private XtaBackwardsZoneTransferFunc(boolean enableAct) {
+		act=enableAct;
 	}
 	
-	static XtaBackwardsZoneTransferFunc getInstance()  {
+	static XtaBackwardsZoneTransferFunc getInstance(boolean enableAct)  {
+		if (enableAct) return ACTINSTANCE;
 		return INSTANCE;
 	}
 	
 	@Override
 	public Collection<? extends ZoneState> getSuccStates(ZoneState state, XtaAction action, ZonePrec prec) {
-		Set<VarDecl<RatType>> newActVars=new HashSet<>(prec.getVars());
-		if (action.isSimple()) {
-			Edge edge=action.asSimple().getEdge();
-			handleEdges(ImmutableSet.of(edge),newActVars);
-		} else {
-			Edge edge1=action.asSynced().getEmittingEdge();
-			Edge edge2=action.asSynced().getReceivingEdge();
-			handleEdges(ImmutableSet.of(edge1,edge2),newActVars);
+		if (act){
+			Set<VarDecl<RatType>> newActVars=new HashSet<>(prec.getVars());
+			if (action.isSimple()) {
+				Edge edge=action.asSimple().getEdge();
+				handleEdges(ImmutableSet.of(edge),newActVars);
+			} else {
+				Edge edge1=action.asSynced().getEmittingEdge();
+				Edge edge2=action.asSynced().getReceivingEdge();
+				handleEdges(ImmutableSet.of(edge1,edge2),newActVars);
+			}
+			List<Loc> srcLocs=action.getSourceLocs();
+			handleLocs(srcLocs,newActVars);
+			prec.reset(newActVars);
 		}
-		List<Loc> srcLocs=action.getSourceLocs();
-		handleLocs(srcLocs,newActVars);
-		prec.reset(newActVars);
 		
 		final ZoneState preState=XtaZoneUtils.pre(state, action, prec);
 		

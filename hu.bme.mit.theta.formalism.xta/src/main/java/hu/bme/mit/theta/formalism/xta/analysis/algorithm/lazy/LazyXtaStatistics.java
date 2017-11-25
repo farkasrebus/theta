@@ -32,9 +32,10 @@ import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
 public final class LazyXtaStatistics extends Statistics {
 
 	private final long algorithmTimeInMs;
-	private final long refinementTimeInMs;
-	private final long interpolationTimeInMs;
-	private final long refinementSteps;
+	private long preprocTimeInMs=0;
+	//private final long refinementTimeInMs;
+	//private final long interpolationTimeInMs;
+	//private final long refinementSteps;
 	private final long argDepth;
 	private final long argNodes;
 	private final long argNodesFeasible;
@@ -43,9 +44,9 @@ public final class LazyXtaStatistics extends Statistics {
 
 	private LazyXtaStatistics(final Builder builder) {
 		algorithmTimeInMs = builder.algorithmTimer.elapsed(TimeUnit.MILLISECONDS);
-		refinementTimeInMs = builder.refinementTimer.elapsed(TimeUnit.MILLISECONDS);
-		interpolationTimeInMs = builder.interpolationTimer.elapsed(TimeUnit.MILLISECONDS);
-		refinementSteps = builder.refinementSteps;
+		//refinementTimeInMs = builder.refinementTimer.elapsed(TimeUnit.MILLISECONDS);
+		//interpolationTimeInMs = builder.interpolationTimer.elapsed(TimeUnit.MILLISECONDS);
+		//refinementSteps = builder.refinementSteps;
 		argDepth = builder.arg.getDepth();
 		argNodes = builder.arg.getNodes().count();
 		argNodesFeasible = builder.arg.getNodes().filter(ArgNode::isFeasible).count();
@@ -54,10 +55,10 @@ public final class LazyXtaStatistics extends Statistics {
 				.map(n -> Tuple.of(n.getState().getLocs(), n.getState().getVal())).collect(toSet()).size();
 
 		addStat("AlgorithmTimeInMs", this::getAlgorithmTimeInMs);
-		addStat("RefinementTimeInMs", this::getRefinementTimeInMs);
-		addStat("InterpolationTimeInMs", this::getInterpolationTimeInMs);
-		addStat("RefinementSteps", this::getRefinementSteps);
-		addStat("ArgDepth", this::getArgDepth);
+		//addStat("RefinementTimeInMs", this::getRefinementTimeInMs);
+		//addStat("InterpolationTimeInMs", this::getInterpolationTimeInMs);
+		//addStat("RefinementSteps", this::getRefinementSteps);
+		//addStat("ArgDepth", this::getArgDepth);
 		addStat("ArgNodes", this::getArgNodes);
 		addStat("ArgNodesFeasible", this::getArgNodesFeasible);
 		addStat("ArgNodesExpanded", this::getArgNodesExpanded);
@@ -72,7 +73,7 @@ public final class LazyXtaStatistics extends Statistics {
 		return algorithmTimeInMs;
 	}
 
-	public long getRefinementTimeInMs() {
+/*	public long getRefinementTimeInMs() {
 		return refinementTimeInMs;
 	}
 
@@ -82,7 +83,7 @@ public final class LazyXtaStatistics extends Statistics {
 
 	public long getRefinementSteps() {
 		return refinementSteps;
-	}
+	}*/
 
 	public long getArgDepth() {
 		return argDepth;
@@ -103,6 +104,14 @@ public final class LazyXtaStatistics extends Statistics {
 	public long getDiscreteStatesExpanded() {
 		return discreteStatesExpanded;
 	}
+	
+	public void setPreProcTimeInMs(long time) {
+		this.preprocTimeInMs=time;
+	}
+
+	public long getFullTimeInMs() {
+		return preprocTimeInMs+algorithmTimeInMs;
+	}
 
 	public static final class Builder {
 
@@ -117,7 +126,7 @@ public final class LazyXtaStatistics extends Statistics {
 		private final Stopwatch refinementTimer;
 		private final Stopwatch interpolationTimer;
 
-		private long refinementSteps;
+		//private long refinementSteps;
 
 		private Builder(final ARG<? extends XtaState<?>, ?> arg) {
 			this.arg = checkNotNull(arg);
@@ -125,7 +134,7 @@ public final class LazyXtaStatistics extends Statistics {
 			algorithmTimer = Stopwatch.createUnstarted();
 			refinementTimer = Stopwatch.createUnstarted();
 			interpolationTimer = Stopwatch.createUnstarted();
-			refinementSteps = 0;
+			//refinementSteps = 0;
 		}
 
 		public void startAlgorithm() {
@@ -166,7 +175,7 @@ public final class LazyXtaStatistics extends Statistics {
 
 		public void refine() {
 			checkState(state == State.REFINING);
-			refinementSteps++;
+			//refinementSteps++;
 		}
 
 		public LazyXtaStatistics build() {
@@ -176,4 +185,5 @@ public final class LazyXtaStatistics extends Statistics {
 		}
 
 	}
+	
 }

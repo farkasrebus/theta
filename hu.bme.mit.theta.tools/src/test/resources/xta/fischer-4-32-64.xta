@@ -12,7 +12,7 @@ process P(const id_t pid) {
     	wait,
     	req { x <= a },
     	A,
-		cs;
+		errorloc;
 
 	init A;
 	
@@ -20,8 +20,8 @@ process P(const id_t pid) {
 		A -> req { guard id == 0; assign x = 0; },
 		req -> wait { assign x = 0, id = pid; },
 		wait -> req { guard id == 0; assign x = 0; },
-		wait -> cs { guard x >= b && id == pid; },
-		cs -> A { assign id = 0; };
+		wait -> errorloc { guard x >= b && id == pid; },
+		errorloc -> A { assign id = 0; };
 }
 
 system P;

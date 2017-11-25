@@ -1,8 +1,8 @@
 package hu.bme.mit.theta.formalism.xta.analysis;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.ImmutableList.toImmutableList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,10 +12,9 @@ import hu.bme.mit.theta.analysis.InitFunc;
 import hu.bme.mit.theta.analysis.Prec;
 import hu.bme.mit.theta.analysis.State;
 import hu.bme.mit.theta.core.model.BasicValuation;
-import hu.bme.mit.theta.core.model.Valuation;
 import hu.bme.mit.theta.formalism.xta.XtaProcess;
-import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
+import hu.bme.mit.theta.formalism.xta.XtaSystem;
 
 public class XtaBackwardsInitFunc<S extends State, P extends Prec> implements InitFunc<XtaState<S>, P> {
 	
@@ -42,10 +41,13 @@ public class XtaBackwardsInitFunc<S extends State, P extends Prec> implements In
 	}
 	
 	private static ImmutableList<Loc> creatInitLocs(final XtaSystem system) {
-		//TODO: ha már nem lesz kihajtogatósdi, akkor az egészet másképp kell
-		for (Loc l:system.getProcesses().get(0).getLocs()) {
-			if (l.getName().contains("errorloc")) return ImmutableList.of(l);
+		
+		List<Loc> result=new ArrayList<>();
+		for (XtaProcess proc:system.getProcesses()) {
+				for (Loc l:proc.getLocs())
+					if (l.getName().contains("errorloc")) result.add(l);
 		}
-		return ImmutableList.of();
+		return ImmutableList.copyOf(result);
+
 	}
 }

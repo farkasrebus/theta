@@ -5,6 +5,9 @@ import static hu.bme.mit.theta.core.type.booltype.BoolExprs.Bool;
 import static hu.bme.mit.theta.core.type.inttype.IntExprs.Eq;
 import static hu.bme.mit.theta.core.type.inttype.IntExprs.Int;
 import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Gt;
+import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Lt;
+import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Leq;
+import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Geq;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,12 +18,32 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.activation.UnsupportedDataTypeException;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import hu.bme.mit.theta.core.clock.constr.AndConstr;
+import hu.bme.mit.theta.core.clock.constr.AtomicConstr;
+import hu.bme.mit.theta.core.clock.constr.CanonizeDiffConstrVisitor;
+import hu.bme.mit.theta.core.clock.constr.ClockConstr;
+import hu.bme.mit.theta.core.clock.constr.ClockConstrVisitor;
+import hu.bme.mit.theta.core.clock.constr.DiffConstr;
+import hu.bme.mit.theta.core.clock.constr.DiffEqConstr;
+import hu.bme.mit.theta.core.clock.constr.DiffGeqConstr;
+import hu.bme.mit.theta.core.clock.constr.DiffGtConstr;
+import hu.bme.mit.theta.core.clock.constr.DiffLeqConstr;
+import hu.bme.mit.theta.core.clock.constr.DiffLtConstr;
+import hu.bme.mit.theta.core.clock.constr.FalseConstr;
+import hu.bme.mit.theta.core.clock.constr.OppositeClockConstrVisitor;
+import hu.bme.mit.theta.core.clock.constr.TrueConstr;
+import hu.bme.mit.theta.core.clock.constr.UnitEqConstr;
+import hu.bme.mit.theta.core.clock.constr.UnitGeqConstr;
+import hu.bme.mit.theta.core.clock.constr.UnitGtConstr;
 import hu.bme.mit.theta.core.clock.constr.UnitLeqConstr;
+import hu.bme.mit.theta.core.clock.constr.UnitLtConstr;
 import hu.bme.mit.theta.core.clock.op.ResetOp;
 import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.VarDecl;
@@ -33,6 +56,7 @@ import hu.bme.mit.theta.core.type.LitExpr;
 import hu.bme.mit.theta.core.type.Type;
 import hu.bme.mit.theta.core.type.abstracttype.EqExpr;
 import hu.bme.mit.theta.core.type.anytype.RefExpr;
+import hu.bme.mit.theta.core.type.arraytype.ArrayExprs;
 import hu.bme.mit.theta.core.type.arraytype.ArrayReadExpr;
 import hu.bme.mit.theta.core.type.arraytype.ArrayType;
 import hu.bme.mit.theta.core.type.booltype.BoolLitExpr;
@@ -42,6 +66,7 @@ import hu.bme.mit.theta.core.type.inttype.IntType;
 import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.formalism.xta.ChanType;
 import hu.bme.mit.theta.formalism.xta.Guard;
+import hu.bme.mit.theta.formalism.xta.Guard.ClockGuard;
 import hu.bme.mit.theta.formalism.xta.Guard.DataGuard;
 import hu.bme.mit.theta.formalism.xta.Label;
 import hu.bme.mit.theta.formalism.xta.Label.Kind;
@@ -67,6 +92,271 @@ public class XtaSystemUnfolder {
 			valmap=vals;
 		}
 	}
+	
+	public static XtaSystem unfoldDiagonalConstraints(XtaSystem system) throws UnsupportedDataTypeException {
+		List<XtaProcess> processes=new ArrayList<>();
+		for (XtaProcess proc:system.getProcesses()) processes.add(unfoldDiagonalConstraints(proc));
+		return XtaSystem.of(processes);
+	}
+	
+	public static class DiagCollectorClockConstrVisitor implements ClockConstrVisitor<Edge,Boolean> {
+		Map<DiffConstr,List<Edge>> containingEdges;
+		CanonizeDiffConstrVisitor cvisitor;
+		
+		public DiagCollectorClockConstrVisitor(Map<DiffConstr,List<Edge>> map){
+			containingEdges=map;
+			cvisitor=new CanonizeDiffConstrVisitor();
+		}
+
+		@Override
+		public Boolean visit(TrueConstr constr, Edge param) {
+			return false;
+		}
+
+		@Override
+		public Boolean visit(FalseConstr constr, Edge param) {
+			return false;
+		}
+
+		@Override
+		public Boolean visit(UnitLtConstr constr, Edge param) {
+			return false;
+		}
+
+		@Override
+		public Boolean visit(UnitLeqConstr constr, Edge param) {
+			return false;
+		}
+
+		@Override
+		public Boolean visit(UnitGtConstr constr, Edge param) {
+			return false;
+		}
+
+		@Override
+		public Boolean visit(UnitGeqConstr constr, Edge param) {
+			return false;
+		}
+
+		@Override
+		public Boolean visit(UnitEqConstr constr, Edge param) {
+			return false;
+		}
+
+		@Override
+		public Boolean visit(DiffLtConstr constr, Edge param) {
+			store(constr,param);
+			return true;
+		}
+
+		@Override
+		public Boolean visit(DiffLeqConstr constr, Edge param) {
+			store(constr,param);
+			return true;
+		}
+
+		@Override
+		public Boolean visit(DiffGtConstr constr, Edge param) {
+			store(constr,param);
+			return true;
+		}
+
+		@Override
+		public Boolean visit(DiffGeqConstr constr, Edge param) {
+			store(constr,param);
+			return true;
+		}
+
+		@Override
+		public Boolean visit(DiffEqConstr constr, Edge param) {
+			store(Leq(constr.getLeftVar(),constr.getRightVar(),constr.getBound()),param);
+			store(Geq(constr.getLeftVar(),constr.getRightVar(),constr.getBound()),param);
+			return true;
+		}
+
+		@Override
+		public Boolean visit(AndConstr constr, Edge param) {
+			boolean result=false;
+			for (ClockConstr c: constr.getConstrs()) {
+				if (c.accept(this, param)) result=true;
+			}
+			
+			return result;
+		}
+		
+		private void store(DiffConstr constr, Edge param) {
+			DiffConstr can=constr.accept(cvisitor, true);
+			if (!containingEdges.containsKey(can))containingEdges.put(can, new ArrayList<Edge>());
+			containingEdges.get(can).add(param);
+		}
+		
+	}
+	
+	public static XtaProcess unfoldDiagonalConstraints(XtaProcess sys) throws UnsupportedDataTypeException {
+		XtaProcess result=sys;
+		//TODO: feltesszük hogy óra csak 0-ra resetelõdik, és mást nem csinál!!!!!
+		//TODO: nem tudom mitörténik, ha egy constraint különbözõ boundokkal szerepel
+		//TODO: invariánsokkal is foglalkozni!!!
+		Map<DiffConstr,List<Edge>> diagConstrs=new HashMap<>();
+		DiagCollectorClockConstrVisitor dvisitor=new DiagCollectorClockConstrVisitor(diagConstrs);
+		OppositeClockConstrVisitor ovisitor=new OppositeClockConstrVisitor();
+		for (Edge e:sys.getEdges()) {
+			List<ClockGuard> toRemove=new ArrayList<>();
+			for (Guard g: e.getGuards()) {
+				if (g.isClockGuard()) {
+					if (g.asClockGuard().getClockConstr().accept(dvisitor, e)) {
+						toRemove.add(g.asClockGuard());
+					}
+				}
+			}
+			for (ClockGuard cg:toRemove) {
+				e.getGuards().remove(cg);
+				if (cg.getClockConstr() instanceof AndConstr) {
+					AndConstr ac=(AndConstr) cg.getClockConstr();
+					List<AtomicConstr> nondiag=new ArrayList<>();
+					for (AtomicConstr c:ac.getConstrs()) {
+						if (!(c instanceof DiffConstr)) nondiag.add(c);
+					}
+					for (ClockConstr c:nondiag) {
+						e.getGuards().add(Guard.clockGuard(c.toExpr()));
+					}
+				}
+			}
+		}
+		for (DiffConstr constr:diagConstrs.keySet()) {
+			XtaProcess oldsys=result;
+			result=XtaProcess.create(sys.getName());
+			for (VarDecl<RatType> c:sys.getClockVars()) result.addClockVar(c);
+			for (VarDecl<?> d:sys.getDataVars()) result.addDataVar(d);
+			
+			Map<Loc,Loc> trueLocs=new HashMap<>();
+			Map<Loc,Loc> falseLocs=new HashMap<>();
+			
+			//create new locations
+			for (Loc l:oldsys.getLocs()) {
+				List<Expr<BoolType>> invars=new ArrayList<>();
+				for (Guard g:l.getInvars()) {
+					invars.add(g.toExpr());
+				}
+				Loc ltrue=result.createLoc(l.getName()+"_"+constr, l.getKind(), invars);
+				trueLocs.put(l, ltrue);
+				Loc lfalse=result.createLoc(l.getName()+"_"+constr.accept(ovisitor, null), l.getKind(), invars);
+				falseLocs.put(l, lfalse);
+			}
+			//set init loc
+			int bound=constr.getBound();
+			Loc origInit=oldsys.getInitLoc();
+			 if (constr instanceof DiffLtConstr) {
+				if (0 <bound) {
+					result.setInitLoc(trueLocs.get(origInit));
+				} else {
+					result.setInitLoc(falseLocs.get(origInit));
+				}
+			} else if (constr instanceof DiffLeqConstr) {
+				if (0 <=bound) {
+					result.setInitLoc(trueLocs.get(origInit));
+				} else result.setInitLoc(falseLocs.get(origInit));
+			} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+			 //System.out.println(result.getInitLoc());
+			 
+			//élek
+			for (Edge e: oldsys.getEdges()) {
+				Loc origSrc=e.getSource();
+				Loc trueSrc=trueLocs.get(origSrc);
+				Loc falseSrc=falseLocs.get(origSrc);
+				Loc origTrg=e.getTarget();
+				Loc trueTrg=trueLocs.get(origTrg);
+				Loc falseTrg=falseLocs.get(origTrg);
+				VarDecl<RatType> leftClock=constr.getLeftVar();
+				VarDecl<RatType> rightClock=constr.getRightVar();
+				//reset clocks
+				List<VarDecl<RatType>> resets=new ArrayList<>();
+				for (Update u: e.getUpdates()) {
+					if (u.isClockUpdate()) resets.addAll(u.asClockUpdate().getClockOp().getVars());
+				}
+				List<Expr<BoolType>> guards=new ArrayList<>();
+				for (Guard g:e.getGuards()) {
+					guards.add(g.toExpr());
+				}
+				List<Stmt> updates=new ArrayList<>();
+				for (Update u:e.getUpdates()) {
+					if (u.isDataUpdate()) {
+						updates.add(u.toStmt());
+					} else {
+						ResetOp r=(ResetOp) u.asClockUpdate().getClockOp();
+						VarDecl<RatType> clock=r.getVar();
+						int value=r.getValue();
+						VarDecl<Type> clockAsType= (VarDecl<Type>) (VarDecl<?>)clock;
+						Expr<Type> valAsType= (Expr<Type>) (Expr<?>) Int(value);
+						updates.add(Assign(clockAsType,valAsType));
+					}
+				}
+				
+				boolean notGuard=!diagConstrs.get(constr).contains(e);
+				
+				if (resets.contains(leftClock)) {
+					if (resets.contains(rightClock)) {
+						//both reset -> target depends on the bound in x-y=0
+						boolean target;
+						if (constr instanceof DiffLtConstr) {
+							target=(bound>0);
+						} else if (constr instanceof DiffLeqConstr) {
+							target=(bound>=0);
+						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+						Loc trgloc;
+						if (target)trgloc=trueTrg; else trgloc=falseTrg;
+						result.createEdge(trueSrc, trgloc, guards, e.getLabel(), updates);
+						if (notGuard) result.createEdge(falseSrc, trgloc, guards, e.getLabel(), updates);
+					} else {
+						//left reset -> target depends on y vs bound
+						Expr<BoolType> posGuard;
+						Expr<BoolType> negGuard;
+						if (constr instanceof DiffLtConstr) {
+							posGuard=Gt(rightClock,-1*bound).toExpr();
+							negGuard=Leq(rightClock,-1*bound).toExpr();
+						} else if (constr instanceof DiffLeqConstr) {
+							posGuard=Geq(rightClock,-1*bound).toExpr();
+							negGuard=Lt(rightClock,-1*bound).toExpr();
+						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+						guards.add(posGuard);
+						result.createEdge(trueSrc, trueTrg, guards, e.getLabel(), updates);
+						if (notGuard) result.createEdge(falseSrc, trueTrg, guards, e.getLabel(), updates);
+						guards.remove(posGuard);
+						guards.add(negGuard);
+						result.createEdge(trueSrc, falseTrg, guards, e.getLabel(), updates);
+						if (notGuard) result.createEdge(falseSrc, falseTrg, guards, e.getLabel(), updates);
+					}
+				} else {
+					if (resets.contains(rightClock)) {
+						//right reset -> target depends on left vs bound
+						Expr<BoolType> posGuard;
+						Expr<BoolType> negGuard;
+						if (constr instanceof DiffLtConstr) {
+							posGuard=Lt(leftClock,bound).toExpr();
+							negGuard=Geq(leftClock,bound).toExpr();
+						} else if (constr instanceof DiffLeqConstr) {
+							posGuard=Leq(leftClock,bound).toExpr();
+							negGuard=Gt(leftClock,bound).toExpr();
+						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+						guards.add(posGuard);
+						result.createEdge(trueSrc, trueTrg, guards, e.getLabel(), updates);
+						if (notGuard) result.createEdge(falseSrc, trueTrg, guards, e.getLabel(), updates);
+						guards.remove(posGuard);
+						guards.add(negGuard);
+						result.createEdge(trueSrc, falseTrg, guards, e.getLabel(), updates);
+						if (notGuard) result.createEdge(falseSrc, falseTrg, guards, e.getLabel(), updates);
+					} else {
+						//neither reset -> same property holds
+						result.createEdge(trueSrc, trueTrg, guards, e.getLabel(), updates);
+						if (notGuard) result.createEdge(falseSrc, falseTrg, guards, e.getLabel(), updates);
+					}
+				}
+				
+			}
+		}
+		return result;
+	}
+
 	
 	public static UnfoldedXtaSystem getFlatSystem(XtaSystem sys, String name) {
 		BiMap<Loc,Map<XtaProcess, Loc>> locMap=HashBiMap.create();
@@ -287,14 +577,174 @@ public class XtaSystemUnfolder {
 		Loc result=proc.createLoc(name, kind, invars);
 		return result;
 	}
+	
+	public static XtaSystem unfoldDataSmart(XtaSystem sys, XtaExample input){
+		if (input.equals(XtaExample.CSMA)) {
+			XtaProcess bus=sys.getProcesses().get(0);
+			for (XtaProcess proc:sys.getProcesses()) {
+				if (proc.getName().contains("Bus")) bus=proc;
+			}
+			XtaProcess unfoldedBus=unfoldLocalData(bus);
+			List<XtaProcess> procs=new ArrayList<>(sys.getProcesses());
+			procs.remove(bus);
+			procs.add(unfoldedBus);
+			return XtaSystem.of(procs);
+		}
+		return null;
+	}
 
+	private static XtaProcess unfoldLocalData(XtaProcess proc) {
+		MutableValuation initVal=new MutableValuation();
+		
+		for (VarDecl<?> v:proc.getDataVars()) {
+			
+			if (v.getType() instanceof IntType) {
+				initVal.put(v, Int(0)); //Ints are initialized to 0;
+			} else if (v.getType() instanceof BoolType) {
+				initVal.put(v, Bool(false));
+			} else throw new UnsupportedOperationException("TODO: support type "+v.getType());
+			
+		}
+		
+		UnfoldedLoc init=new UnfoldedLoc();
+		init.loc=proc.getInitLoc();
+		init.valuation=initVal;
+		
+		Map<UnfoldedLoc,Loc> locMap=new HashMap<>();
+		XtaProcess result=XtaProcess.create(proc.getName()+"_unfolded");
+		
+		//TODO: nemlokál adatváltozókat viszont majd meg kell adni
+		
+		for (VarDecl<RatType> v:proc.getClockVars()) {
+			result.addClockVar(v);
+		}
+		
+		Loc pureinit=createUnfoldedLoc(result,init);
+		locMap.put(init, pureinit);
+		result.setInitLoc(pureinit);
+		List<UnfoldedLoc> unfinished=new ArrayList<>();
+		unfinished.add(init);
+		
+		while (!unfinished.isEmpty()) {
+			UnfoldedLoc loc=unfinished.remove(0);
+			Loc origLoc=loc.loc;
+			Loc autLoc=locMap.get(loc);
+			for (Edge e:origLoc.getOutEdges()) {
+				//check guards
+				boolean guardsat=true;
+				for (Guard g: e.getGuards()) {
+					if (g.isDataGuard()) {
+						DataGuard dg=g.asDataGuard();
+						BoolLitExpr sat=(BoolLitExpr) dg.toExpr().eval(loc.getValuation());
+						if (!sat.getValue()) guardsat=false;
+					}
+				}
+				
+				//update
+				if (guardsat) {
+					MutableValuation nextVal=MutableValuation.copyOf(loc.getValuation());
+					for (Update u:e.getUpdates()) {
+						if (u.isDataUpdate()) {
+							AssignStmt<?> assignment=(AssignStmt<?>) u.asDataUpdate().toStmt();
+							nextVal.put(assignment.getVarDecl(), assignment.getExpr().eval(loc.getValuation()));
+						}
+					}
+					//check/create target
+					Loc nextAutLoc = null;
+					for (UnfoldedLoc ul:locMap.keySet()) {
+						if (ul.loc==e.getTarget()) {
+							/*boolean eqval=true;
+							for (VarDecl<?> v:ul.valuation.keySet()) {
+								if (!ul.valuation.get(v).equals(nextVal.get(v))) {
+									eqval=false;
+									break;
+								}
+							}
+							//if (eqval) {*/
+							if (ul.getValuation().equals(nextVal)) {
+								nextAutLoc=locMap.get(ul);
+								break;
+							}
+						}
+					}
+					if (nextAutLoc==null) {
+						UnfoldedLoc next=new UnfoldedLoc();
+						next.loc=e.getTarget();
+						next.valuation=nextVal;
+						nextAutLoc=createUnfoldedLoc(result, next);
+						locMap.put(next, nextAutLoc);
+						unfinished.add(next);
+					}
+					List<Expr<BoolType>> guards=new ArrayList<>();
+					for (Guard g:e.getGuards()) {
+						if (g.isClockGuard()) guards.add(g.toExpr());
+					}
+					List<Stmt> updates=new ArrayList<>();
+					for (Update u:e.getUpdates()) {
+						if (u.isClockUpdate()) {
+							ResetOp r=(ResetOp) u.asClockUpdate().getClockOp();
+							VarDecl<RatType> clock=r.getVar();
+							int value=r.getValue();
+							VarDecl<Type> clockAsType= (VarDecl<Type>) (VarDecl<?>)clock;
+							Expr<Type> valAsType= (Expr<Type>) (Expr<?>) Int(value);
+							updates.add(Assign(clockAsType,valAsType));
+						}
+					}
+					
+					//sync
+					Optional<Label> newsync;
+					if (e.getLabel().isPresent()) {
+						Label sync=e.getLabel().get();
+						Expr<ChanType> syncExpr=sync.getExpr();
+						if (syncExpr instanceof RefExpr) {
+							newsync=e.getLabel();
+						} else if (syncExpr instanceof ArrayReadExpr) {
+							@SuppressWarnings("unchecked")
+							ArrayReadExpr<IntType, ChanType> chans=(ArrayReadExpr<IntType, ChanType>) syncExpr;
+							Expr<ArrayType<IntType,ChanType>> array=chans.getArray();
+							@SuppressWarnings("unchecked")
+							RefExpr<ArrayType<IntType,ChanType>> chref= (RefExpr<ArrayType<IntType,ChanType>> ) array;
+							VarDecl<ArrayType<IntType,ChanType>> varr=(VarDecl<ArrayType<IntType,ChanType>>) chref.getDecl();
+							Expr<?> indx=chans.getIndex();
+							
+							/*if (indx instanceof IntLitExpr) {
+								isInt=true;
+							} else if (!(indx instanceof RefExpr)){
+								throw new UnsupportedOperationException("What kind of index is this?");
+							}*/
+							
+							ArrayReadExpr<IntType,ChanType> expr=ArrayExprs.Read(array, (IntLitExpr) indx.eval(loc.getValuation()));
+							if (sync.getKind().equals(Kind.EMIT)) {
+								newsync=Optional.of(Label.emit(expr));
+							} else {
+								newsync=Optional.of(Label.receive(expr));
+							}
+						} else throw new UnsupportedOperationException("What kind of chan is this?");
+						
+					} else {
+						newsync=Optional.empty();
+					}
+					
+					result.createEdge(autLoc, nextAutLoc, guards, newsync, updates);
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	/*public static XtaSystem unfoldDataChannel(XtaSystem sys, XtaExample input) {
+		
+		return null;
+	}*/
+	
 	public static UnfoldedXtaSystem getPureFlatSystem(XtaSystem system, XtaExample input) {
 		UnfoldedXtaSystem usys=getFlatSystem(system, input.toString());
-		System.out.println("Locs before data unfold: "+usys.result.getLocs().size());
+		//System.out.println("Locs before data unfold: "+usys.result.getLocs().size());
 		
 		UnfoldedXtaSystem result= unfoldDataVariables(usys, input.toString());
 		Map<Loc, Map<XtaProcess,Loc>> locmap=result.locmap;
-		System.out.println("Locs after data unfold: "+result.result.getLocs().size());
+		//System.out.println("Locs after data unfold: "+result.result.getLocs().size());
 		/*for (Loc l:locmap.keySet()) {
 			String name=l.getName();
 			String[] vsplit=name.split("V");
@@ -314,7 +764,15 @@ public class XtaSystemUnfolder {
 		XtaProcess sys=result.result;
 		Loc errorLoc=sys.createLoc("errorloc", LocKind.NORMAL, ImmutableSet.of());
 		Map<Loc, Map<XtaProcess, Loc>> locmap=result.locmap;
-		switch (input) {
+		for (Loc l:locmap.keySet()) {
+			Map<XtaProcess, Loc> origLocs=locmap.get(l);
+			boolean allerror=true;
+			for (XtaProcess p:origLocs.keySet()) {
+				if (!origLocs.get(p).getName().contains("errorloc")) allerror=false;
+			}
+			if (allerror) sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
+		}
+		/*switch (input) {
 		case FISCHER:
 			for (Loc l:locmap.keySet()) {
 				Map<XtaProcess, Loc> origLocs=locmap.get(l);
@@ -367,9 +825,9 @@ public class XtaSystemUnfolder {
 				}
 			}
 			break;
-		case FDDI://intentionally empty
+		/*case FDDI://intentionally empty
 			break;
-		case LYNCH:
+		case LYNCH:*/
 			/*Decl counter=null;
 			for (Decl d: result.valmap.entrySet().iterator().next().getValue().getDecls()){
 				if (d.getName().contains("count")) counter=d;
@@ -382,16 +840,16 @@ public class XtaSystemUnfolder {
 					sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
 				}
 			}*/
-			break;
+			//break;
 		/*case SPLIT:
 			for (Loc l:locmap.keySet()) {
 				if (l.getName().contains("S3"))
 					sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
 			}
 			break;*/
-		default:
+		/*default:
 			break;
-		}
+		}*/
 	}
 
 	private static UnfoldedXtaSystem unfoldDataVariables(UnfoldedXtaSystem usys,String name) {

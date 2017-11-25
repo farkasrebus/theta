@@ -15,8 +15,6 @@ public class XtaModelCheckerTests {
 	@Parameters
 	  public static XtaExample[] data() {
 	    return XtaExample.values();
-		//XtaExample[] result={XtaExample.CRITICAL};
-		//return result;
 	  }
 	
 	@Parameter
@@ -24,32 +22,100 @@ public class XtaModelCheckerTests {
 	
 	@Ignore("Works fine")
 	@Test
-	public void test_unfolder() {
-		String[] args={"-a","BACKWARDS","-m","src/test/resources/xta/lynch-2-16.xta","-s","BFS"};
-		XtaMain.fromArgs(args);
+	public void test_unfolder() throws InterruptedException {
+		for (int i=2;i<=input.getMaxThreads();i++) {
+			for (int j=0; j<5;j++) {
+				System.gc();
+				System.gc();
+				System.gc();
+				Thread.sleep(5000);
+				System.out.print(input+","+i+",");
+				String[] args={"-a","BACKWARDS","-m",input.getFileLocation(i),"-s","BFS"};
+				XtaMain.main(args);
+			}
+		}
+		
 	}
 	
 	//@Ignore("Not benchmarking now")
 	@Test
 	public void benchmark() throws InterruptedException {
+		XtaMain.Algorithm[] algs=XtaMain.Algorithm.values();
 		for (int i=2;i<=input.getMaxThreads();i++) {
+			for (XtaMain.Algorithm alg:algs) {
+				for (int j=0; j<15;j++) {
+					String[] args={"-a",alg.toString(),"-m",input.getFileLocation(i),"-s","BFS"};
+					XtaMain.main(args);
+				}
+			}
+		}
+		
+		/*for (int i=3;i<=input.getMaxThreads();i++) {
 			for (int j=0; j<5;j++) {
 				System.gc();
-				Thread.sleep(10000);
-				System.out.println(input.getFileLocation(i));
-				String[] args={"-a","BACKWARDS","-m",input.getFileLocation(i),"-s","BFS"};
-				System.out.println("Model: "+input.toString()+i);
+				System.gc();
+				System.gc();
+				Thread.sleep(5000);
+				//System.out.println(input.getFileLocation(i));
+				String[] args={"-a","SEQITP","-m",input.getFileLocation(i),"-s","BFS"};
+				//System.out.println("Model: "+input.toString()+i);
+				XtaMain.main(args);
+			}
+		}*/
+		
+		/*for (int i=2;i<=input.getMaxThreads();i++) {
+			for (int j=0; j<5;j++) {
+				System.gc();
+				System.gc();
+				System.gc();
+				Thread.sleep(5000);
+				//System.out.println(input.getFileLocation(i));
+				String[] args={"-a","BINITP","-m",input.getFileLocation(i),"-s","BFS"};
+				//System.out.println("Model: "+input.toString()+i);
 				XtaMain.main(args);
 			}
 		}
+		
+		/*for (int i=2;i<=input.getMaxThreads();i++) {
+			for (int j=0; j<5;j++) {
+				System.gc();
+				System.gc();
+				System.gc();
+				Thread.sleep(5000);
+				//System.out.println(input.getFileLocation(i));
+				String[] args={"-a","WEAKSEQITP","-m",input.getFileLocation(i),"-s","BFS"};
+				//System.out.println("Model: "+input.toString()+i);
+				XtaMain.main(args);
+			}
+		}
+		
+		for (int i=2;i<=input.getMaxThreads();i++) {
+			for (int j=0; j<5;j++) {
+				System.gc();
+				System.gc();
+				System.gc();
+				Thread.sleep(5000);
+				//System.out.println(input.getFileLocation(i));
+				String[] args={"-a","WEAKBINITP","-m",input.getFileLocation(i),"-s","BFS"};
+				//System.out.println("Model: "+input.toString()+i);
+				XtaMain.main(args);
+			}
+		}*/
 	}
 	
-	@Ignore("Works fine")
+	//@Ignore("Works fine")
 	@Test
 	public void analyze_run() {
-		String[] args={"-a","BACKWARDS","-m",input.getFileLocation(2),"-s","BFS"};
-		System.out.println("Model: "+input.toString()+2);
+		/*try {
+			System.in.read();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		String[] args={"-a","BW","-m",input.getFileLocation(2),"-s","BFS"};
 		XtaMain.main(args);
+		String[] args2={"-a","BACT","-m",input.getFileLocation(2),"-s","BFS"};
+		XtaMain.main(args2);
 	}
 
 }

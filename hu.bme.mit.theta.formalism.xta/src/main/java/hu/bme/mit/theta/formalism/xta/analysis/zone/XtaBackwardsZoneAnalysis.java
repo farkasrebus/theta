@@ -10,13 +10,16 @@ import hu.bme.mit.theta.analysis.zone.ZoneState;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 
 public class XtaBackwardsZoneAnalysis implements Analysis<ZoneState, XtaAction, ZonePrec> {
+	private final boolean act;
+	private static final XtaBackwardsZoneAnalysis INSTANCE = new XtaBackwardsZoneAnalysis(false);
+	private static final XtaBackwardsZoneAnalysis ACTINSTANCE = new XtaBackwardsZoneAnalysis(true);
 	
-	private static final XtaBackwardsZoneAnalysis INSTANCE = new XtaBackwardsZoneAnalysis();
-	
-	private XtaBackwardsZoneAnalysis() {
+	private XtaBackwardsZoneAnalysis(boolean enableAct) {
+		act=enableAct;
 	}
 	
-	public static XtaBackwardsZoneAnalysis getInstance() {
+	public static XtaBackwardsZoneAnalysis getInstance(boolean enableAct) {
+		if (enableAct) return ACTINSTANCE;
 		return INSTANCE;
 	}
 	
@@ -27,12 +30,12 @@ public class XtaBackwardsZoneAnalysis implements Analysis<ZoneState, XtaAction, 
 
 	@Override
 	public InitFunc<ZoneState, ZonePrec> getInitFunc() {
-		return XtaBackwardsZoneInitFunc.getInstance();
+		return XtaBackwardsZoneInitFunc.getInstance(act);
 	}
 
 	@Override
 	public TransferFunc<ZoneState, XtaAction, ZonePrec> getTransferFunc() {
-		return XtaBackwardsZoneTransferFunc.getInstance();
+		return XtaBackwardsZoneTransferFunc.getInstance(act);
 	}
 
 }

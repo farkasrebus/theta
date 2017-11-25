@@ -17,7 +17,8 @@ process P(const Pid i) {
 		L4,
 		L3,
 		L2 { c <= T },
-		L1;
+		L1,
+		errorloc;
 	
 	init L1;
 	
@@ -33,7 +34,8 @@ process P(const Pid i) {
 		L4 -> L5 { guard !v2; assign c = 0; },
 		L3 -> L4 { guard v1 == i && c > T; },
 		L2 -> L3 { assign v1 = i, c = 0; },
-		L1 -> L2 { guard v1 == 0; assign c = 0; };
+		L1 -> L2 { guard v1 == 0; assign c = 0; },
+		CS7 -> errorloc;
 }
 
 system P;

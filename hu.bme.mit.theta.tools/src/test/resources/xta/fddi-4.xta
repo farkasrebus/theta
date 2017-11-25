@@ -1,4 +1,4 @@
-const int N = 4;
+const int N = 30;
   
 const int TTRT = 50 * N;
 const int SA = 20;
