@@ -1,13 +1,13 @@
 package hu.bme.mit.theta.tools.xta;
 
+import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Geq;
+import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Gt;
+import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Leq;
+import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Lt;
 import static hu.bme.mit.theta.core.stmt.Stmts.Assign;
 import static hu.bme.mit.theta.core.type.booltype.BoolExprs.Bool;
 import static hu.bme.mit.theta.core.type.inttype.IntExprs.Eq;
 import static hu.bme.mit.theta.core.type.inttype.IntExprs.Int;
-import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Gt;
-import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Lt;
-import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Leq;
-import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Geq;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,14 +45,12 @@ import hu.bme.mit.theta.core.clock.constr.UnitGtConstr;
 import hu.bme.mit.theta.core.clock.constr.UnitLeqConstr;
 import hu.bme.mit.theta.core.clock.constr.UnitLtConstr;
 import hu.bme.mit.theta.core.clock.op.ResetOp;
-import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.model.MutableValuation;
 import hu.bme.mit.theta.core.model.Valuation;
 import hu.bme.mit.theta.core.stmt.AssignStmt;
 import hu.bme.mit.theta.core.stmt.Stmt;
 import hu.bme.mit.theta.core.type.Expr;
-import hu.bme.mit.theta.core.type.LitExpr;
 import hu.bme.mit.theta.core.type.Type;
 import hu.bme.mit.theta.core.type.abstracttype.EqExpr;
 import hu.bme.mit.theta.core.type.anytype.RefExpr;
@@ -64,20 +62,20 @@ import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.type.inttype.IntLitExpr;
 import hu.bme.mit.theta.core.type.inttype.IntType;
 import hu.bme.mit.theta.core.type.rattype.RatType;
-import hu.bme.mit.theta.formalism.xta.ChanType;
 import hu.bme.mit.theta.formalism.xta.Guard;
 import hu.bme.mit.theta.formalism.xta.Guard.ClockGuard;
 import hu.bme.mit.theta.formalism.xta.Guard.DataGuard;
 import hu.bme.mit.theta.formalism.xta.Label;
-import hu.bme.mit.theta.formalism.xta.Label.Kind;
+import hu.bme.mit.theta.formalism.xta.Sync;
+import hu.bme.mit.theta.formalism.xta.Sync.Kind;
 import hu.bme.mit.theta.formalism.xta.Update;
 import hu.bme.mit.theta.formalism.xta.XtaProcess;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Edge;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.LocKind;
-import hu.bme.mit.theta.tools.XtaExample;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import net.bytebuddy.implementation.bind.annotation.AllArguments.Assignment;
+import hu.bme.mit.theta.formalism.xta.utils.ChanType;
+import hu.bme.mit.theta.tools.XtaExample;
 
 public class XtaSystemUnfolder {
 	
@@ -305,8 +303,8 @@ public class XtaSystemUnfolder {
 						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
 						Loc trgloc;
 						if (target)trgloc=trueTrg; else trgloc=falseTrg;
-						result.createEdge(trueSrc, trgloc, guards, e.getLabel(), updates);
-						if (notGuard) result.createEdge(falseSrc, trgloc, guards, e.getLabel(), updates);
+						result.createEdge(trueSrc, trgloc, guards, e.getSync(), updates);
+						if (notGuard) result.createEdge(falseSrc, trgloc, guards, e.getSync(), updates);
 					} else {
 						//left reset -> target depends on y vs bound
 						Expr<BoolType> posGuard;
@@ -319,12 +317,12 @@ public class XtaSystemUnfolder {
 							negGuard=Lt(rightClock,-1*bound).toExpr();
 						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
 						guards.add(posGuard);
-						result.createEdge(trueSrc, trueTrg, guards, e.getLabel(), updates);
-						if (notGuard) result.createEdge(falseSrc, trueTrg, guards, e.getLabel(), updates);
+						result.createEdge(trueSrc, trueTrg, guards, e.getSync(), updates);
+						if (notGuard) result.createEdge(falseSrc, trueTrg, guards, e.getSync(), updates);
 						guards.remove(posGuard);
 						guards.add(negGuard);
-						result.createEdge(trueSrc, falseTrg, guards, e.getLabel(), updates);
-						if (notGuard) result.createEdge(falseSrc, falseTrg, guards, e.getLabel(), updates);
+						result.createEdge(trueSrc, falseTrg, guards, e.getSync(), updates);
+						if (notGuard) result.createEdge(falseSrc, falseTrg, guards, e.getSync(), updates);
 					}
 				} else {
 					if (resets.contains(rightClock)) {
@@ -339,16 +337,16 @@ public class XtaSystemUnfolder {
 							negGuard=Gt(leftClock,bound).toExpr();
 						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
 						guards.add(posGuard);
-						result.createEdge(trueSrc, trueTrg, guards, e.getLabel(), updates);
-						if (notGuard) result.createEdge(falseSrc, trueTrg, guards, e.getLabel(), updates);
+						result.createEdge(trueSrc, trueTrg, guards, e.getSync(), updates);
+						if (notGuard) result.createEdge(falseSrc, trueTrg, guards, e.getSync(), updates);
 						guards.remove(posGuard);
 						guards.add(negGuard);
-						result.createEdge(trueSrc, falseTrg, guards, e.getLabel(), updates);
-						if (notGuard) result.createEdge(falseSrc, falseTrg, guards, e.getLabel(), updates);
+						result.createEdge(trueSrc, falseTrg, guards, e.getSync(), updates);
+						if (notGuard) result.createEdge(falseSrc, falseTrg, guards, e.getSync(), updates);
 					} else {
 						//neither reset -> same property holds
-						result.createEdge(trueSrc, trueTrg, guards, e.getLabel(), updates);
-						if (notGuard) result.createEdge(falseSrc, falseTrg, guards, e.getLabel(), updates);
+						result.createEdge(trueSrc, trueTrg, guards, e.getSync(), updates);
+						if (notGuard) result.createEdge(falseSrc, falseTrg, guards, e.getSync(), updates);
 					}
 				}
 				
@@ -358,7 +356,7 @@ public class XtaSystemUnfolder {
 	}
 
 	
-	public static UnfoldedXtaSystem getFlatSystem(XtaSystem sys, String name) {
+	/*public static UnfoldedXtaSystem getFlatSystem(XtaSystem sys, String name) {
 		BiMap<Loc,Map<XtaProcess, Loc>> locMap=HashBiMap.create();
 		XtaProcess result=XtaProcess.create(name);
 		
@@ -402,10 +400,10 @@ public class XtaSystemUnfolder {
 			Map<VarDecl<ArrayType<?,ChanType>>,Set<Edge>> arraySyncGroups=new HashMap<>();
 			for (Loc src : committedLocs) {
 				for (Edge tran: src.getOutEdges()) {
-					Optional<Label> label=tran.getLabel();
-					if (label.isPresent()) {
-						Label sync=label.get();
-						Expr<ChanType> syncExpr=sync.getExpr();
+					Optional<Sync> sync=tran.getSync();
+					if (sync.isPresent()) {
+						Label syncLabel=sync.get().getLabel();
+						Expr<ChanType> syncExpr=sync;
 						if (syncExpr instanceof RefExpr) {
 							RefExpr<ChanType> chan= (RefExpr<ChanType>) syncExpr;
 							VarDecl<ChanType> v=(VarDecl<ChanType>) chan.getDecl();
@@ -558,7 +556,7 @@ public class XtaSystemUnfolder {
 		UnfoldedXtaSystem ret=new UnfoldedXtaSystem(result, locMap,null);
 		return ret;
 	}
-	
+	*/
 	private static Loc createFlatLoc(XtaProcess proc,Map<XtaProcess, Loc> location) {
 
 		//It has to be created
@@ -584,16 +582,16 @@ public class XtaSystemUnfolder {
 			for (XtaProcess proc:sys.getProcesses()) {
 				if (proc.getName().contains("Bus")) bus=proc;
 			}
-			XtaProcess unfoldedBus=unfoldLocalData(bus);
+			//XtaProcess unfoldedBus=unfoldLocalData(bus);//TODO: újraír
 			List<XtaProcess> procs=new ArrayList<>(sys.getProcesses());
 			procs.remove(bus);
-			procs.add(unfoldedBus);
+			//procs.add(unfoldedBus);//TODO újraír
 			return XtaSystem.of(procs);
 		}
 		return null;
 	}
 
-	private static XtaProcess unfoldLocalData(XtaProcess proc) {
+	/*private static XtaProcess unfoldLocalData(XtaProcess proc) {
 		MutableValuation initVal=new MutableValuation();
 		
 		for (VarDecl<?> v:proc.getDataVars()) {
@@ -661,7 +659,7 @@ public class XtaSystemUnfolder {
 								}
 							}
 							//if (eqval) {*/
-							if (ul.getValuation().equals(nextVal)) {
+							/*if (ul.getValuation().equals(nextVal)) {
 								nextAutLoc=locMap.get(ul);
 								break;
 							}
@@ -713,7 +711,7 @@ public class XtaSystemUnfolder {
 								throw new UnsupportedOperationException("What kind of index is this?");
 							}*/
 							
-							ArrayReadExpr<IntType,ChanType> expr=ArrayExprs.Read(array, (IntLitExpr) indx.eval(loc.getValuation()));
+							/*ArrayReadExpr<IntType,ChanType> expr=ArrayExprs.Read(array, (IntLitExpr) indx.eval(loc.getValuation()));
 							if (sync.getKind().equals(Kind.EMIT)) {
 								newsync=Optional.of(Label.emit(expr));
 							} else {
@@ -733,29 +731,18 @@ public class XtaSystemUnfolder {
 		return result;
 	}
 
+	*/
 	/*public static XtaSystem unfoldDataChannel(XtaSystem sys, XtaExample input) {
 		
 		return null;
 	}*/
 	
 	public static UnfoldedXtaSystem getPureFlatSystem(XtaSystem system, XtaExample input) {
-		UnfoldedXtaSystem usys=getFlatSystem(system, input.toString());
+		UnfoldedXtaSystem usys=null;
+		//UnfoldedXtaSystem usys=getFlatSystem(system, input.toString());//TODO: újraír
 		//System.out.println("Locs before data unfold: "+usys.result.getLocs().size());
 		
 		UnfoldedXtaSystem result= unfoldDataVariables(usys, input.toString());
-		Map<Loc, Map<XtaProcess,Loc>> locmap=result.locmap;
-		//System.out.println("Locs after data unfold: "+result.result.getLocs().size());
-		/*for (Loc l:locmap.keySet()) {
-			String name=l.getName();
-			String[] vsplit=name.split("V");
-			String loc=vsplit[0];
-			String vstring=vsplit[1];
-			char id=vstring.charAt(vstring.length()-2);//digit
-			String[] psplit=loc.split("P");
-			System.out.println(psplit[2].substring(3)+","+psplit[1].substring(3)+","+id);
-		}*/
-			
-		//System.out.println(result.locmap);
 		addErrorLoc(result,input);
 		return result;
 	}

@@ -6,20 +6,20 @@ import java.util.Collection;
 import java.util.Collections;
 
 import hu.bme.mit.theta.analysis.Action;
-import hu.bme.mit.theta.analysis.TransferFunc;
 import hu.bme.mit.theta.analysis.pred.PredPrec;
 import hu.bme.mit.theta.analysis.pred.PredState;
+import hu.bme.mit.theta.analysis.TransFunc;
 import hu.bme.mit.theta.core.type.booltype.BoolExprs;
 
-public class WeakestPreconditionTransferFunc<A extends Action> implements TransferFunc<PredState, A, PredPrec> {
-	private final TransferFunc<PredState, ? super A, PredPrec> transferFunc;
+public class WeakestPreconditionTransFunc<A extends Action> implements TransFunc<PredState, A, PredPrec> {
+	private final TransFunc<PredState, ? super A, PredPrec> TransFunc;
 	
-	private WeakestPreconditionTransferFunc(final TransferFunc<PredState, ? super A, PredPrec> transferFunc) {
-		this.transferFunc=checkNotNull(transferFunc);
+	private WeakestPreconditionTransFunc(final TransFunc<PredState, ? super A, PredPrec> TransFunc) {
+		this.TransFunc=checkNotNull(TransFunc);
 	}
 	
-	public static <A extends Action> WeakestPreconditionTransferFunc<A> create(final TransferFunc<PredState, ? super A, PredPrec> transferFunc) {
-		return new WeakestPreconditionTransferFunc<A>(transferFunc);
+	public static <A extends Action> WeakestPreconditionTransFunc<A> create(final TransFunc<PredState, ? super A, PredPrec> TransFunc) {
+		return new WeakestPreconditionTransFunc<A>(TransFunc);
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class WeakestPreconditionTransferFunc<A extends Action> implements Transf
 		checkNotNull(action);
 		checkNotNull(prec);
 		
-		final Collection<? extends PredState> succStates = transferFunc.getSuccStates(state, action, prec);
+		final Collection<? extends PredState> succStates = TransFunc.getSuccStates(state, action, prec);
 		if (succStates.isEmpty()) {
 			final PredState succState=PredState.of(BoolExprs.False());
 			return Collections.singleton(succState);

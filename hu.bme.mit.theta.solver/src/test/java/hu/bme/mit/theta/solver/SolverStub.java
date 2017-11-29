@@ -17,13 +17,8 @@ package hu.bme.mit.theta.solver;
 
 import java.util.Collection;
 
-<<<<<<< HEAD
-import hu.bme.mit.theta.core.model.Model;
-import hu.bme.mit.theta.core.type.Expr;
-=======
 import hu.bme.mit.theta.core.model.Valuation;
 import hu.bme.mit.theta.core.type.Expr;
->>>>>>> upstream/master
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 
 class SolverStub implements Solver {

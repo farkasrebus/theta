@@ -17,17 +17,16 @@ import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
 import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.common.table.TableWriter;
-import hu.bme.mit.theta.common.table.impl.SimpleTableWriter;
+import hu.bme.mit.theta.common.table.impl.BasicTableWriter;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.ActStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.BinItpStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.ItpStrategy.ItpOperator;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaChecker;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaChecker.AlgorithmStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.lazy.BackwardsStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaStatistics;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LuStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.SeqItpStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.ActStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.BinItpStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.ItpStrategy.ItpOperator;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaChecker;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaChecker.AlgorithmStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaStatistics;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LuStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.SeqItpStrategy;
 import hu.bme.mit.theta.formalism.xta.dsl.XtaDslManager;
 import hu.bme.mit.theta.tools.XtaExample;
 
@@ -97,7 +96,7 @@ public final class XtaMain {
 			public AlgorithmStrategy<?> create(final XtaSystem system) {
 				return ActStrategy.create(system);
 			}
-		},
+		}/*,
 		
 		BW {
 			@Override
@@ -111,7 +110,7 @@ public final class XtaMain {
 			public AlgorithmStrategy<?> create(final XtaSystem system) {
 				return BackwardsStrategy.create(system,true);
 			}
-		};
+		}*/;
 
 		public abstract LazyXtaChecker.AlgorithmStrategy<?> create(final XtaSystem system);
 	}
@@ -124,21 +123,21 @@ public final class XtaMain {
 		DFS {
 			@Override
 			public SearchStrategy create() {
-				return SearchStrategy.depthFirst();
+				return SearchStrategy.DFS;
 			}
 		},
 
 		BFS {
 			@Override
 			public SearchStrategy create() {
-				return SearchStrategy.breadthFirst();
+				return SearchStrategy.BFS;
 			}
 		},
 
 		RANDOM {
 			@Override
 			public SearchStrategy create() {
-				return SearchStrategy.random();
+				return SearchStrategy.RANDOM;
 			}
 		};
 
@@ -147,7 +146,7 @@ public final class XtaMain {
 
 	public XtaMain(final String[] args) {
 		this.args = args;
-		this.writer = new SimpleTableWriter(System.out, ",", "\"", "\"");
+		this.writer = new BasicTableWriter(System.out, ",", "\"", "\"");
 	}
 	
 	public static void main(final String[] args) {
@@ -201,7 +200,7 @@ public final class XtaMain {
 			XtaSystem xta = loadModel();
 			XtaExample ex=XtaExample.getExampleBySource(model);
 			long preProcTime=0;
-			Set<Algorithm> newAlgs=ImmutableSet.of(Algorithm.BW,Algorithm.BACT);
+			Set<Algorithm> newAlgs=ImmutableSet.of(/*Algorithm.BW,Algorithm.BACT*/);
 			Set<XtaExample> newEx=ImmutableSet.of(XtaExample.BACKEX,XtaExample.SPLIT);
 			
 			if  (!newAlgs.contains(algorithm) && newEx.contains(ex)) {

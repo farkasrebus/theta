@@ -5,26 +5,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import hu.bme.mit.theta.analysis.Action;
-import hu.bme.mit.theta.analysis.TransferFunc;
+import hu.bme.mit.theta.analysis.TransFunc;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
-import hu.bme.mit.theta.core.decl.VarDecl;
-import hu.bme.mit.theta.core.type.rattype.RatType;
 
-public class BackwardsZoneTransferFunc<A extends Action> implements TransferFunc<BackwardsZoneState, A, ZonePrec> {
+public class BackwardsZoneTransFunc<A extends Action> implements TransFunc<BackwardsZoneState, A, ZonePrec> {
 	
-	private final TransferFunc<ZoneState, ? super A, ZonePrec> transferFunc;
+	private final TransFunc<ZoneState, ? super A, ZonePrec> TransFunc;
 	
-	private BackwardsZoneTransferFunc(final TransferFunc<ZoneState, ? super A, ZonePrec> transferFunc) {
-		this.transferFunc=checkNotNull(transferFunc);
+	private BackwardsZoneTransFunc(final TransFunc<ZoneState, ? super A, ZonePrec> TransFunc) {
+		this.TransFunc=checkNotNull(TransFunc);
 	}
 	
-	public static <A extends Action> BackwardsZoneTransferFunc<A> create(final TransferFunc<ZoneState, ? super A, ZonePrec> transferFunc){
-		return new BackwardsZoneTransferFunc<>(transferFunc);
+	public static <A extends Action> BackwardsZoneTransFunc<A> create(final TransFunc<ZoneState, ? super A, ZonePrec> TransFunc){
+		return new BackwardsZoneTransFunc<>(TransFunc);
 	}
 	
 	@Override
@@ -35,7 +31,7 @@ public class BackwardsZoneTransferFunc<A extends Action> implements TransferFunc
 		
 		final ZoneState subState = state.getZone();
 		prec.reset(state.getActiveVars());
-		final Collection<? extends ZoneState> subSuccStates = transferFunc.getSuccStates(subState, action, prec);
+		final Collection<? extends ZoneState> subSuccStates = TransFunc.getSuccStates(subState, action, prec);
 		
 		if (subSuccStates.isEmpty()) {
 			final BackwardsZoneState succState = new BackwardsZoneState(ZoneState.bottom(),prec.getVars());

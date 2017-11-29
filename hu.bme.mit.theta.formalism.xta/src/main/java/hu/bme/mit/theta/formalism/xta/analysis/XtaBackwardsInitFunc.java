@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableList;
 import hu.bme.mit.theta.analysis.InitFunc;
 import hu.bme.mit.theta.analysis.Prec;
 import hu.bme.mit.theta.analysis.State;
-import hu.bme.mit.theta.core.model.BasicValuation;
 import hu.bme.mit.theta.formalism.xta.XtaProcess;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
@@ -35,9 +34,8 @@ public class XtaBackwardsInitFunc<S extends State, P extends Prec> implements In
 	public Collection<? extends XtaState<S>> getInitStates(final P prec) {
 		checkNotNull(prec);
 		final List<Loc> initLocs = creatInitLocs(system);
-		//final Valuation initVal = createInitVal(system);//TODO
 		final Collection<? extends S> initStates = initFunc.getInitStates(prec);
-		return XtaState.collectionOf(initLocs, BasicValuation.builder().build(), initStates);
+		return XtaState.collectionOf(initLocs, initStates);
 	}
 	
 	private static ImmutableList<Loc> creatInitLocs(final XtaSystem system) {

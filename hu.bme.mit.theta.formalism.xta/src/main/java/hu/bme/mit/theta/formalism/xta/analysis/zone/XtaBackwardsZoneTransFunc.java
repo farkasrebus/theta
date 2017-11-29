@@ -8,7 +8,7 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import hu.bme.mit.theta.analysis.TransferFunc;
+import hu.bme.mit.theta.analysis.TransFunc;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
 import hu.bme.mit.theta.core.decl.VarDecl;
@@ -19,17 +19,17 @@ import hu.bme.mit.theta.formalism.xta.XtaProcess.Edge;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 
-public class XtaBackwardsZoneTransferFunc implements TransferFunc<ZoneState, XtaAction, ZonePrec> {
+public class XtaBackwardsZoneTransFunc implements TransFunc<ZoneState, XtaAction, ZonePrec> {
 	
 	private final boolean act;
-	private final static XtaBackwardsZoneTransferFunc INSTANCE=new XtaBackwardsZoneTransferFunc(false);
-	private final static XtaBackwardsZoneTransferFunc ACTINSTANCE=new XtaBackwardsZoneTransferFunc(true);
+	private final static XtaBackwardsZoneTransFunc INSTANCE=new XtaBackwardsZoneTransFunc(false);
+	private final static XtaBackwardsZoneTransFunc ACTINSTANCE=new XtaBackwardsZoneTransFunc(true);
 	
-	private XtaBackwardsZoneTransferFunc(boolean enableAct) {
+	private XtaBackwardsZoneTransFunc(boolean enableAct) {
 		act=enableAct;
 	}
 	
-	static XtaBackwardsZoneTransferFunc getInstance(boolean enableAct)  {
+	static XtaBackwardsZoneTransFunc getInstance(boolean enableAct)  {
 		if (enableAct) return ACTINSTANCE;
 		return INSTANCE;
 	}
@@ -38,12 +38,12 @@ public class XtaBackwardsZoneTransferFunc implements TransferFunc<ZoneState, Xta
 	public Collection<? extends ZoneState> getSuccStates(ZoneState state, XtaAction action, ZonePrec prec) {
 		if (act){
 			Set<VarDecl<RatType>> newActVars=new HashSet<>(prec.getVars());
-			if (action.isSimple()) {
-				Edge edge=action.asSimple().getEdge();
+			if (action.isBasic()) {
+				Edge edge=action.asBasic().getEdge();
 				handleEdges(ImmutableSet.of(edge),newActVars);
 			} else {
-				Edge edge1=action.asSynced().getEmittingEdge();
-				Edge edge2=action.asSynced().getReceivingEdge();
+				Edge edge1=action.asSynced().getEmitEdge();
+				Edge edge2=action.asSynced().getRecvEdge();
 				handleEdges(ImmutableSet.of(edge1,edge2),newActVars);
 			}
 			List<Loc> srcLocs=action.getSourceLocs();

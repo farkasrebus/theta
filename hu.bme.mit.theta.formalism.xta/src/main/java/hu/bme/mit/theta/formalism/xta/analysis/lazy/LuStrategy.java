@@ -147,4 +147,9 @@ public final class LuStrategy implements LazyXtaChecker.AlgorithmStrategy<LuZone
 		node.clearCoveredNodes();
 	}
 
+	@Override
+	public boolean isForward() {
+		return true;
+	}
+
 }
