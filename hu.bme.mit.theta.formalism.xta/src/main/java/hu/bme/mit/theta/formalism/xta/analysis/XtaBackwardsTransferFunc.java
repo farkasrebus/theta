@@ -65,7 +65,8 @@ public class XtaBackwardsTransferFunc<S extends State, P extends Prec> implement
 		}*/
 
 		final List<Loc> succLocs = action.getSourceLocs();
-		final Valuation succVal = createSuccValForSimpleAction(val, action);//TODO: itt lesznek problémák
+		//final Valuation succVal = createSuccValForSimpleAction(val, action);//TODO: itt lesznek problémák
+		final Valuation succVal = val;
 		
 		final Collection<? extends S> succStates = transferFunc.getSuccStates(state, action, prec);
 
@@ -90,24 +91,24 @@ public class XtaBackwardsTransferFunc<S extends State, P extends Prec> implement
 		}*/
 
 		final List<Loc> succLocs = action.getSourceLocs();
-		final Valuation succVal = createSuccValForSyncedAction(val, action);//TODO: itt lesznek problémák
+		//final Valuation succVal = createSuccValForSyncedAction(val, action);//TODO: itt lesznek problémák
 		final Collection<? extends S> succStates = transferFunc.getSuccStates(state, action, prec);
 
-		return XtaState.collectionOf(succLocs, succVal, succStates);
+		return XtaState.collectionOf(succLocs, val, succStates);
 	}
 	
-	private static Valuation createSuccValForSimpleAction(final Valuation val, final SimpleXtaAction action) {
+	/*private static Valuation createSuccValForSimpleAction(final Valuation val, final SimpleXtaAction action) {
 		final MutableValuation builder = MutableValuation.copyOf(val);
 		//applyDataUpdates(action.getEdge(), builder);//TODO: itt lesznek problémák
 		return BasicValuation.copyOf(builder);
-	}
+	}0
 	
 	private Valuation createSuccValForSyncedAction(final Valuation val, final SyncedXtaAction action) {
 		final MutableValuation builder = MutableValuation.copyOf(val);
 		//applyDataUpdates(action.getEmittingEdge(), builder);//TODO: itt lesznek problémák
 		//applyDataUpdates(action.getReceivingEdge(), builder);//TODO: itt lesznek problémák
 		return BasicValuation.copyOf(builder);
-	}
+	}*/
 	
 	/*private static boolean checkDataGuards(final Edge edge, final Valuation val) {
 		for (final Guard guard : edge.getGuards()) {

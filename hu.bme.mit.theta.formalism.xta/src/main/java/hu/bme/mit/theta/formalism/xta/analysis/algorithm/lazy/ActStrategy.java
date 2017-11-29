@@ -28,6 +28,7 @@ import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.algorithm.ArgEdge;
 import hu.bme.mit.theta.analysis.algorithm.ArgNode;
 import hu.bme.mit.theta.analysis.impl.PrecMappingAnalysis;
+import hu.bme.mit.theta.analysis.prod.Prod2Analysis;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.act.ActZoneAnalysis;
@@ -43,7 +44,7 @@ import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaZoneAnalysis;
 
 public final class ActStrategy implements LazyXtaChecker.AlgorithmStrategy<ActZoneState> {
 
-	private final Analysis<ActZoneState, XtaAction, UnitPrec> analysis;
+	private final Analysis<ActZoneState,XtaAction,UnitPrec> analysis;
 
 	private ActStrategy(final XtaSystem system) {
 		checkNotNull(system);
