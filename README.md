@@ -1,21 +1,14 @@
 # Theta
 
-<<<<<<< HEAD
-[![Build Status](https://travis-ci.com/FTSRG/theta.svg?token=dduaCwDzExdmU27AvBiK&branch=master)](https://travis-ci.com/FTSRG/theta)
-=======
 [![Build Status](https://travis-ci.org/FTSRG/theta.svg?branch=master)](https://travis-ci.org/FTSRG/theta)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bc5270fd2ba2412bb5f4b81b42d4b9f8)](https://www.codacy.com/app/tothtamas28/theta?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=FTSRG/theta&amp;utm_campaign=Badge_Grade)
 [![Apache 2.0 License](https://img.shields.io/badge/license-Apache--2-brightgreen.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## About
->>>>>>> upstream/master
 
 _Theta_ is a generic, modular and configurable model checking framework developed at the [Fault Tolerant Systems Research Group](http://inf.mit.bme.hu/en) of [Budapest University of Technology and Economics](http://www.bme.hu/?language=en), aiming to support the design and evaluation of abstraction refinement-based algorithms for the reachability analysis of various formalisms.
 The main distinguishing characteristic of Theta is its architecture that allows the definition of input formalisms with higher level language front-ends, and the combination of various abstract domains, interpreters, and strategies for abstraction and refinement.
 
-<<<<<<< HEAD
-For more information, see the [list of publications](http://home.mit.bme.hu/~hajdua/theta/) and the [doc](doc) folder.
-=======
 ## Overview of the architecture
 
 Theta can be divided into the following four layers.
@@ -58,4 +51,3 @@ To cite Theta, please cite the following paper.
     pages      = {176--179},
 }
 ```
->>>>>>> upstream/master
