@@ -46,7 +46,7 @@ public final class StopCriterions {
 
 		@Override
 		public String toString() {
-			return Utils.toStringBuilder(StopCriterion.class.getSimpleName()).add(getClass().getSimpleName())
+			return Utils.lispStringBuilder(StopCriterion.class.getSimpleName()).add(getClass().getSimpleName())
 					.toString();
 		}
 	}
@@ -59,7 +59,7 @@ public final class StopCriterions {
 
 		@Override
 		public String toString() {
-			return Utils.toStringBuilder(StopCriterion.class.getSimpleName()).add(getClass().getSimpleName())
+			return Utils.lispStringBuilder(StopCriterion.class.getSimpleName()).add(getClass().getSimpleName())
 					.toString();
 		}
 	}
@@ -81,7 +81,7 @@ public final class StopCriterions {
 
 		@Override
 		public String toString() {
-			return Utils.toStringBuilder(StopCriterion.class.getSimpleName()).add(getClass().getSimpleName())
+			return Utils.lispStringBuilder(StopCriterion.class.getSimpleName()).add(getClass().getSimpleName())
 					.add("N = " + n).toString();
 		}
 	}

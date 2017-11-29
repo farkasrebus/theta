@@ -18,9 +18,9 @@ package hu.bme.mit.theta.analysis.expl;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import hu.bme.mit.theta.analysis.Analysis;
-import hu.bme.mit.theta.analysis.Domain;
 import hu.bme.mit.theta.analysis.InitFunc;
-import hu.bme.mit.theta.analysis.TransferFunc;
+import hu.bme.mit.theta.analysis.PartialOrd;
+import hu.bme.mit.theta.analysis.TransFunc;
 import hu.bme.mit.theta.analysis.expr.StmtAction;
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
@@ -28,26 +28,30 @@ import hu.bme.mit.theta.solver.Solver;
 
 public final class ExplStmtAnalysis implements Analysis<ExplState, StmtAction, ExplPrec> {
 
-	private final Domain<ExplState> domain;
+	private final PartialOrd<ExplState> partialOrd;
 	private final InitFunc<ExplState, ExplPrec> initFunc;
-	private final TransferFunc<ExplState, StmtAction, ExplPrec> transferFunc;
+	private final TransFunc<ExplState, StmtAction, ExplPrec> transFunc;
 
-	private ExplStmtAnalysis(final Solver solver, final Expr<BoolType> initExpr, final int maxStatesFromSolver) {
+	private ExplStmtAnalysis(final Solver solver, final Expr<BoolType> initExpr, final int maxSuccToEnumerate) {
 		checkNotNull(solver);
 		checkNotNull(initExpr);
-		this.domain = ExplDomain.getInstance();
+		this.partialOrd = ExplOrd.getInstance();
 		this.initFunc = ExplInitFunc.create(solver, initExpr);
-		this.transferFunc = ExplStmtTransferFunc.create(solver, maxStatesFromSolver);
+		this.transFunc = ExplStmtTransFunc.create(solver, maxSuccToEnumerate);
 	}
 
 	public static ExplStmtAnalysis create(final Solver solver, final Expr<BoolType> initExpr,
-			final int maxStatesFromSolver) {
-		return new ExplStmtAnalysis(solver, initExpr, maxStatesFromSolver);
+			final int maxSuccToEnumerate) {
+		return new ExplStmtAnalysis(solver, initExpr, maxSuccToEnumerate);
+	}
+
+	public static ExplStmtAnalysis create(final Solver solver, final Expr<BoolType> initExpr) {
+		return create(solver, initExpr, 0);
 	}
 
 	@Override
-	public Domain<ExplState> getDomain() {
-		return domain;
+	public PartialOrd<ExplState> getPartialOrd() {
+		return partialOrd;
 	}
 
 	@Override
@@ -56,8 +60,8 @@ public final class ExplStmtAnalysis implements Analysis<ExplState, StmtAction, E
 	}
 
 	@Override
-	public TransferFunc<ExplState, StmtAction, ExplPrec> getTransferFunc() {
-		return transferFunc;
+	public TransFunc<ExplState, StmtAction, ExplPrec> getTransFunc() {
+		return transFunc;
 	}
 
 }

@@ -78,8 +78,8 @@ public final class XtaVisualizer {
 				.lineStyle(LOC_LINE_STYLE).peripheries(LOC_PERIPHERIES).build();
 		graph.addNode(id, nAttrs);
 		graph.setChild(ids.get(process), id);
-		final EdgeAttributes eAttrs = EdgeAttributes.builder().label("").color(LINE_COLOR)
-				.lineStyle(EDGE_LINE_STYLE).build();
+		final EdgeAttributes eAttrs = EdgeAttributes.builder().label("").color(LINE_COLOR).lineStyle(EDGE_LINE_STYLE)
+				.build();
 		graph.addEdge(id, ids.get(process.getInitLoc()), eAttrs);
 	}
 
@@ -109,7 +109,7 @@ public final class XtaVisualizer {
 
 	private static void addEdge(final Graph graph, final Map<Object, String> ids, final Edge outEdge) {
 		final StringJoiner edgeLabel = new StringJoiner("\n");
-		outEdge.getLabel().ifPresent(sync -> edgeLabel.add(sync.toString()));
+		outEdge.getSync().ifPresent(sync -> edgeLabel.add(sync.toString()));
 		outEdge.getGuards().stream().forEach(expr -> edgeLabel.add("\\[" + expr.toString() + "\\]"));
 		outEdge.getUpdates().stream().forEach(stmt -> edgeLabel.add(stmt.toString()));
 		final EdgeAttributes attrs = EdgeAttributes.builder().label(edgeLabel.toString()).color(LINE_COLOR)

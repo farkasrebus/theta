@@ -19,13 +19,13 @@ import hu.bme.mit.theta.analysis.algorithm.SafetyChecker;
 import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.ActStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.BinItpStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.ItpStrategy.ItpOperator;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaChecker;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaChecker.AlgorithmStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LuStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.SeqItpStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.ActStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.BinItpStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.ItpStrategy.ItpOperator;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaChecker;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaChecker.AlgorithmStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LuStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.SeqItpStrategy;
 
 public final class XtaCheckerBuilder {
 	public enum Algorithm {
@@ -75,36 +75,12 @@ public final class XtaCheckerBuilder {
 		public abstract LazyXtaChecker.AlgorithmStrategy<?> create(final XtaSystem system);
 	}
 
-	public enum Search {
-
-		DFS {
-			@Override
-			public SearchStrategy create() {
-				return SearchStrategy.depthFirst();
-			}
-		},
-
-		BFS {
-			@Override
-			public SearchStrategy create() {
-				return SearchStrategy.breadthFirst();
-			}
-		},
-
-		RANDOM {
-			@Override
-			public SearchStrategy create() {
-				return SearchStrategy.random();
-			}
-		};
-
-		public abstract SearchStrategy create();
+	private XtaCheckerBuilder() {
 	}
 
-	public static SafetyChecker<?, ?, UnitPrec> build(final Algorithm algorithm, final Search search,
+	public static SafetyChecker<?, ?, UnitPrec> build(final Algorithm algorithm, final SearchStrategy searchStrategy,
 			final XtaSystem xta) {
 		final LazyXtaChecker.AlgorithmStrategy<?> algorithmStrategy = algorithm.create(xta);
-		final SearchStrategy searchStrategy = search.create();
 
 		final SafetyChecker<?, ?, UnitPrec> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy,
 				l -> false);

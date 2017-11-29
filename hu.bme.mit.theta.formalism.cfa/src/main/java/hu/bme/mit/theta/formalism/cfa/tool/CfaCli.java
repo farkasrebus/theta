@@ -19,26 +19,30 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.google.common.base.Stopwatch;
 
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
 import hu.bme.mit.theta.analysis.algorithm.cegar.CegarStatistics;
 import hu.bme.mit.theta.analysis.utils.ArgVisualizer;
 import hu.bme.mit.theta.analysis.utils.TraceVisualizer;
 import hu.bme.mit.theta.common.logging.Logger;
+import hu.bme.mit.theta.common.logging.Logger.Level;
 import hu.bme.mit.theta.common.logging.impl.ConsoleLogger;
 import hu.bme.mit.theta.common.logging.impl.NullLogger;
 import hu.bme.mit.theta.common.table.TableWriter;
-import hu.bme.mit.theta.common.table.impl.SimpleTableWriter;
+import hu.bme.mit.theta.common.table.impl.BasicTableWriter;
 import hu.bme.mit.theta.common.visualization.Graph;
 import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.formalism.cfa.CFA;
 import hu.bme.mit.theta.formalism.cfa.dsl.CfaDslManager;
 import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.Domain;
 import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.Encoding;
+import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.InitPrec;
 import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.PrecGranularity;
 import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.PredSplit;
 import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.Refinement;
@@ -52,44 +56,50 @@ public class CfaCli {
 	private final String[] args;
 	private final TableWriter writer;
 
-	@Parameter(names = { "--domain" }, description = "Abstract domain", required = true)
+	@Parameter(names = "--domain", description = "Abstract domain", required = true)
 	Domain domain;
 
-	@Parameter(names = { "--refinement" }, description = "Refinement strategy", required = true)
+	@Parameter(names = "--refinement", description = "Refinement strategy", required = true)
 	Refinement refinement;
 
-	@Parameter(names = { "--search" }, description = "Search strategy")
+	@Parameter(names = "--search", description = "Search strategy")
 	Search search = Search.BFS;
 
-	@Parameter(names = { "--predsplit" }, description = "Predicate splitting")
+	@Parameter(names = "--predsplit", description = "Predicate splitting")
 	PredSplit predSplit = PredSplit.WHOLE;
 
-	@Parameter(names = { "--model" }, description = "Path of the input model", required = true)
+	@Parameter(names = "--model", description = "Path of the input model", required = true)
 	String model;
 
-	@Parameter(names = { "--precgranularity" }, description = "Precision granularity")
+	@Parameter(names = "--precgranularity", description = "Precision granularity")
 	PrecGranularity precGranularity = PrecGranularity.GLOBAL;
 
-	@Parameter(names = { "--encoding" }, description = "Encoding")
+	@Parameter(names = "--encoding", description = "Encoding")
 	Encoding encoding = Encoding.LBE;
 
-	@Parameter(names = { "--loglevel" }, description = "Detailedness of logging")
-	Integer logLevel = 1;
+	@Parameter(names = "--maxenum", description = "Maximal number of explicitly enumerated successors (0: unlimited)")
+	Integer maxEnum = 0;
 
-	@Parameter(names = { "--benchmark" }, description = "Benchmark mode (only print metrics)")
+	@Parameter(names = "--initprec", description = "Initial precision")
+	InitPrec initPrec = InitPrec.EMPTY;
+
+	@Parameter(names = "--loglevel", description = "Detailedness of logging")
+	Logger.Level logLevel = Level.SUBSTEP;
+
+	@Parameter(names = "--benchmark", description = "Benchmark mode (only print metrics)")
 	Boolean benchmarkMode = false;
 
-	@Parameter(names = { "--visualize" }, description = "Write proof or counterexample to file in dot format")
+	@Parameter(names = "--visualize", description = "Write proof or counterexample to file in dot format")
 	String dotfile = null;
 
-	@Parameter(names = { "--header" }, description = "Print only a header (for benchmarks)", help = true)
+	@Parameter(names = "--header", description = "Print only a header (for benchmarks)", help = true)
 	boolean headerOnly = false;
 
 	private Logger logger;
 
 	public CfaCli(final String[] args) {
 		this.args = args;
-		writer = new SimpleTableWriter(System.out, ",", "\"", "\"");
+		writer = new BasicTableWriter(System.out, ",", "\"", "\"");
 	}
 
 	public static void main(final String[] args) {
@@ -113,10 +123,12 @@ public class CfaCli {
 		}
 
 		try {
+			final Stopwatch sw = Stopwatch.createStarted();
 			final CFA cfa = loadModel();
 			final Config<?, ?, ?> configuration = buildConfiguration(cfa);
 			final SafetyResult<?, ?> status = configuration.check();
-			printResult(status, cfa);
+			sw.stop();
+			printResult(status, cfa, sw.elapsed(TimeUnit.MILLISECONDS));
 			if (dotfile != null) {
 				writeVisualStatus(status, dotfile);
 			}
@@ -129,8 +141,8 @@ public class CfaCli {
 	}
 
 	private void printHeader() {
-		final String[] header = new String[] { "Result", "TimeMs", "Iterations", "ArgSize", "ArgDepth",
-				"ArgMeanBranchFactor", "CexLen", "Vars", "Locs", "Edges" };
+		final String[] header = new String[] { "Result", "TimeMs", "AlgoTimeMs", "AbsTimeMs", "RefTimeMs", "Iterations",
+				"ArgSize", "ArgDepth", "ArgMeanBranchFactor", "CexLen", "Vars", "Locs", "Edges" };
 		for (final String str : header) {
 			writer.cell(str);
 		}
@@ -145,14 +157,17 @@ public class CfaCli {
 
 	private Config<?, ?, ?> buildConfiguration(final CFA cfa) {
 		return new CfaConfigBuilder(domain, refinement).precGranularity(precGranularity).search(search)
-				.predSplit(predSplit).encoding(encoding).logger(logger).build(cfa);
+				.predSplit(predSplit).encoding(encoding).maxEnum(maxEnum).initPrec(initPrec).logger(logger).build(cfa);
 	}
 
-	private void printResult(final SafetyResult<?, ?> status, final CFA cfa) {
+	private void printResult(final SafetyResult<?, ?> status, final CFA cfa, final long totalTimeMs) {
 		final CegarStatistics stats = (CegarStatistics) status.getStats().get();
 		if (benchmarkMode) {
 			writer.cell(status.isSafe());
-			writer.cell(stats.getElapsedMillis());
+			writer.cell(totalTimeMs);
+			writer.cell(stats.getAlgorithmTimeMs());
+			writer.cell(stats.getAbstractorTimeMs());
+			writer.cell(stats.getRefinerTimeMs());
 			writer.cell(stats.getIterations());
 			writer.cell(status.getArg().size());
 			writer.cell(status.getArg().getDepth());
@@ -173,8 +188,8 @@ public class CfaCli {
 		if (benchmarkMode) {
 			writer.cell("[EX] " + ex.getClass().getSimpleName() + message);
 		} else {
-			logger.writeln("Exception occured: " + ex.getClass().getSimpleName(), 0);
-			logger.writeln("Message: " + ex.getMessage(), 0, 1);
+			logger.write(Level.RESULT, "Exception of type %s occurred%n", ex.getClass().getSimpleName());
+			logger.write(Level.INFO, "Message:%n%s%n", ex.getMessage());
 		}
 	}
 

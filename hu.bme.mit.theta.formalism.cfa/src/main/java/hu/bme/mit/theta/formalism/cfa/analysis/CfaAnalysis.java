@@ -18,26 +18,26 @@ package hu.bme.mit.theta.formalism.cfa.analysis;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import hu.bme.mit.theta.analysis.Analysis;
-import hu.bme.mit.theta.analysis.Domain;
+import hu.bme.mit.theta.analysis.PartialOrd;
 import hu.bme.mit.theta.analysis.InitFunc;
 import hu.bme.mit.theta.analysis.Prec;
-import hu.bme.mit.theta.analysis.TransferFunc;
+import hu.bme.mit.theta.analysis.TransFunc;
 import hu.bme.mit.theta.analysis.expr.ExprState;
 import hu.bme.mit.theta.formalism.cfa.CFA.Loc;
 
 public final class CfaAnalysis<S extends ExprState, P extends Prec>
 		implements Analysis<CfaState<S>, CfaAction, CfaPrec<P>> {
 
-	private final Domain<CfaState<S>> domain;
+	private final PartialOrd<CfaState<S>> partialOrd;
 	private final InitFunc<CfaState<S>, CfaPrec<P>> initFunc;
-	private final TransferFunc<CfaState<S>, CfaAction, CfaPrec<P>> transferFunc;
+	private final TransFunc<CfaState<S>, CfaAction, CfaPrec<P>> transFunc;
 
 	private CfaAnalysis(final Loc initLoc, final Analysis<S, ? super CfaAction, ? super P> analysis) {
 		checkNotNull(initLoc);
 		checkNotNull(analysis);
-		domain = CfaDomain.create(analysis.getDomain());
+		partialOrd = CfaOrd.create(analysis.getPartialOrd());
 		initFunc = CfaInitFunc.create(initLoc, analysis.getInitFunc());
-		transferFunc = CfaTransferFunc.create(analysis.getTransferFunc());
+		transFunc = CfaTransFunc.create(analysis.getTransFunc());
 	}
 
 	public static <S extends ExprState, P extends Prec> CfaAnalysis<S, P> create(final Loc initLoc,
@@ -46,8 +46,8 @@ public final class CfaAnalysis<S extends ExprState, P extends Prec>
 	}
 
 	@Override
-	public Domain<CfaState<S>> getDomain() {
-		return domain;
+	public PartialOrd<CfaState<S>> getPartialOrd() {
+		return partialOrd;
 	}
 
 	@Override
@@ -56,8 +56,8 @@ public final class CfaAnalysis<S extends ExprState, P extends Prec>
 	}
 
 	@Override
-	public TransferFunc<CfaState<S>, CfaAction, CfaPrec<P>> getTransferFunc() {
-		return transferFunc;
+	public TransFunc<CfaState<S>, CfaAction, CfaPrec<P>> getTransFunc() {
+		return transFunc;
 	}
 
 }

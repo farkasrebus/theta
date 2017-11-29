@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import com.google.common.collect.ImmutableList;
 
+import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.stmt.Stmt;
 import hu.bme.mit.theta.core.type.Expr;
@@ -121,13 +122,12 @@ public final class XtaProcess {
 	}
 
 	public Edge createEdge(final Loc source, final Loc target, final Collection<Expr<BoolType>> guards,
-			final Optional<Label> sync, final List<Stmt> updates) {
+			final Optional<Sync> sync, final List<Stmt> updates) {
 		checkArgument(locs.contains(source));
 		checkArgument(locs.contains(target));
 		final Edge edge = new Edge(source, target, guards, sync, updates);
 		source.outEdges.add(edge);
 		target.inEdges.add(edge);
-		edges.add(edge);
 		return edge;
 	}
 
@@ -162,8 +162,7 @@ public final class XtaProcess {
 			}
 			builder.add(guard);
 		}
-		//return builder.build();//TODO
-		return new ArrayList<>(builder.build());
+		return builder.build();
 	}
 
 	private List<Update> createUpdates(final List<Stmt> stmts) {
@@ -243,19 +242,10 @@ public final class XtaProcess {
 		public Collection<Guard> getInvars() {
 			return invars;
 		}
-		
-		@Override//TODO: Critical
+
+		@Override
 		public String toString() {
-			//if (name.contains("errorloc")) return name;
-			//String[] splitname=name.split("_");
-			//0-1-2 Arbiter2 V.
-			//3-4-5 PC1 II.
-			//6-7 Counter I.
-			//8-9-10 A1  III.
-			//11-12-13 PC2 IV.
-			//14 Valuation ...
-			//String result=splitname[7]+","+splitname[5]+","+splitname[10]+","+splitname[13]+","+splitname[2]+","+splitname[14].charAt(splitname[14].length()-2);
-			return name;
+			return Utils.lispStringBuilder("loc").add(name).toString();
 		}
 	}
 
@@ -265,15 +255,15 @@ public final class XtaProcess {
 		private final Loc source;
 		private final Loc target;
 		private final Collection<Guard> guards;
-		private final Optional<Label> label;
+		private final Optional<Sync> sync;
 		private final List<Update> updates;
 
 		private Edge(final Loc source, final Loc target, final Collection<Expr<BoolType>> guards,
-				final Optional<Label> label, final List<Stmt> updates) {
+				final Optional<Sync> sync, final List<Stmt> updates) {
 			this.source = checkNotNull(source);
 			this.target = checkNotNull(target);
 			this.guards = createGuards(guards);
-			this.label = checkNotNull(label);
+			this.sync = checkNotNull(sync);
 			this.updates = createUpdates(updates);
 		}
 
@@ -289,8 +279,8 @@ public final class XtaProcess {
 			return guards;
 		}
 
-		public Optional<Label> getLabel() {
-			return label;
+		public Optional<Sync> getSync() {
+			return sync;
 		}
 
 		public List<Update> getUpdates() {

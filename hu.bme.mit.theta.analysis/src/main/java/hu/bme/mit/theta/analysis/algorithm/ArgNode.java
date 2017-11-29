@@ -87,7 +87,7 @@ public final class ArgNode<S extends State, A extends Action> {
 	}
 
 	public boolean mayCover(final ArgNode<S, A> node) {
-		if (arg.domain.isLeq(node.getState(), this.getState())) {
+		if (arg.partialOrd.isLeq(node.getState(), this.getState())) {
 			return ancestors().noneMatch(n -> n.equals(node) || n.isSubsumed());
 		} else {
 			return false;
@@ -168,7 +168,7 @@ public final class ArgNode<S extends State, A extends Action> {
 	 * Checks if the node is not a bottom state.
 	 */
 	public boolean isFeasible() {
-		return !arg.domain.isBottom(state);
+		return !state.isBottom();
 	}
 
 	/**
@@ -282,8 +282,7 @@ public final class ArgNode<S extends State, A extends Action> {
 
 	@Override
 	public String toString() {
-
-		return Utils.toStringBuilder("ArgNode").add(id).add(state).toString();
+		return Utils.lispStringBuilder("ArgNode").add(id).add(state).toString();
 	}
 
 }

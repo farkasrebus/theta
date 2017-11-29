@@ -15,13 +15,16 @@
  */
 package hu.bme.mit.theta.core.type.booltype;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static hu.bme.mit.theta.common.Utils.singleElementOf;
+import static hu.bme.mit.theta.core.type.booltype.BoolExprs.False;
+import static hu.bme.mit.theta.core.type.booltype.BoolExprs.True;
+
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 
-import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.core.type.Expr;
 
 public final class SmartBoolExprs {
@@ -30,10 +33,10 @@ public final class SmartBoolExprs {
 	}
 
 	public static Expr<BoolType> Not(final Expr<BoolType> op) {
-		if (op.equals(BoolExprs.True())) {
-			return BoolExprs.False();
-		} else if (op.equals(BoolExprs.False())) {
-			return BoolExprs.True();
+		if (op.equals(True())) {
+			return False();
+		} else if (op.equals(False())) {
+			return True();
 		} else if (op instanceof NotExpr) {
 			return ((NotExpr) op).getOp();
 		} else {
@@ -41,20 +44,33 @@ public final class SmartBoolExprs {
 		}
 	}
 
+	public static Expr<BoolType> Imply(final Expr<BoolType> leftOp, final Expr<BoolType> rightOp) {
+		if (leftOp.equals(False())) {
+			return True();
+		} else if (leftOp.equals(True())) {
+			return rightOp;
+		} else if (rightOp.equals(False())) {
+			return Not(leftOp);
+		} else if (rightOp.equals(True())) {
+			return True();
+		} else {
+			return BoolExprs.Imply(leftOp, rightOp);
+		}
+	}
+
 	public static Expr<BoolType> And(final Collection<? extends Expr<BoolType>> ops) {
 		if (ops.isEmpty()) {
-			return BoolExprs.True();
-		} else if (ops.contains(BoolExprs.False())) {
-			return BoolExprs.False();
+			return True();
+		} else if (ops.contains(False())) {
+			return False();
 		}
 
-		final List<Expr<BoolType>> filteredOps = ops.stream().filter(o -> !o.equals(BoolExprs.True()))
-				.collect(Collectors.toList());
+		final List<Expr<BoolType>> filteredOps = ops.stream().filter(o -> !o.equals(True())).collect(toImmutableList());
 
 		if (filteredOps.isEmpty()) {
-			return BoolExprs.True();
+			return True();
 		} else if (filteredOps.size() == 1) {
-			return Utils.anyElementOf(filteredOps);
+			return singleElementOf(filteredOps);
 		} else {
 			return BoolExprs.And(filteredOps);
 		}
@@ -62,18 +78,18 @@ public final class SmartBoolExprs {
 
 	public static Expr<BoolType> Or(final Collection<? extends Expr<BoolType>> ops) {
 		if (ops.isEmpty()) {
-			return BoolExprs.True();
-		} else if (ops.contains(BoolExprs.True())) {
-			return BoolExprs.True();
+			return True();
+		} else if (ops.contains(True())) {
+			return True();
 		}
 
-		final List<Expr<BoolType>> filteredOps = ops.stream().filter(o -> !o.equals(BoolExprs.False()))
-				.collect(Collectors.toList());
+		final List<Expr<BoolType>> filteredOps = ops.stream().filter(o -> !o.equals(False()))
+				.collect(toImmutableList());
 
 		if (filteredOps.isEmpty()) {
-			return BoolExprs.False();
+			return False();
 		} else if (filteredOps.size() == 1) {
-			return Utils.anyElementOf(filteredOps);
+			return singleElementOf(filteredOps);
 		} else {
 			return BoolExprs.Or(filteredOps);
 		}
@@ -84,40 +100,40 @@ public final class SmartBoolExprs {
 	 */
 
 	public static Expr<BoolType> And(final Expr<BoolType> op1, final Expr<BoolType> op2) {
-		return And(ImmutableSet.of(op1, op2));
+		return And(ImmutableList.of(op1, op2));
 	}
 
 	public static Expr<BoolType> And(final Expr<BoolType> op1, final Expr<BoolType> op2, final Expr<BoolType> op3) {
-		return And(ImmutableSet.of(op1, op2, op3));
+		return And(ImmutableList.of(op1, op2, op3));
 	}
 
 	public static Expr<BoolType> And(final Expr<BoolType> op1, final Expr<BoolType> op2, final Expr<BoolType> op3,
 			final Expr<BoolType> op4) {
-		return And(ImmutableSet.of(op1, op2, op3, op4));
+		return And(ImmutableList.of(op1, op2, op3, op4));
 	}
 
 	public static Expr<BoolType> And(final Expr<BoolType> op1, final Expr<BoolType> op2, final Expr<BoolType> op3,
 			final Expr<BoolType> op4, final Expr<BoolType> op5) {
-		return And(ImmutableSet.of(op1, op2, op3, op4, op5));
+		return And(ImmutableList.of(op1, op2, op3, op4, op5));
 	}
 
 	////
 
 	public static Expr<BoolType> Or(final Expr<BoolType> op1, final Expr<BoolType> op2) {
-		return Or(ImmutableSet.of(op1, op2));
+		return Or(ImmutableList.of(op1, op2));
 	}
 
 	public static Expr<BoolType> Or(final Expr<BoolType> op1, final Expr<BoolType> op2, final Expr<BoolType> op3) {
-		return Or(ImmutableSet.of(op1, op2, op3));
+		return Or(ImmutableList.of(op1, op2, op3));
 	}
 
 	public static Expr<BoolType> Or(final Expr<BoolType> op1, final Expr<BoolType> op2, final Expr<BoolType> op3,
 			final Expr<BoolType> op4) {
-		return Or(ImmutableSet.of(op1, op2, op3, op4));
+		return Or(ImmutableList.of(op1, op2, op3, op4));
 	}
 
 	public static Expr<BoolType> Or(final Expr<BoolType> op1, final Expr<BoolType> op2, final Expr<BoolType> op3,
 			final Expr<BoolType> op4, final Expr<BoolType> op5) {
-		return Or(ImmutableSet.of(op1, op2, op3, op4, op5));
+		return Or(ImmutableList.of(op1, op2, op3, op4, op5));
 	}
 }

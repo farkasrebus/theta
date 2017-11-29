@@ -27,7 +27,7 @@ import com.google.common.collect.ImmutableSet;
 import hu.bme.mit.theta.analysis.Prec;
 import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.core.decl.VarDecl;
-import hu.bme.mit.theta.core.model.BasicValuation;
+import hu.bme.mit.theta.core.model.ImmutableValuation;
 import hu.bme.mit.theta.core.model.Valuation;
 import hu.bme.mit.theta.core.type.LitExpr;
 
@@ -44,11 +44,11 @@ public final class ExplPrec implements Prec {
 		this.vars = ImmutableSet.copyOf(vars);
 	}
 
-	public static ExplPrec create() {
-		return create(Collections.emptySet());
+	public static ExplPrec empty() {
+		return of(Collections.emptySet());
 	}
 
-	public static ExplPrec create(final Iterable<? extends VarDecl<?>> vars) {
+	public static ExplPrec of(final Iterable<? extends VarDecl<?>> vars) {
 		checkNotNull(vars);
 		if (vars.iterator().hasNext()) {
 			return new ExplPrec(vars);
@@ -71,25 +71,25 @@ public final class ExplPrec implements Prec {
 		} else if (newVars.size() == other.vars.size()) {
 			return other;
 		} else {
-			return create(newVars);
+			return of(newVars);
 		}
 	}
 
 	public ExplState createState(final Valuation valuation) {
 		checkNotNull(valuation);
-		final BasicValuation.Builder builder = BasicValuation.builder();
+		final ImmutableValuation.Builder builder = ImmutableValuation.builder();
 		for (final VarDecl<?> var : vars) {
 			final Optional<? extends LitExpr<?>> eval = valuation.eval(var);
 			if (eval.isPresent()) {
 				builder.put(var, eval.get());
 			}
 		}
-		return ExplState.create(builder.build());
+		return ExplState.of(builder.build());
 	}
 
 	@Override
 	public String toString() {
-		return Utils.toStringBuilder(getClass().getSimpleName()).addAll(vars, VarDecl::getName).toString();
+		return Utils.lispStringBuilder(getClass().getSimpleName()).addAll(vars, VarDecl::getName).toString();
 	}
 
 	@Override

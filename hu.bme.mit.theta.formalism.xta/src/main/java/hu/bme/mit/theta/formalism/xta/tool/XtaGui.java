@@ -22,6 +22,7 @@ import com.google.common.io.Files;
 
 import hu.bme.mit.theta.analysis.algorithm.SafetyChecker;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
+import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.utils.ArgVisualizer;
 import hu.bme.mit.theta.analysis.utils.TraceVisualizer;
@@ -31,10 +32,9 @@ import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter.Format;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.XtaVisualizer;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaStatistics;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaStatistics;
 import hu.bme.mit.theta.formalism.xta.dsl.XtaDslManager;
 import hu.bme.mit.theta.formalism.xta.tool.XtaCheckerBuilder.Algorithm;
-import hu.bme.mit.theta.formalism.xta.tool.XtaCheckerBuilder.Search;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
@@ -49,11 +49,7 @@ import javafx.stage.Stage;
 
 public class XtaGui extends BaseGui {
 	private ChoiceBox<Algorithm> cbAlgorithm;
-	private ChoiceBox<Search> cbSearch;
-	private Button btnRunAlgo;
-	private Button btnLoadModel;
-	private Button btnVisualizeModel;
-	private Button btnVisualizeResult;
+	private ChoiceBox<SearchStrategy> cbSearchStrategy;
 	private CheckBox cbStructureOnly;
 
 	private TextArea taModel;
@@ -90,21 +86,21 @@ public class XtaGui extends BaseGui {
 		tabVisualResult = createTab("Result Visualized", wvVisualResult);
 
 		createTitle("Input model");
-		btnLoadModel = createButton("Load XTA");
+		final Button btnLoadModel = createButton("Load XTA");
 		btnLoadModel.setOnMouseClicked(e -> btnLoadClicked(primaryStage));
-		btnVisualizeModel = createButton("Visualize XTA");
+		final Button btnVisualizeModel = createButton("Visualize XTA");
 		btnVisualizeModel.setOnMouseClicked(e -> btnVisualizeModelClicked());
 
 		createTitle("Algorithm");
 		cbAlgorithm = createChoice("Algorithm", Algorithm.values());
-		cbSearch = createChoice("Search", Search.values());
+		cbSearchStrategy = createChoice("Search", SearchStrategy.values());
 
-		btnRunAlgo = createButton("Run algorithm");
+		final Button btnRunAlgo = createButton("Run algorithm");
 		btnRunAlgo.setOnMouseClicked(e -> btnRunAlgoClicked());
 
 		createTitle("Result");
 		cbStructureOnly = createCheckBox("Structure only");
-		btnVisualizeResult = createButton("Visualize result");
+		final Button btnVisualizeResult = createButton("Visualize result");
 		btnVisualizeResult.setOnMouseClicked(e -> btnVisualizeResultClicked());
 	}
 
@@ -150,7 +146,7 @@ public class XtaGui extends BaseGui {
 			try {
 				final XtaSystem xta = XtaDslManager.createSystem(taModel.getText());
 				final SafetyChecker<?, ?, UnitPrec> checker = XtaCheckerBuilder.build(cbAlgorithm.getValue(),
-						cbSearch.getValue(), xta);
+						cbSearchStrategy.getValue(), xta);
 				safetyResult = checker.check(UnitPrec.getInstance());
 				final LazyXtaStatistics stats = (LazyXtaStatistics) safetyResult.getStats().get();
 				Platform.runLater(() -> taOutput.setText(stats.toString()));

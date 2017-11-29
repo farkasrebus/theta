@@ -29,9 +29,9 @@ import hu.bme.mit.theta.analysis.algorithm.cegar.Abstractor;
 import hu.bme.mit.theta.analysis.algorithm.cegar.BasicAbstractor;
 import hu.bme.mit.theta.analysis.algorithm.cegar.CegarChecker;
 import hu.bme.mit.theta.analysis.algorithm.cegar.Refiner;
-import hu.bme.mit.theta.analysis.expl.ExplAnalysis;
 import hu.bme.mit.theta.analysis.expl.ExplPrec;
 import hu.bme.mit.theta.analysis.expl.ExplState;
+import hu.bme.mit.theta.analysis.expl.ExplStmtAnalysis;
 import hu.bme.mit.theta.analysis.expl.ItpRefToExplPrec;
 import hu.bme.mit.theta.analysis.expl.VarsRefToExplPrec;
 import hu.bme.mit.theta.analysis.expr.ExprState;
@@ -47,10 +47,10 @@ import hu.bme.mit.theta.analysis.expr.refinement.RefutationToPrec;
 import hu.bme.mit.theta.analysis.expr.refinement.SingleExprTraceRefiner;
 import hu.bme.mit.theta.analysis.pred.ExprSplitters;
 import hu.bme.mit.theta.analysis.pred.ExprSplitters.ExprSplitter;
-import hu.bme.mit.theta.analysis.pred.ItpRefToSimplePredPrec;
+import hu.bme.mit.theta.analysis.pred.ItpRefToPredPrec;
 import hu.bme.mit.theta.analysis.pred.PredAnalysis;
+import hu.bme.mit.theta.analysis.pred.PredPrec;
 import hu.bme.mit.theta.analysis.pred.PredState;
-import hu.bme.mit.theta.analysis.pred.SimplePredPrec;
 import hu.bme.mit.theta.analysis.waitlist.PriorityWaitlist;
 import hu.bme.mit.theta.common.logging.Logger;
 import hu.bme.mit.theta.common.logging.impl.NullLogger;
@@ -60,6 +60,9 @@ import hu.bme.mit.theta.formalism.cfa.analysis.CfaAnalysis;
 import hu.bme.mit.theta.formalism.cfa.analysis.CfaPrec;
 import hu.bme.mit.theta.formalism.cfa.analysis.CfaState;
 import hu.bme.mit.theta.formalism.cfa.analysis.DistToErrComparator;
+import hu.bme.mit.theta.formalism.cfa.analysis.initprec.CfaAllVarsInitPrec;
+import hu.bme.mit.theta.formalism.cfa.analysis.initprec.CfaEmptyInitPrec;
+import hu.bme.mit.theta.formalism.cfa.analysis.initprec.CfaInitPrec;
 import hu.bme.mit.theta.formalism.cfa.analysis.lts.CfaCachedLts;
 import hu.bme.mit.theta.formalism.cfa.analysis.lts.CfaLbeLts;
 import hu.bme.mit.theta.formalism.cfa.analysis.lts.CfaLts;
@@ -172,6 +175,16 @@ public class CfaConfigBuilder {
 		public abstract CfaLts getLts();
 	};
 
+	public enum InitPrec {
+		EMPTY(new CfaEmptyInitPrec()), ALLVARS(new CfaAllVarsInitPrec());
+
+		public final CfaInitPrec builder;
+
+		private InitPrec(final CfaInitPrec builder) {
+			this.builder = builder;
+		}
+	}
+
 	private Logger logger = NullLogger.getInstance();
 	private SolverFactory solverFactory = Z3SolverFactory.getInstace();
 	private final Domain domain;
@@ -180,6 +193,8 @@ public class CfaConfigBuilder {
 	private PredSplit predSplit = PredSplit.WHOLE;
 	private PrecGranularity precGranularity = PrecGranularity.GLOBAL;
 	private Encoding encoding = Encoding.LBE;
+	private int maxEnum = 0;
+	private InitPrec initPrec = InitPrec.EMPTY;
 
 	public CfaConfigBuilder(final Domain domain, final Refinement refinement) {
 		this.domain = domain;
@@ -216,18 +231,28 @@ public class CfaConfigBuilder {
 		return this;
 	}
 
+	public CfaConfigBuilder maxEnum(final int maxEnum) {
+		this.maxEnum = maxEnum;
+		return this;
+	}
+
+	public CfaConfigBuilder initPrec(final InitPrec initPrec) {
+		this.initPrec = initPrec;
+		return this;
+	}
+
 	public Config<? extends State, ? extends Action, ? extends Prec> build(final CFA cfa) {
 		final ItpSolver solver = solverFactory.createItpSolver();
 		final CfaLts lts = encoding.getLts();
 
 		if (domain == Domain.EXPL) {
 			final Analysis<CfaState<ExplState>, CfaAction, CfaPrec<ExplPrec>> analysis = CfaAnalysis
-					.create(cfa.getInitLoc(), ExplAnalysis.create(solver, True()));
+					.create(cfa.getInitLoc(), ExplStmtAnalysis.create(solver, True(), maxEnum));
 			final ArgBuilder<CfaState<ExplState>, CfaAction, CfaPrec<ExplPrec>> argBuilder = ArgBuilder.create(lts,
-					analysis, s -> s.getLoc().equals(cfa.getErrorLoc()));
+					analysis, s -> s.getLoc().equals(cfa.getErrorLoc()), true);
 			final Abstractor<CfaState<ExplState>, CfaAction, CfaPrec<ExplPrec>> abstractor = BasicAbstractor
 					.builder(argBuilder).projection(CfaState::getLoc)
-					.waitlistSupplier(PriorityWaitlist.supplier(search.getComp(cfa))).logger(logger).build();
+					.waitlist(PriorityWaitlist.create(search.getComp(cfa))).logger(logger).build();
 
 			Refiner<CfaState<ExplState>, CfaAction, CfaPrec<ExplPrec>> refiner = null;
 
@@ -256,18 +281,18 @@ public class CfaConfigBuilder {
 			final SafetyChecker<CfaState<ExplState>, CfaAction, CfaPrec<ExplPrec>> checker = CegarChecker
 					.create(abstractor, refiner, logger);
 
-			final CfaPrec<ExplPrec> prec = precGranularity.createPrec(ExplPrec.create());
+			final CfaPrec<ExplPrec> prec = precGranularity.createPrec(initPrec.builder.createExpl(cfa));
 
 			return Config.create(checker, prec);
 
 		} else if (domain == Domain.PRED) {
-			final Analysis<CfaState<PredState>, CfaAction, CfaPrec<SimplePredPrec>> analysis = CfaAnalysis
+			final Analysis<CfaState<PredState>, CfaAction, CfaPrec<PredPrec>> analysis = CfaAnalysis
 					.create(cfa.getInitLoc(), PredAnalysis.create(solver, True()));
-			final ArgBuilder<CfaState<PredState>, CfaAction, CfaPrec<SimplePredPrec>> argBuilder = ArgBuilder
-					.create(lts, analysis, s -> s.getLoc().equals(cfa.getErrorLoc()));
-			final Abstractor<CfaState<PredState>, CfaAction, CfaPrec<SimplePredPrec>> abstractor = BasicAbstractor
+			final ArgBuilder<CfaState<PredState>, CfaAction, CfaPrec<PredPrec>> argBuilder = ArgBuilder.create(lts,
+					analysis, s -> s.getLoc().equals(cfa.getErrorLoc()), true);
+			final Abstractor<CfaState<PredState>, CfaAction, CfaPrec<PredPrec>> abstractor = BasicAbstractor
 					.builder(argBuilder).projection(CfaState::getLoc)
-					.waitlistSupplier(PriorityWaitlist.supplier(search.getComp(cfa))).logger(logger).build();
+					.waitlist(PriorityWaitlist.create(search.getComp(cfa))).logger(logger).build();
 
 			ExprTraceChecker<ItpRefutation> exprTraceChecker = null;
 			switch (refinement) {
@@ -284,14 +309,14 @@ public class CfaConfigBuilder {
 				throw new UnsupportedOperationException(
 						domain + " domain does not support " + refinement + " refinement.");
 			}
-			final ItpRefToSimplePredPrec refToPrec = new ItpRefToSimplePredPrec(solver, predSplit.splitter);
-			final Refiner<CfaState<PredState>, CfaAction, CfaPrec<SimplePredPrec>> refiner = SingleExprTraceRefiner
+			final ItpRefToPredPrec refToPrec = new ItpRefToPredPrec(solver, predSplit.splitter);
+			final Refiner<CfaState<PredState>, CfaAction, CfaPrec<PredPrec>> refiner = SingleExprTraceRefiner
 					.create(exprTraceChecker, precGranularity.createRefiner(refToPrec), logger);
 
-			final SafetyChecker<CfaState<PredState>, CfaAction, CfaPrec<SimplePredPrec>> checker = CegarChecker
+			final SafetyChecker<CfaState<PredState>, CfaAction, CfaPrec<PredPrec>> checker = CegarChecker
 					.create(abstractor, refiner, logger);
 
-			final CfaPrec<SimplePredPrec> prec = precGranularity.createPrec(SimplePredPrec.create(solver));
+			final CfaPrec<PredPrec> prec = precGranularity.createPrec(initPrec.builder.createPred(cfa, solver));
 
 			return Config.create(checker, prec);
 

@@ -1,12 +1,12 @@
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,13 +35,12 @@ import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.zone.itp.ItpZoneState;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.ActStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.BinItpStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaChecker;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LuStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.SeqItpStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.ItpStrategy.ItpOperator;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.ActStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.BinItpStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.ItpStrategy.ItpOperator;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaChecker;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LuStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.SeqItpStrategy;
 import hu.bme.mit.theta.formalism.xta.dsl.XtaDslManager;
 
 @RunWith(Parameterized.class)
@@ -50,8 +49,6 @@ public final class LazyXtaCheckerTest {
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
-
-				// { "/critical-2-25-50.xta" },
 
 				{ "/csma-2.xta" },
 
@@ -79,7 +76,7 @@ public final class LazyXtaCheckerTest {
 	public void testBinItpStrategy() {
 		// Arrange
 		final LazyXtaChecker<ItpZoneState> checker = LazyXtaChecker.create(system,
-				BinItpStrategy.create(system, ItpOperator.DEFAULT), SearchStrategy.breadthFirst(), l -> false);
+				BinItpStrategy.create(system, ItpOperator.DEFAULT), SearchStrategy.BFS, l -> false);
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());
@@ -93,7 +90,7 @@ public final class LazyXtaCheckerTest {
 	public void testSeqItpStrategy() {
 		// Arrange
 		final LazyXtaChecker<ItpZoneState> checker = LazyXtaChecker.create(system,
-				SeqItpStrategy.create(system, ItpOperator.DEFAULT), SearchStrategy.breadthFirst(), l -> false);
+				SeqItpStrategy.create(system, ItpOperator.DEFAULT), SearchStrategy.BFS, l -> false);
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());
@@ -106,8 +103,8 @@ public final class LazyXtaCheckerTest {
 	@Test
 	public void testLuStrategy() {
 		// Arrange
-		final LazyXtaChecker<?> checker = LazyXtaChecker.create(system, LuStrategy.create(system),
-				SearchStrategy.breadthFirst(), l -> false);
+		final LazyXtaChecker<?> checker = LazyXtaChecker.create(system, LuStrategy.create(system), SearchStrategy.BFS,
+				l -> false);
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());
@@ -120,8 +117,8 @@ public final class LazyXtaCheckerTest {
 	@Test
 	public void testActStrategy() {
 		// Arrange
-		final LazyXtaChecker<?> checker = LazyXtaChecker.create(system, ActStrategy.create(system),
-				SearchStrategy.breadthFirst(), l -> false);
+		final LazyXtaChecker<?> checker = LazyXtaChecker.create(system, ActStrategy.create(system), SearchStrategy.BFS,
+				l -> false);
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());

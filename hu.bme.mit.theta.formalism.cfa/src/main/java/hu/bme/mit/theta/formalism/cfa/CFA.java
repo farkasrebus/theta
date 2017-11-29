@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.stmt.Stmt;
 import hu.bme.mit.theta.core.utils.StmtUtils;
@@ -117,7 +116,7 @@ public final class CFA {
 
 		@Override
 		public String toString() {
-			return Utils.toStringBuilder(getClass().getSimpleName()).add(name).toString();
+			return name;
 		}
 	}
 
@@ -176,21 +175,27 @@ public final class CFA {
 		public void setInitLoc(final Loc initLoc) {
 			checkState(!built, "A CFA was already built.");
 			checkNotNull(initLoc);
-			checkArgument(locs.contains(initLoc));
+			checkArgument(locs.contains(initLoc), "Initial location not present in CFA.");
+			checkArgument(!initLoc.equals(finalLoc), "Initial location cannot be same as final.");
+			checkArgument(!initLoc.equals(errorLoc), "Initial location cannot be same as error.");
 			this.initLoc = initLoc;
 		}
 
 		public void setFinalLoc(final Loc finalLoc) {
 			checkState(!built, "A CFA was already built.");
 			checkNotNull(finalLoc);
-			checkArgument(locs.contains(finalLoc));
+			checkArgument(locs.contains(finalLoc), "Final location not present in CFA.");
+			checkArgument(!finalLoc.equals(initLoc), "Final location cannot be same as init.");
+			checkArgument(!finalLoc.equals(errorLoc), "Final location cannot be same as error.");
 			this.finalLoc = finalLoc;
 		}
 
 		public void setErrorLoc(final Loc errorLoc) {
 			checkState(!built, "A CFA was already built.");
 			checkNotNull(errorLoc);
-			checkArgument(locs.contains(errorLoc));
+			checkArgument(locs.contains(errorLoc), "Error location not present in CFA.");
+			checkArgument(!errorLoc.equals(initLoc), "Error location cannot be same as init.");
+			checkArgument(!errorLoc.equals(finalLoc), "Error location cannot be same as final.");
 			this.errorLoc = errorLoc;
 		}
 
@@ -201,15 +206,15 @@ public final class CFA {
 			return loc;
 		}
 
-		public Edge createEdge(final Loc source, final Loc target, final Stmt stmts) {
+		public Edge createEdge(final Loc source, final Loc target, final Stmt stmt) {
 			checkState(!built, "A CFA was already built.");
 			checkNotNull(source);
 			checkNotNull(target);
-			checkNotNull(stmts);
+			checkNotNull(stmt);
 			checkArgument(locs.contains(source), "Invalid source.");
 			checkArgument(locs.contains(target), "Invalid target.");
 
-			final Edge edge = new Edge(source, target, stmts);
+			final Edge edge = new Edge(source, target, stmt);
 			source.outEdges.add(edge);
 			target.inEdges.add(edge);
 			edges.add(edge);

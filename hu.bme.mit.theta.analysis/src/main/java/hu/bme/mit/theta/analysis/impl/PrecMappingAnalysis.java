@@ -21,26 +21,26 @@ import java.util.function.Function;
 
 import hu.bme.mit.theta.analysis.Action;
 import hu.bme.mit.theta.analysis.Analysis;
-import hu.bme.mit.theta.analysis.Domain;
+import hu.bme.mit.theta.analysis.PartialOrd;
 import hu.bme.mit.theta.analysis.InitFunc;
 import hu.bme.mit.theta.analysis.Prec;
 import hu.bme.mit.theta.analysis.State;
-import hu.bme.mit.theta.analysis.TransferFunc;
+import hu.bme.mit.theta.analysis.TransFunc;
 
 public final class PrecMappingAnalysis<S extends State, A extends Action, PP extends Prec, PR extends Prec>
 		implements Analysis<S, A, PP> {
 
-	private final Domain<S> domain;
+	private final PartialOrd<S> partialOrd;
 	private final InitFunc<S, PP> initFunc;
-	private final TransferFunc<S, A, PP> transferFunc;
+	private final TransFunc<S, A, PP> transFunc;
 
 	private PrecMappingAnalysis(final Analysis<S, ? super A, ? super PR> analysis,
 			final Function<? super PP, ? extends PR> mapping) {
 		checkNotNull(analysis);
 		checkNotNull(mapping);
-		this.domain = analysis.getDomain();
+		this.partialOrd = analysis.getPartialOrd();
 		this.initFunc = PrecMappingInitFunc.create(analysis.getInitFunc(), mapping);
-		this.transferFunc = PrecMappingTransferFunc.create(analysis.getTransferFunc(), mapping);
+		this.transFunc = PrecMappingTransFunc.create(analysis.getTransFunc(), mapping);
 	}
 
 	public static <S extends State, A extends Action, PP extends Prec, PR extends Prec> PrecMappingAnalysis<S, A, PP, PR> create(
@@ -49,8 +49,8 @@ public final class PrecMappingAnalysis<S extends State, A extends Action, PP ext
 	}
 
 	@Override
-	public Domain<S> getDomain() {
-		return domain;
+	public PartialOrd<S> getPartialOrd() {
+		return partialOrd;
 	}
 
 	@Override
@@ -59,8 +59,8 @@ public final class PrecMappingAnalysis<S extends State, A extends Action, PP ext
 	}
 
 	@Override
-	public TransferFunc<S, A, PP> getTransferFunc() {
-		return transferFunc;
+	public TransFunc<S, A, PP> getTransFunc() {
+		return transFunc;
 	}
 
 }

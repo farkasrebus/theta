@@ -1,12 +1,12 @@
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,9 +22,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.microsoft.z3.Context;
 
-import hu.bme.mit.theta.common.product.Product2;
-import hu.bme.mit.theta.common.product.Tuple;
-import hu.bme.mit.theta.common.product.Tuple2;
+import hu.bme.mit.theta.common.Tuple2;
 import hu.bme.mit.theta.core.decl.ConstDecl;
 import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.ParamDecl;
@@ -62,9 +60,9 @@ final class Z3DeclTransformer {
 		} else {
 			final Type type = decl.getType();
 
-			final Product2<List<Type>, Type> extractedTypes = extractTypes(type);
-			final List<Type> paramTypes = extractedTypes._1();
-			final Type returnType = extractedTypes._2();
+			final Tuple2<List<Type>, Type> extractedTypes = extractTypes(type);
+			final List<Type> paramTypes = extractedTypes.get1();
+			final Type returnType = extractedTypes.get2();
 
 			final com.microsoft.z3.Sort returnSort = transformer.toSort(returnType);
 			final com.microsoft.z3.Sort[] paramSorts = paramTypes.stream().map(t -> transformer.toSort(t))
@@ -97,14 +95,14 @@ final class Z3DeclTransformer {
 			checkArgument(!(paramType instanceof FuncType));
 
 			final Tuple2<List<Type>, Type> subResult = extractTypes(resultType);
-			final List<Type> paramTypes = subResult._1();
-			final Type newResultType = subResult._2();
+			final List<Type> paramTypes = subResult.get1();
+			final Type newResultType = subResult.get2();
 			final List<Type> newParamTypes = ImmutableList.<Type>builder().add(paramType).addAll(paramTypes).build();
-			final Tuple2<List<Type>, Type> result = Tuple.of(newParamTypes, newResultType);
+			final Tuple2<List<Type>, Type> result = Tuple2.of(newParamTypes, newResultType);
 
 			return result;
 		} else {
-			return Tuple.of(ImmutableList.of(), type);
+			return Tuple2.of(ImmutableList.of(), type);
 		}
 	}
 

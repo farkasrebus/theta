@@ -18,9 +18,9 @@ package hu.bme.mit.theta.analysis.expl;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import hu.bme.mit.theta.analysis.Analysis;
-import hu.bme.mit.theta.analysis.Domain;
+import hu.bme.mit.theta.analysis.PartialOrd;
 import hu.bme.mit.theta.analysis.InitFunc;
-import hu.bme.mit.theta.analysis.TransferFunc;
+import hu.bme.mit.theta.analysis.TransFunc;
 import hu.bme.mit.theta.analysis.expr.ExprAction;
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
@@ -28,16 +28,16 @@ import hu.bme.mit.theta.solver.Solver;
 
 public final class ExplAnalysis implements Analysis<ExplState, ExprAction, ExplPrec> {
 
-	private final Domain<ExplState> domain;
+	private final PartialOrd<ExplState> partialOrd;
 	private final InitFunc<ExplState, ExplPrec> initFunc;
-	private final TransferFunc<ExplState, ExprAction, ExplPrec> transferFunc;
+	private final TransFunc<ExplState, ExprAction, ExplPrec> transFunc;
 
 	private ExplAnalysis(final Solver solver, final Expr<BoolType> initExpr) {
 		checkNotNull(solver);
 		checkNotNull(initExpr);
-		this.domain = ExplDomain.getInstance();
+		this.partialOrd = ExplOrd.getInstance();
 		this.initFunc = ExplInitFunc.create(solver, initExpr);
-		this.transferFunc = ExplTransferFunc.create(solver);
+		this.transFunc = ExplTransFunc.create(solver);
 
 	}
 
@@ -46,8 +46,8 @@ public final class ExplAnalysis implements Analysis<ExplState, ExprAction, ExplP
 	}
 
 	@Override
-	public Domain<ExplState> getDomain() {
-		return domain;
+	public PartialOrd<ExplState> getPartialOrd() {
+		return partialOrd;
 	}
 
 	@Override
@@ -56,8 +56,8 @@ public final class ExplAnalysis implements Analysis<ExplState, ExprAction, ExplP
 	}
 
 	@Override
-	public TransferFunc<ExplState, ExprAction, ExplPrec> getTransferFunc() {
-		return transferFunc;
+	public TransFunc<ExplState, ExprAction, ExplPrec> getTransFunc() {
+		return transFunc;
 	}
 
 }

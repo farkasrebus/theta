@@ -1,12 +1,12 @@
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,6 +29,7 @@ import hu.bme.mit.theta.analysis.algorithm.SafetyChecker;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
 import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.common.logging.Logger;
+import hu.bme.mit.theta.common.logging.Logger.Level;
 import hu.bme.mit.theta.common.logging.impl.NullLogger;
 
 /**
@@ -61,8 +62,10 @@ public final class CegarChecker<S extends State, A extends Action, P extends Pre
 
 	@Override
 	public SafetyResult<S, A> check(final P initPrec) {
-		logger.writeln("Configuration: ", this, 1, 0);
+		logger.write(Level.INFO, "Configuration: %s%n", this);
 		final Stopwatch stopwatch = Stopwatch.createStarted();
+		long abstractorTime = 0;
+		long refinerTime = 0;
 		RefinerResult<S, A, P> refinerResult = null;
 		AbstractorResult abstractorResult = null;
 		final ARG<S, A> arg = abstractor.createArg();
@@ -70,16 +73,20 @@ public final class CegarChecker<S extends State, A extends Action, P extends Pre
 		int iteration = 0;
 		do {
 			++iteration;
-			logger.writeln("Iteration ", iteration, 2, 0);
 
-			logger.writeln("Checking abstraction...", 2, 1);
+			logger.write(Level.MAINSTEP, "Iteration %d%n", iteration);
+			logger.write(Level.MAINSTEP, "| Checking abstraction...%n");
+			final long abstractorStartTime = stopwatch.elapsed(TimeUnit.MILLISECONDS);
 			abstractorResult = abstractor.check(arg, prec);
-			logger.writeln("Checking abstraction done, result: ", abstractorResult, 2, 1);
+			abstractorTime += stopwatch.elapsed(TimeUnit.MILLISECONDS) - abstractorStartTime;
+			logger.write(Level.MAINSTEP, "| Checking abstraction done, result: %s%n", abstractorResult);
 
 			if (abstractorResult.isUnsafe()) {
-				logger.writeln("Refining abstraction...", 2, 1);
+				logger.write(Level.MAINSTEP, "| Refining abstraction...%n");
+				final long refinerStartTime = stopwatch.elapsed(TimeUnit.MILLISECONDS);
 				refinerResult = refiner.refine(arg, prec);
-				logger.writeln("Refining abstraction done, result: ", refinerResult, 2, 1);
+				refinerTime += stopwatch.elapsed(TimeUnit.MILLISECONDS) - refinerStartTime;
+				logger.write(Level.MAINSTEP, "Refining abstraction done, result: %s%n", refinerResult);
 
 				if (refinerResult.isSpurious()) {
 					prec = refinerResult.asSpurious().getRefinedPrec();
@@ -90,7 +97,8 @@ public final class CegarChecker<S extends State, A extends Action, P extends Pre
 
 		stopwatch.stop();
 		SafetyResult<S, A> cegarResult = null;
-		final CegarStatistics stats = new CegarStatistics(stopwatch.elapsed(TimeUnit.MILLISECONDS), iteration);
+		final CegarStatistics stats = new CegarStatistics(stopwatch.elapsed(TimeUnit.MILLISECONDS), abstractorTime,
+				refinerTime, iteration);
 
 		assert abstractorResult.isSafe() || (refinerResult != null && refinerResult.isUnsafe());
 
@@ -101,13 +109,13 @@ public final class CegarChecker<S extends State, A extends Action, P extends Pre
 		}
 
 		assert cegarResult != null;
-		logger.writeln("Done, result: ", cegarResult, 1, 0);
-		logger.writeln(stats, 1);
+		logger.write(Level.RESULT, "%s%n", cegarResult);
+		logger.write(Level.INFO, "%s%n", stats);
 		return cegarResult;
 	}
 
 	@Override
 	public String toString() {
-		return Utils.toStringBuilder(getClass().getSimpleName()).add(abstractor).add(refiner).toString();
+		return Utils.lispStringBuilder(getClass().getSimpleName()).add(abstractor).add(refiner).toString();
 	}
 }

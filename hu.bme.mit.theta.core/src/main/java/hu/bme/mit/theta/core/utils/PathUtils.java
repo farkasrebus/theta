@@ -1,12 +1,12 @@
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,8 +26,7 @@ import hu.bme.mit.theta.core.decl.ConstDecl;
 import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.IndexedConstDecl;
 import hu.bme.mit.theta.core.decl.VarDecl;
-import hu.bme.mit.theta.core.model.BasicValuation;
-import hu.bme.mit.theta.core.model.Model;
+import hu.bme.mit.theta.core.model.ImmutableValuation;
 import hu.bme.mit.theta.core.model.Valuation;
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.LitExpr;
@@ -112,8 +111,8 @@ public class PathUtils {
 	 * @param indexing Indexing
 	 * @return Values
 	 */
-	public static Valuation extractValuation(final Model model, final VarIndexing indexing) {
-		final BasicValuation.Builder builder = BasicValuation.builder();
+	public static Valuation extractValuation(final Valuation model, final VarIndexing indexing) {
+		final ImmutableValuation.Builder builder = ImmutableValuation.builder();
 		for (final Decl<?> decl : model.getDecls()) {
 			if (decl instanceof IndexedConstDecl) {
 				final IndexedConstDecl<?> indexedConstDecl = (IndexedConstDecl<?>) decl;
@@ -136,7 +135,7 @@ public class PathUtils {
 	 * @param i Index
 	 * @return Values
 	 */
-	public static Valuation extractValuation(final Model model, final int i) {
+	public static Valuation extractValuation(final Valuation model, final int i) {
 		checkArgument(i >= 0);
 		return extractValuation(model, VarIndexing.all(i));
 	}
@@ -150,9 +149,9 @@ public class PathUtils {
 	 * @param indexing Indexing
 	 * @return Values
 	 */
-	public static Valuation extractValuation(final Model model, final VarIndexing indexing,
+	public static Valuation extractValuation(final Valuation model, final VarIndexing indexing,
 			final Collection<? extends VarDecl<?>> varDecls) {
-		final BasicValuation.Builder builder = BasicValuation.builder();
+		final ImmutableValuation.Builder builder = ImmutableValuation.builder();
 		for (final VarDecl<?> varDecl : varDecls) {
 			final int index = indexing.get(varDecl);
 			final IndexedConstDecl<?> constDecl = varDecl.getConstDecl(index);
@@ -173,7 +172,7 @@ public class PathUtils {
 	 * @param i Index
 	 * @return Values
 	 */
-	public static Valuation extractValuation(final Model model, final int i,
+	public static Valuation extractValuation(final Valuation model, final int i,
 			final Collection<? extends VarDecl<?>> varDecls) {
 		checkArgument(i >= 0);
 		return extractValuation(model, VarIndexing.all(i), varDecls);

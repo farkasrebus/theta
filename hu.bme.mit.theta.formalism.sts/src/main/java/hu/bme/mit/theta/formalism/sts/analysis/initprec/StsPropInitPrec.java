@@ -16,7 +16,7 @@
 package hu.bme.mit.theta.formalism.sts.analysis.initprec;
 
 import hu.bme.mit.theta.analysis.expl.ExplPrec;
-import hu.bme.mit.theta.analysis.pred.SimplePredPrec;
+import hu.bme.mit.theta.analysis.pred.PredPrec;
 import hu.bme.mit.theta.core.utils.ExprUtils;
 import hu.bme.mit.theta.formalism.sts.STS;
 import hu.bme.mit.theta.solver.Solver;
@@ -29,12 +29,12 @@ public class StsPropInitPrec implements StsInitPrec {
 
 	@Override
 	public ExplPrec createExpl(final STS sts) {
-		return ExplPrec.create(ExprUtils.getVars(sts.getProp()));
+		return ExplPrec.of(ExprUtils.getVars(sts.getProp()));
 	}
 
 	@Override
-	public SimplePredPrec createSimplePred(final STS sts, final Solver solver) {
-		return SimplePredPrec.create(ExprUtils.getAtoms(sts.getProp()), solver);
+	public PredPrec createPred(final STS sts, final Solver solver) {
+		return PredPrec.create(ExprUtils.getAtoms(sts.getProp()), solver);
 	}
 
 }

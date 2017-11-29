@@ -15,7 +15,10 @@
  */
 package hu.bme.mit.theta.formalism.cfa.tool;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -23,9 +26,10 @@ import com.google.common.io.Files;
 import hu.bme.mit.theta.analysis.Trace;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
 import hu.bme.mit.theta.analysis.utils.ArgVisualizer;
-import hu.bme.mit.theta.analysis.utils.TraceVisualizer;
 import hu.bme.mit.theta.common.BaseGui;
+import hu.bme.mit.theta.common.logging.Logger;
 import hu.bme.mit.theta.common.logging.impl.TextAreaLogger;
+import hu.bme.mit.theta.common.table.impl.HtmlTableWriter;
 import hu.bme.mit.theta.common.visualization.Graph;
 import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter.Format;
@@ -36,6 +40,7 @@ import hu.bme.mit.theta.formalism.cfa.analysis.CfaTraceConcretizer;
 import hu.bme.mit.theta.formalism.cfa.dsl.CfaDslManager;
 import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.Domain;
 import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.Encoding;
+import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.InitPrec;
 import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.PrecGranularity;
 import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.PredSplit;
 import hu.bme.mit.theta.formalism.cfa.tool.CfaConfigBuilder.Refinement;
@@ -64,11 +69,9 @@ public class CfaGui extends BaseGui {
 	private ChoiceBox<PredSplit> cbPredSplit;
 	private ChoiceBox<PrecGranularity> cbPrecGranularity;
 	private ChoiceBox<Encoding> cbEncoding;
-	private Spinner<Integer> spLogLevel;
-	private Button btnRunAlgo;
-	private Button btnLoadModel;
-	private Button btnVisualizeModel;
-	private Button btnVisualizeResult;
+	private Spinner<Integer> spMaxEnum;
+	private ChoiceBox<InitPrec> cbInitPrec;
+	private ChoiceBox<Logger.Level> cbLogLevel;
 	private CheckBox cbStructureOnly;
 
 	private TextArea taModel;
@@ -105,9 +108,9 @@ public class CfaGui extends BaseGui {
 		tabVisualResult = createTab("Result Visualized", wvVisualResult);
 
 		createTitle("Input model");
-		btnLoadModel = createButton("Load CFA");
+		final Button btnLoadModel = createButton("Load CFA");
 		btnLoadModel.setOnMouseClicked(e -> btnLoadClicked(primaryStage));
-		btnVisualizeModel = createButton("Visualize CFA");
+		final Button btnVisualizeModel = createButton("Visualize CFA");
 		btnVisualizeModel.setOnMouseClicked(e -> btnVisualizeModelClicked());
 
 		createTitle("Algorithm");
@@ -117,14 +120,16 @@ public class CfaGui extends BaseGui {
 		cbPredSplit = createChoice("Predicate split", PredSplit.values());
 		cbPrecGranularity = createChoice("Precision granularity", PrecGranularity.values());
 		cbEncoding = createChoice("Encoding", Encoding.values());
-		spLogLevel = createSpinner("Log level", 0, 100, 2);
+		spMaxEnum = createSpinner("Max. succ. to enumerate", 0, Integer.MAX_VALUE, 0);
+		cbInitPrec = createChoice("Initial precision", InitPrec.values());
+		cbLogLevel = createChoice("Logging level", Logger.Level.values());
 
-		btnRunAlgo = createButton("Run algorithm");
+		final Button btnRunAlgo = createButton("Run algorithm");
 		btnRunAlgo.setOnMouseClicked(e -> btnRunAlgoClicked());
 
 		createTitle("Result");
 		cbStructureOnly = createCheckBox("Structure only");
-		btnVisualizeResult = createButton("Visualize result");
+		final Button btnVisualizeResult = createButton("Visualize result");
 		btnVisualizeResult.setOnMouseClicked(e -> btnVisualizeResultClicked());
 	}
 
@@ -172,7 +177,8 @@ public class CfaGui extends BaseGui {
 				final Config<?, ?, ?> config = new CfaConfigBuilder(cbDomain.getValue(), cbRefinement.getValue())
 						.search(cbSearch.getValue()).predSplit(cbPredSplit.getValue())
 						.precGranularity(cbPrecGranularity.getValue()).encoding(cbEncoding.getValue())
-						.logger(new TextAreaLogger(spLogLevel.getValue(), taOutput)).build(cfa);
+						.maxEnum(spMaxEnum.getValue()).initPrec(cbInitPrec.getValue())
+						.logger(new TextAreaLogger(cbLogLevel.getValue(), taOutput)).build(cfa);
 				safetyResult = config.check();
 			} catch (final Exception ex) {
 				Platform.runLater(() -> displayException(ex));
@@ -213,24 +219,31 @@ public class CfaGui extends BaseGui {
 				if (safetyResult == null) {
 					throw new IllegalStateException("No result is present.");
 				}
-				Graph graph = null;
+				String content = "";
 				if (safetyResult.isSafe()) {
+					Graph graph = null;
 					if (cbStructureOnly.isSelected()) {
 						graph = ArgVisualizer.getStructureOnly().visualize(safetyResult.asSafe().getArg());
 					} else {
 						graph = ArgVisualizer.getDefault().visualize(safetyResult.asSafe().getArg());
 					}
+					final File tmpFile = File.createTempFile("theta", ".tmp");
+					GraphvizWriter.getInstance().writeFile(graph, tmpFile.getAbsolutePath(), Format.SVG);
+					content = Files.toString(tmpFile, Charsets.UTF_8);
+					tmpFile.delete();
 				} else {
 					@SuppressWarnings("unchecked")
 					final Trace<CfaState<?>, CfaAction> trace = (Trace<CfaState<?>, CfaAction>) safetyResult.asUnsafe()
 							.getTrace();
-					graph = TraceVisualizer.getDefault().visualize(CfaTraceConcretizer.concretize(trace));
+					final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					final PrintStream ps = new PrintStream(baos, true, "utf-8");
+					CfaVisualizer.printTraceTable(CfaTraceConcretizer.concretize(trace), new HtmlTableWriter(ps));
+					content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+					ps.close();
 				}
-				final File tmpFile = File.createTempFile("theta", ".tmp");
-				GraphvizWriter.getInstance().writeFile(graph, tmpFile.getAbsolutePath(), Format.SVG);
-				final String image = Files.toString(tmpFile, Charsets.UTF_8);
-				tmpFile.delete();
-				Platform.runLater(() -> wvVisualResult.getEngine().loadContent(image));
+
+				final String finalContent = content;
+				Platform.runLater(() -> wvVisualResult.getEngine().loadContent(finalContent));
 			} catch (final Exception ex) {
 				Platform.runLater(() -> displayException(ex));
 			} finally {

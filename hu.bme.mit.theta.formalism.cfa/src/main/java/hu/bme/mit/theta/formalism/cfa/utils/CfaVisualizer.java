@@ -17,15 +17,28 @@ package hu.bme.mit.theta.formalism.cfa.utils;
 
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
+import hu.bme.mit.theta.analysis.Trace;
+import hu.bme.mit.theta.analysis.expl.ExplState;
+import hu.bme.mit.theta.common.table.TableWriter;
+import hu.bme.mit.theta.common.visualization.Alignment;
 import hu.bme.mit.theta.common.visualization.EdgeAttributes;
 import hu.bme.mit.theta.common.visualization.Graph;
 import hu.bme.mit.theta.common.visualization.LineStyle;
 import hu.bme.mit.theta.common.visualization.NodeAttributes;
+import hu.bme.mit.theta.common.visualization.Shape;
+import hu.bme.mit.theta.core.decl.Decl;
+import hu.bme.mit.theta.core.decl.VarDecl;
+import hu.bme.mit.theta.core.dsl.CoreDslManager;
 import hu.bme.mit.theta.formalism.cfa.CFA;
 import hu.bme.mit.theta.formalism.cfa.CFA.Edge;
 import hu.bme.mit.theta.formalism.cfa.CFA.Loc;
+import hu.bme.mit.theta.formalism.cfa.analysis.CfaAction;
+import hu.bme.mit.theta.formalism.cfa.analysis.CfaState;
 
 public final class CfaVisualizer {
 
@@ -44,7 +57,7 @@ public final class CfaVisualizer {
 	public static Graph visualize(final CFA cfa) {
 		final Graph graph = new Graph(CFA_ID, CFA_LABEL);
 		final Map<Loc, String> ids = new HashMap<>();
-
+		addVars(graph, cfa);
 		for (final Loc loc : cfa.getLocs()) {
 			addLocation(graph, cfa, loc, ids);
 		}
@@ -52,6 +65,17 @@ public final class CfaVisualizer {
 			addEdge(graph, edge, ids);
 		}
 		return graph;
+	}
+
+	private static void addVars(final Graph graph, final CFA cfa) {
+		final StringBuilder sb = new StringBuilder("Variables");
+		for (final VarDecl<?> var : cfa.getVars()) {
+			sb.append('\n').append(var.getName()).append(": ").append(var.getType());
+		}
+		final NodeAttributes attrs = NodeAttributes.builder().label(sb.toString()).shape(Shape.RECTANGLE)
+				.fillColor(FILL_COLOR).lineColor(LINE_COLOR).lineStyle(LineStyle.DASHED).alignment(Alignment.LEFT)
+				.build();
+		graph.addNode(CFA_ID + "_vars", attrs);
 	}
 
 	private static void addLocation(final Graph graph, final CFA cfa, final Loc loc, final Map<Loc, String> ids) {
@@ -66,14 +90,44 @@ public final class CfaVisualizer {
 			label += " (error)";
 		}
 		final int peripheries = loc == cfa.getErrorLoc() ? 2 : 1;
-		final NodeAttributes nAttributes = NodeAttributes.builder().label(label).fillColor(FILL_COLOR)
-				.lineColor(LINE_COLOR).lineStyle(LOC_LINE_STYLE).peripheries(peripheries).build();
-		graph.addNode(id, nAttributes);
+		final NodeAttributes nAttrs = NodeAttributes.builder().label(label).fillColor(FILL_COLOR).lineColor(LINE_COLOR)
+				.lineStyle(LOC_LINE_STYLE).peripheries(peripheries).build();
+		graph.addNode(id, nAttrs);
 	}
 
 	private static void addEdge(final Graph graph, final Edge edge, final Map<Loc, String> ids) {
-		final EdgeAttributes eAttributes = EdgeAttributes.builder().label(edge.getStmt().toString()).color(LINE_COLOR)
-				.lineStyle(EDGE_LINE_STYLE).font(EDGE_FONT).build();
-		graph.addEdge(ids.get(edge.getSource()), ids.get(edge.getTarget()), eAttributes);
+		final EdgeAttributes eAttrs = EdgeAttributes.builder().label(new CoreDslManager().writeStmt(edge.getStmt()))
+				.color(LINE_COLOR).lineStyle(EDGE_LINE_STYLE).font(EDGE_FONT).build();
+		graph.addEdge(ids.get(edge.getSource()), ids.get(edge.getTarget()), eAttrs);
+	}
+
+	public static void printTraceTable(final Trace<CfaState<ExplState>, CfaAction> trace, final TableWriter writer) {
+		final Set<Decl<?>> allVars = new LinkedHashSet<>();
+		for (final CfaState<ExplState> state : trace.getStates()) {
+			allVars.addAll(state.getState().getDecls());
+		}
+		final int nCols = 1 + allVars.size();
+		writer.startTable();
+		writer.cell("LOC");
+		allVars.forEach(v -> writer.cell(v.getName()));
+		writer.newRow();
+
+		for (int i = 0; i < trace.getStates().size(); i++) {
+			final CfaState<ExplState> state = trace.getState(i);
+			writer.cell(state.getLoc().getName());
+			for (final Decl<?> decl : allVars) {
+				final Optional<?> eval = state.getState().eval(decl);
+				final String evalStr = eval.isPresent() ? eval.get().toString() : "";
+				writer.cell(evalStr);
+			}
+			writer.newRow();
+			if (i < trace.getActions().size()) {
+				final StringBuilder sb = new StringBuilder();
+				trace.getAction(i).getStmts().forEach(s -> sb.append(s.toString()).append(System.lineSeparator()));
+				writer.cell(sb.toString(), nCols);
+				writer.newRow();
+			}
+		}
+		writer.endTable();
 	}
 }

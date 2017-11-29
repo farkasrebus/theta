@@ -19,10 +19,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.google.common.base.Stopwatch;
 
 import hu.bme.mit.theta.analysis.State;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
@@ -31,17 +33,21 @@ import hu.bme.mit.theta.analysis.utils.ArgVisualizer;
 import hu.bme.mit.theta.analysis.utils.TraceVisualizer;
 import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.common.logging.Logger;
+import hu.bme.mit.theta.common.logging.Logger.Level;
 import hu.bme.mit.theta.common.logging.impl.ConsoleLogger;
 import hu.bme.mit.theta.common.logging.impl.NullLogger;
 import hu.bme.mit.theta.common.table.TableWriter;
-import hu.bme.mit.theta.common.table.impl.SimpleTableWriter;
+import hu.bme.mit.theta.common.table.impl.BasicTableWriter;
 import hu.bme.mit.theta.common.visualization.Graph;
 import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.core.type.booltype.BoolExprs;
 import hu.bme.mit.theta.core.utils.ExprUtils;
 import hu.bme.mit.theta.formalism.sts.STS;
 import hu.bme.mit.theta.formalism.sts.StsUtils;
-import hu.bme.mit.theta.formalism.sts.aiger.BasicAigerParser;
+import hu.bme.mit.theta.formalism.sts.aiger.AigerParser;
+import hu.bme.mit.theta.formalism.sts.aiger.AigerToSts;
+import hu.bme.mit.theta.formalism.sts.aiger.elements.AigerSystem;
+import hu.bme.mit.theta.formalism.sts.aiger.utils.AigerCoi;
 import hu.bme.mit.theta.formalism.sts.dsl.StsDslManager;
 import hu.bme.mit.theta.formalism.sts.dsl.StsSpec;
 import hu.bme.mit.theta.formalism.sts.tool.StsConfigBuilder.Domain;
@@ -77,7 +83,7 @@ public class StsCli {
 	InitPrec initPrec = InitPrec.EMPTY;
 
 	@Parameter(names = { "--loglevel" }, description = "Detailedness of logging")
-	Integer logLevel = 1;
+	Logger.Level logLevel = Level.SUBSTEP;
 
 	@Parameter(names = { "--benchmark" }, description = "Benchmark mode (only print metrics)")
 	Boolean benchmarkMode = false;
@@ -92,7 +98,7 @@ public class StsCli {
 
 	public StsCli(final String[] args) {
 		this.args = args;
-		writer = new SimpleTableWriter(System.out, ",", "\"", "\"");
+		writer = new BasicTableWriter(System.out, ",", "\"", "\"");
 	}
 
 	public static void main(final String[] args) {
@@ -116,10 +122,12 @@ public class StsCli {
 		}
 
 		try {
+			final Stopwatch sw = Stopwatch.createStarted();
 			final STS sts = loadModel();
 			final Config<?, ?, ?> configuration = buildConfiguration(sts);
 			final SafetyResult<?, ?> status = configuration.check();
-			printResult(status, sts);
+			sw.stop();
+			printResult(status, sts, sw.elapsed(TimeUnit.MILLISECONDS));
 			if (dotfile != null) {
 				writeVisualStatus(status, dotfile);
 			}
@@ -132,8 +140,8 @@ public class StsCli {
 	}
 
 	private void printHeader() {
-		final String[] header = new String[] { "Result", "TimeMs", "Iterations", "ArgSize", "ArgDepth",
-				"ArgMeanBranchFactor", "CexLen", "Vars", "Size" };
+		final String[] header = new String[] { "Result", "TimeMs", "AlgoTimeMs", "AbsTimeMs", "RefTimeMs", "Iterations",
+				"ArgSize", "ArgDepth", "ArgMeanBranchFactor", "CexLen", "Vars", "Size" };
 		for (final String str : header) {
 			writer.cell(str);
 		}
@@ -142,7 +150,9 @@ public class StsCli {
 
 	private STS loadModel() throws IOException {
 		if (model.endsWith(".aag")) {
-			return new BasicAigerParser().parse(model);
+			final AigerSystem aigerSystem = AigerParser.parse(model);
+			AigerCoi.apply(aigerSystem);
+			return AigerToSts.createSts(aigerSystem);
 		} else if (model.endsWith(".system")) {
 			final InputStream inputStream = new FileInputStream(model);
 			final StsSpec spec = StsDslManager.createStsSpec(inputStream);
@@ -160,11 +170,14 @@ public class StsCli {
 				.logger(logger).build(sts);
 	}
 
-	private void printResult(final SafetyResult<?, ?> status, final STS sts) {
+	private void printResult(final SafetyResult<?, ?> status, final STS sts, final long totalTimeMs) {
 		final CegarStatistics stats = (CegarStatistics) status.getStats().get();
 		if (benchmarkMode) {
 			writer.cell(status.isSafe());
-			writer.cell(stats.getElapsedMillis());
+			writer.cell(totalTimeMs);
+			writer.cell(stats.getAlgorithmTimeMs());
+			writer.cell(stats.getAbstractorTimeMs());
+			writer.cell(stats.getRefinerTimeMs());
 			writer.cell(stats.getIterations());
 			writer.cell(status.getArg().size());
 			writer.cell(status.getArg().getDepth());
@@ -184,8 +197,8 @@ public class StsCli {
 		if (benchmarkMode) {
 			writer.cell("[EX] " + ex.getClass().getSimpleName() + message);
 		} else {
-			logger.writeln("Exception occured: " + ex.getClass().getSimpleName(), 0);
-			logger.writeln("Message: " + ex.getMessage(), 0, 1);
+			logger.write(Level.RESULT, "Exception of type %s occurred%n", ex.getClass().getSimpleName());
+			logger.write(Level.INFO, "Message:%n%s%n", ex.getMessage());
 		}
 	}
 

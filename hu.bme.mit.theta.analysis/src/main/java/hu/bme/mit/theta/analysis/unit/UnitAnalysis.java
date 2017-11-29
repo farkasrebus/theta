@@ -13,14 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package hu.bme.mit.theta.analysis.unit;
 
 import hu.bme.mit.theta.analysis.Action;
 import hu.bme.mit.theta.analysis.Analysis;
-import hu.bme.mit.theta.analysis.Domain;
+import hu.bme.mit.theta.analysis.PartialOrd;
 import hu.bme.mit.theta.analysis.InitFunc;
-import hu.bme.mit.theta.analysis.TransferFunc;
+import hu.bme.mit.theta.analysis.TransFunc;
 
 public final class UnitAnalysis implements Analysis<UnitState, Action, UnitPrec> {
 
@@ -34,8 +33,8 @@ public final class UnitAnalysis implements Analysis<UnitState, Action, UnitPrec>
 	}
 
 	@Override
-	public Domain<UnitState> getDomain() {
-		return UnitDomain.getInstance();
+	public PartialOrd<UnitState> getPartialOrd() {
+		return UnitOrd.getInstance();
 	}
 
 	@Override
@@ -44,8 +43,8 @@ public final class UnitAnalysis implements Analysis<UnitState, Action, UnitPrec>
 	}
 
 	@Override
-	public TransferFunc<UnitState, Action, UnitPrec> getTransferFunc() {
-		return UnitTransferFunc.getInstance();
+	public TransFunc<UnitState, Action, UnitPrec> getTransFunc() {
+		return UnitTransFunc.getInstance();
 	}
 
 }

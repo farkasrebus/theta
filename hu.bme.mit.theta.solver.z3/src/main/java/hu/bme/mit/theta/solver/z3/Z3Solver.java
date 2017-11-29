@@ -1,12 +1,12 @@
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,6 @@
  */
 package hu.bme.mit.theta.solver.z3;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -32,8 +31,7 @@ import com.microsoft.z3.Status;
 
 import hu.bme.mit.theta.core.decl.ConstDecl;
 import hu.bme.mit.theta.core.decl.Decl;
-import hu.bme.mit.theta.core.model.AbstractModel;
-import hu.bme.mit.theta.core.model.Model;
+import hu.bme.mit.theta.core.model.Valuation;
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.LitExpr;
 import hu.bme.mit.theta.core.type.Type;
@@ -62,7 +60,7 @@ final class Z3Solver implements Solver {
 	private static final String ASSUMPTION_LABEL = "_LABEL_%d";
 	private int labelNum = 0;
 
-	private Model model;
+	private Valuation model;
 	private Collection<Expr<BoolType>> unsatCore;
 	private SolverStatus status;
 
@@ -148,11 +146,12 @@ final class Z3Solver implements Solver {
 
 	@Override
 	public SolverStatus getStatus() {
+		checkState(status != null, "Solver status is unknown.");
 		return status;
 	}
 
 	@Override
-	public Model getModel() {
+	public Valuation getModel() {
 		checkState(status == SolverStatus.SAT, "Cannot get model if status is not SAT.");
 
 		if (model == null) {
@@ -163,7 +162,7 @@ final class Z3Solver implements Solver {
 		return model;
 	}
 
-	private Model extractModel() {
+	private Valuation extractModel() {
 		assert status == SolverStatus.SAT;
 		assert model == null;
 
@@ -221,20 +220,18 @@ final class Z3Solver implements Solver {
 
 	////
 
-	private final class Z3Model extends AbstractModel {
-		final com.microsoft.z3.Model z3Model;
-
-		Collection<ConstDecl<?>> constDecls;
-		final Map<ConstDecl<?>, LitExpr<?>> constToExpr;
+	private final class Z3Model extends Valuation {
+		private final com.microsoft.z3.Model z3Model;
+		private final Map<Decl<?>, LitExpr<?>> constToExpr;
+		private volatile Collection<ConstDecl<?>> constDecls = null;
 
 		public Z3Model(final com.microsoft.z3.Model z3Model) {
 			this.z3Model = z3Model;
-			constDecls = null;
 			constToExpr = new HashMap<>();
 		}
 
 		@Override
-		public Collection<? extends ConstDecl<?>> getDecls() {
+		public Collection<ConstDecl<?>> getDecls() {
 			Collection<ConstDecl<?>> result = constDecls;
 			if (result == null) {
 				result = constDeclsOf(z3Model);
@@ -246,7 +243,10 @@ final class Z3Solver implements Solver {
 		@Override
 		public <DeclType extends Type> Optional<LitExpr<DeclType>> eval(final Decl<DeclType> decl) {
 			checkNotNull(decl);
-			checkArgument(decl instanceof ConstDecl<?>);
+
+			if (!(decl instanceof ConstDecl)) {
+				return Optional.empty();
+			}
 
 			final ConstDecl<DeclType> constDecl = (ConstDecl<DeclType>) decl;
 
@@ -265,6 +265,12 @@ final class Z3Solver implements Solver {
 			@SuppressWarnings("unchecked")
 			final LitExpr<DeclType> tVal = (LitExpr<DeclType>) val;
 			return Optional.of(tVal);
+		}
+
+		@Override
+		public Map<Decl<?>, LitExpr<?>> toMap() {
+			getDecls().forEach(this::eval);
+			return Collections.unmodifiableMap(constToExpr);
 		}
 
 		////

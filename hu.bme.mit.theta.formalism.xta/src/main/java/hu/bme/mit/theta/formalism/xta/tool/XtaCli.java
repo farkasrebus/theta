@@ -26,18 +26,18 @@ import com.beust.jcommander.ParameterException;
 
 import hu.bme.mit.theta.analysis.algorithm.SafetyChecker;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
+import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.utils.ArgVisualizer;
 import hu.bme.mit.theta.analysis.utils.TraceVisualizer;
 import hu.bme.mit.theta.common.table.TableWriter;
-import hu.bme.mit.theta.common.table.impl.SimpleTableWriter;
+import hu.bme.mit.theta.common.table.impl.BasicTableWriter;
 import hu.bme.mit.theta.common.visualization.Graph;
 import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import hu.bme.mit.theta.formalism.xta.analysis.algorithm.lazy.LazyXtaStatistics;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaStatistics;
 import hu.bme.mit.theta.formalism.xta.dsl.XtaDslManager;
 import hu.bme.mit.theta.formalism.xta.tool.XtaCheckerBuilder.Algorithm;
-import hu.bme.mit.theta.formalism.xta.tool.XtaCheckerBuilder.Search;
 
 public final class XtaCli {
 	private static final String JAR_NAME = "theta-xta.jar";
@@ -51,7 +51,7 @@ public final class XtaCli {
 	String model;
 
 	@Parameter(names = { "--search" }, description = "Search strategy", required = true)
-	Search search;
+	SearchStrategy searchStrategy;
 
 	@Parameter(names = { "--benchmark" }, description = "Benchmark mode (only print metrics)")
 	Boolean benchmarkMode = false;
@@ -64,7 +64,7 @@ public final class XtaCli {
 
 	public XtaCli(final String[] args) {
 		this.args = args;
-		this.writer = new SimpleTableWriter(System.out, ",", "\"", "\"");
+		this.writer = new BasicTableWriter(System.out, ",", "\"", "\"");
 	}
 
 	public static void main(final String[] args) {
@@ -88,7 +88,7 @@ public final class XtaCli {
 
 		try {
 			final XtaSystem xta = loadModel();
-			final SafetyChecker<?, ?, UnitPrec> checker = XtaCheckerBuilder.build(algorithm, search, xta);
+			final SafetyChecker<?, ?, UnitPrec> checker = XtaCheckerBuilder.build(algorithm, searchStrategy, xta);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
 			printResult(result);
 			if (dotfile != null) {
@@ -103,16 +103,12 @@ public final class XtaCli {
 	}
 
 	private void printHeader() {
-		writer.cell("Expected");
-		writer.cell("Model");
-		writer.cell("DataPreProc");
-		writer.cell("DiagPreProc");
-		writer.cell("Algorithm");
 		writer.cell("Result");
-		writer.cell("PreProcTimeInMs");
 		writer.cell("AlgorithmTimeInMs");
 		writer.cell("RefinementTimeInMs");
-		writer.cell("TimeMs");
+		writer.cell("InterpolationTimeInMs");
+		writer.cell("RefinementSteps");
+		writer.cell("ArgDepth");
 		writer.cell("ArgNodes");
 		writer.cell("ArgNodesFeasible");
 		writer.cell("ArgNodesExpanded");
@@ -133,8 +129,8 @@ public final class XtaCli {
 			writer.cell(stats.getAlgorithmTimeInMs());
 			/*writer.cell(stats.getRefinementTimeInMs());
 			writer.cell(stats.getInterpolationTimeInMs());
-			writer.cell(stats.getRefinementSteps());
-			writer.cell(stats.getArgDepth());*/
+			writer.cell(stats.getRefinementSteps());*/
+			writer.cell(stats.getArgDepth());
 			writer.cell(stats.getArgNodes());
 			writer.cell(stats.getArgNodesFeasible());
 			writer.cell(stats.getArgNodesExpanded());

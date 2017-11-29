@@ -19,21 +19,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import hu.bme.mit.theta.analysis.Action;
 import hu.bme.mit.theta.analysis.Analysis;
-import hu.bme.mit.theta.analysis.Domain;
+import hu.bme.mit.theta.analysis.PartialOrd;
 import hu.bme.mit.theta.analysis.InitFunc;
-import hu.bme.mit.theta.analysis.TransferFunc;
+import hu.bme.mit.theta.analysis.TransFunc;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
 
 public final class ActZoneAnalysis<A extends Action> implements Analysis<ActZoneState, A, ZonePrec> {
 
 	private final InitFunc<ActZoneState, ZonePrec> initFunc;
-	private final TransferFunc<ActZoneState, A, ZonePrec> transferFunc;
+	private final TransFunc<ActZoneState, A, ZonePrec> transFunc;
 
 	private ActZoneAnalysis(final Analysis<ZoneState, ? super A, ZonePrec> analysis) {
 		checkNotNull(analysis);
 		initFunc = ActZoneInitFunc.create(analysis.getInitFunc());
-		transferFunc = ActZoneTransferFunc.create(analysis.getTransferFunc());
+		transFunc = ActZoneTransFunc.create(analysis.getTransFunc());
 	}
 
 	public static <A extends Action> ActZoneAnalysis<A> create(
@@ -42,8 +42,8 @@ public final class ActZoneAnalysis<A extends Action> implements Analysis<ActZone
 	}
 
 	@Override
-	public Domain<ActZoneState> getDomain() {
-		return ActZoneDomain.getInstance();
+	public PartialOrd<ActZoneState> getPartialOrd() {
+		return ActZoneOrd.getInstance();
 	}
 
 	@Override
@@ -52,8 +52,8 @@ public final class ActZoneAnalysis<A extends Action> implements Analysis<ActZone
 	}
 
 	@Override
-	public TransferFunc<ActZoneState, A, ZonePrec> getTransferFunc() {
-		return transferFunc;
+	public TransFunc<ActZoneState, A, ZonePrec> getTransFunc() {
+		return transFunc;
 	}
 
 }

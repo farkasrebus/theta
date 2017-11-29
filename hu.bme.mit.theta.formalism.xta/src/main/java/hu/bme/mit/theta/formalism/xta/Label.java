@@ -17,53 +17,57 @@ package hu.bme.mit.theta.formalism.xta;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import hu.bme.mit.theta.core.type.Expr;
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
+
+import hu.bme.mit.theta.core.type.Type;
 
 public final class Label {
 
-	public enum Kind {
-		EMIT, RECEIVE
+	private static final int HASH_SEED = 8527;
+	private volatile int hashCode = 0;
+
+	private final String name;
+	private final List<Type> paramTypes;
+
+	private Label(final String name, final List<? extends Type> paramTypes) {
+		this.name = checkNotNull(name);
+		this.paramTypes = ImmutableList.copyOf(checkNotNull(paramTypes));
 	}
 
-	private final Expr<ChanType> expr;
-	private final Kind kind;
-
-	private Label(final Expr<ChanType> expr, final Kind kind) {
-		this.expr = checkNotNull(expr);
-		this.kind = checkNotNull(kind);
+	public static Label of(final String name, final List<? extends Type> paramTypes) {
+		return new Label(name, paramTypes);
 	}
 
-	public static Label emit(final Expr<ChanType> expr) {
-		return new Label(expr, Kind.EMIT);
+	public String getName() {
+		return name;
 	}
 
-	public static Label receive(final Expr<ChanType> expr) {
-		return new Label(expr, Kind.RECEIVE);
-	}
-
-	public Expr<ChanType> getExpr() {
-		return expr;
-	}
-
-	public Kind getKind() {
-		return kind;
+	public List<Type> getParamTypes() {
+		return paramTypes;
 	}
 
 	@Override
 	public int hashCode() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO: auto-generated method stub");
+		int result = hashCode;
+		if (result == 0) {
+			result = HASH_SEED;
+			result = 31 * result + name.hashCode();
+			result = 31 * result + paramTypes.hashCode();
+			hashCode = result;
+		}
+		return result;
 	}
 
 	@Override
 	public boolean equals(final Object obj) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO: auto-generated method stub");
+		return super.equals(obj);
 	}
 
 	@Override
 	public String toString() {
-		return kind == Kind.EMIT ? expr + "!" : expr + "?";
+		return name;
 	}
 
 }

@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import hu.bme.mit.theta.analysis.LTS;
-import hu.bme.mit.theta.core.type.Expr;
-import hu.bme.mit.theta.core.utils.ExprUtils;
-import hu.bme.mit.theta.formalism.xta.ChanType;
 import hu.bme.mit.theta.formalism.xta.Label;
-import hu.bme.mit.theta.formalism.xta.Label.Kind;
+import hu.bme.mit.theta.formalism.xta.Sync;
+import hu.bme.mit.theta.formalism.xta.Sync.Kind;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Edge;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
@@ -46,7 +44,7 @@ public final class XtaLts implements LTS<XtaState<?>, XtaAction> {
 	public Collection<XtaAction> getEnabledActionsFor(final XtaState<?> state) {
 		final Collection<XtaAction> result = new ArrayList<>();
 		for (final Loc loc : state.getLocs()) {
-			for (final Edge edge : loc.getOutEdges()) {				
+			for (final Edge edge : loc.getOutEdges()) {
 				addActionsForEdge(result, system, state, edge);
 			}
 		}
@@ -55,7 +53,7 @@ public final class XtaLts implements LTS<XtaState<?>, XtaAction> {
 
 	private static void addActionsForEdge(final Collection<XtaAction> result, final XtaSystem system,
 			final XtaState<?> state, final Edge edge) {
-		if (edge.getLabel().isPresent()) {
+		if (edge.getSync().isPresent()) {
 			addSyncActionsForEdge(result, system, state, edge);
 		} else {
 			addSimpleActionsForEdge(result, system, state, edge);
@@ -66,31 +64,32 @@ public final class XtaLts implements LTS<XtaState<?>, XtaAction> {
 			final XtaState<?> state, final Edge emitEdge) {
 
 		final Loc emitLoc = emitEdge.getSource();
-		final Label emitLabel = emitEdge.getLabel().get();
-		if (emitLabel.getKind() != Kind.EMIT) {
+		final Sync emitSync = emitEdge.getSync().get();
+		if (emitSync.getKind() != Kind.EMIT) {
 			return;
 		}
 
-		final Expr<ChanType> emitExpr = ExprUtils.simplify(emitLabel.getExpr(), state.getVal());
+		final Label emitLabel = emitSync.getLabel();
 
-		for (final Loc receiveLoc : state.getLocs()) {
-			if (receiveLoc == emitLoc) {
+		for (final Loc recvLoc : state.getLocs()) {
+			if (recvLoc == emitLoc) {
 				continue;
 			}
 
-			for (final Edge recieveEdge : receiveLoc.getOutEdges()) {
-				if (!recieveEdge.getLabel().isPresent()) {
+			for (final Edge recvEdge : recvLoc.getOutEdges()) {
+				if (!recvEdge.getSync().isPresent()) {
 					continue;
 				}
 
-				final Label receiveLabel = recieveEdge.getLabel().get();
-				if (receiveLabel.getKind() != Kind.RECEIVE) {
+				final Sync recvSync = recvEdge.getSync().get();
+				if (recvSync.getKind() != Kind.RECV) {
 					continue;
 				}
 
-				final Expr<?> receiveExpr = ExprUtils.simplify(receiveLabel.getExpr(), state.getVal());
-				if (emitExpr.equals(receiveExpr)) {
-					final XtaAction action = XtaAction.synced(system, state.getLocs(), emitExpr, emitEdge, recieveEdge,true);
+				final Label recvLabel = recvSync.getLabel();
+
+				if (emitLabel.equals(recvLabel)) {
+					final XtaAction action = XtaAction.synced(system, state.getLocs(), emitEdge, recvEdge);
 					result.add(action);
 				}
 			}
@@ -99,7 +98,7 @@ public final class XtaLts implements LTS<XtaState<?>, XtaAction> {
 
 	private static void addSimpleActionsForEdge(final Collection<XtaAction> result, final XtaSystem system,
 			final XtaState<?> state, final Edge edge) {
-		final XtaAction action = XtaAction.simple(system, state.getLocs(), edge, true);
+		final XtaAction action = XtaAction.simple(system, state.getLocs(), edge);
 		result.add(action);
 	}
 
