@@ -154,21 +154,21 @@ public final class XtaMain {
 		mainApp.run();
 	}
 	
-	/*public static XtaMain fromArgs(final String[] args) {
+	public static XtaMain fromArgs(final String[] args) {
 		final XtaMain result = new XtaMain(args);
 		try {
 			JCommander.newBuilder().addObject(result).programName(JAR_NAME).build().parse(args);
 			final XtaSystem xta = result.loadModel();
 			//System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(xta)));
 			//final XtaSystem resultSys=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xta, XtaExample.getExampleBySource(result.model)).result));
-			long start=System.currentTimeMillis();
+			/*long start=System.currentTimeMillis();
 			//FFDI
 			UnfoldedXtaSystem resultSys=XtaSystemUnfolder.getPureFlatSystem(xta, XtaExample.getExampleBySource(result.model));
 			//CSMA
 			//XtaSystem sys=XtaSystemUnfolder.unfoldDataSmart(xta, XtaExample.CSMA);
 			long end=System.currentTimeMillis();
 			long time=end-start;
-			System.out.println(time);
+			System.out.println(time);*/
 			//System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(sys)));
 			return result;
 		} catch (final ParameterException ex) {
@@ -180,7 +180,7 @@ public final class XtaMain {
 			e.printStackTrace();
 			return null;
 		}
-	}*/
+	}
 
 	private void run() {
 		try {
