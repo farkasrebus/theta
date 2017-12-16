@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model formalismUrl="http://formalisms.cosyverif.org/parametric-timed-automaton.fml"
+    xmlns="http://cosyverif.org/ns/model">
+<!-- ************************************************************
+ automaton NET
+ ************************************************************ -->
+
+	 <attribute name="variables">
+		 <attribute name="clocks">
+			<attribute name="clock">
+				<attribute name="name">PLCclk</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">COMclk</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">NETclk</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">RIOclk</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">ENVclk</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">tt</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">yy</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">zz</attribute>
+			</attribute>
+		</attribute>
+	</attribute>
+
+	 <attribute name="constants">
+		 <attribute name="parameters">
+			<attribute name="parameter">
+				<attribute name="name">PLCmtt</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">PLCct</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">COMd</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">COMct</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">NETd</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">RIOd</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">SIGmrt</attribute>
+			</attribute>
+		</attribute>
+	</attribute>
+ 
+	<node id="0" nodeType="state">
+		<attribute name="name">NET1</attribute>
+		<attribute name="type">
+			<attribute name="initialState"/>
+		</attribute>
+	</node>
+ 
+	<node id="1" nodeType="state">
+		<attribute name="name">NET2</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">NETd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">NETclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="2" nodeType="state">
+		<attribute name="name">NET3</attribute>
+	</node>
+ 
+	<node id="3" nodeType="state">
+		<attribute name="name">NET4</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">NETd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">NETclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="4" nodeType="state">
+		<attribute name="name">NET5</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">NETd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">NETclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="5" nodeType="state">
+		<attribute name="name">NET6</attribute>
+	</node>
+ 
+	<node id="6" nodeType="state">
+		<attribute name="name">NET7</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">NETd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">NETclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<arc id="46" arcType="transition" source="0" target="1">
+		<!-- Nosync CNreq0 -->
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">NETclk</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="47" arcType="transition" source="0" target="4">
+		<!-- Nosync CNreq1 -->
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">NETclk</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="48" arcType="transition" source="1" target="2">
+		<!-- Nosync NRreq0 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">NETd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">NETclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="49" arcType="transition" source="2" target="3">
+		<!-- Nosync RNrep0 -->
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">NETclk</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="50" arcType="transition" source="2" target="6">
+		<!-- Nosync RNrep1 -->
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">NETclk</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="51" arcType="transition" source="3" target="0">
+		<!-- Nosync NCrep0 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">NETd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">NETclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="52" arcType="transition" source="4" target="5">
+		<!-- Nosync NRreq1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">NETd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">NETclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="53" arcType="transition" source="5" target="6">
+		<!-- Nosync RNrep1 -->
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">NETclk</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="54" arcType="transition" source="6" target="0">
+		<!-- Nosync NCrep1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">NETd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">NETclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+</model>

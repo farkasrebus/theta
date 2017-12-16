@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model formalismUrl="http://formalisms.cosyverif.org/parametric-timed-automaton.fml"
+    xmlns="http://cosyverif.org/ns/model">
+<!-- ************************************************************
+ automaton RIO
+ ************************************************************ -->
+
+	 <attribute name="variables">
+		 <attribute name="clocks">
+			<attribute name="clock">
+				<attribute name="name">PLCclk</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">COMclk</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">NETclk</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">RIOclk</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">ENVclk</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">tt</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">yy</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">zz</attribute>
+			</attribute>
+		</attribute>
+	</attribute>
+
+	 <attribute name="constants">
+		 <attribute name="parameters">
+			<attribute name="parameter">
+				<attribute name="name">PLCmtt</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">PLCct</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">COMd</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">COMct</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">NETd</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">RIOd</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">SIGmrt</attribute>
+			</attribute>
+		</attribute>
+	</attribute>
+ 
+	<node id="0" nodeType="state">
+		<attribute name="name">RIO1</attribute>
+		<attribute name="type">
+			<attribute name="initialState"/>
+		</attribute>
+	</node>
+ 
+	<node id="1" nodeType="state">
+		<attribute name="name">RIO2</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">RIOd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">RIOclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="2" nodeType="state">
+		<attribute name="name">RIO3</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">zz</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="3" nodeType="state">
+		<attribute name="name">RIO4</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">RIOd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">RIOclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="4" nodeType="state">
+		<attribute name="name">RIO5</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">zz</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="5" nodeType="state">
+		<attribute name="name">RIO6</attribute>
+	</node>
+ 
+	<node id="6" nodeType="state">
+		<attribute name="name">RIO7</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">RIOd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">RIOclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="7" nodeType="state">
+		<attribute name="name">RIO8</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">zz</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="8" nodeType="state">
+		<attribute name="name">RIO9</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">RIOd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">RIOclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="9" nodeType="state">
+		<attribute name="name">RIO10</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">zz</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<arc id="55" arcType="transition" source="0" target="1">
+		<!-- Nosync NRreq0 -->
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">RIOclk</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="56" arcType="transition" source="1" target="2">
+		<!-- Nosync SIGout0 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">RIOd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">RIOclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">zz</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="57" arcType="transition" source="1" target="3">
+		<!-- Nosync SIGin1 -->
+	</arc>
+
+	<arc id="58" arcType="transition" source="2" target="0">
+		<!-- Nosync RNrep0 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">zz</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="59" arcType="transition" source="3" target="4">
+		<!-- Nosync SIGout0 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">RIOd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">RIOclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">zz</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="60" arcType="transition" source="4" target="5">
+		<!-- Nosync RNrep0 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">zz</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="61" arcType="transition" source="5" target="6">
+		<!-- Nosync NRreq0 -->
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">RIOclk</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="62" arcType="transition" source="5" target="8">
+		<!-- Nosync NRreq1 -->
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">RIOclk</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="63" arcType="transition" source="6" target="7">
+		<!-- Nosync SIGout0 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">RIOd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">RIOclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">zz</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="64" arcType="transition" source="7" target="5">
+		<!-- Nosync RNrep1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">zz</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="65" arcType="transition" source="8" target="9">
+		<!-- Nosync SIGout1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">RIOd</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">RIOclk</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">zz</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="66" arcType="transition" source="9" target="5">
+		<!-- Nosync RNrep1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">zz</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+</model>

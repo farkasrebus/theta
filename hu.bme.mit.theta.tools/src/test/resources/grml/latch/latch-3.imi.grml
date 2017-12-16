@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model formalismUrl="http://formalisms.cosyverif.org/parametric-timed-automaton.fml"
+    xmlns="http://cosyverif.org/ns/model">
+<!-- ************************************************************
+ automaton not1
+ ************************************************************ -->
+
+	 <attribute name="variables">
+		 <attribute name="clocks">
+			<attribute name="clock">
+				<attribute name="name">s</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">ckClock</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">ckD</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">ckNot1</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">ckNot2</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">ckXor</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">ckAnd</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">ckLatch</attribute>
+			</attribute>
+		</attribute>
+		 <attribute name="discretes">
+			<attribute name="discrete">
+				<attribute name="name">q</attribute>
+			</attribute>
+		</attribute>
+	</attribute>
+
+	 <attribute name="constants">
+		 <attribute name="parameters">
+			<attribute name="parameter">
+				<attribute name="name">dClockHigh</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dClockLow</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dSetup</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dHold</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dNot1Down</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dNot1Up</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dNot2Down</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dNot2Up</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dXorDown1Up</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dXorUp2Up</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dAndUp2</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dAndDown1</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">dLatchUp</attribute>
+			</attribute>
+		</attribute>
+	</attribute>
+ 
+	<node id="0" nodeType="state">
+		<attribute name="name">Not1High1</attribute>
+		<attribute name="type">
+			<attribute name="initialState"/>
+		</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">ckNot1</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="1" nodeType="state">
+		<attribute name="name">Not1High1bis</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">dNot1Down</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">ckNot1</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<node id="2" nodeType="state">
+		<attribute name="name">Not1Low1</attribute>
+		<attribute name="invariant">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">ckNot1</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</node>
+ 
+	<arc id="5" arcType="transition" source="0" target="1">
+		<!-- Nosync clockUp1 -->
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">ckNot1</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="6" arcType="transition" source="1" target="2">
+		<!-- Nosync not1Down1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="greaterEqual">
+					<attribute name="expr">
+						<attribute name="name">ckNot1</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">dNot1Down</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+</model>

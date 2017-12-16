@@ -30,12 +30,18 @@ public class GrmlToXtaTransformer {
 		private String name;
 		private Set<String> clocks=new HashSet<>();
 		private Set<String> params=new HashSet<>();
+		private Set<String> discVars=new HashSet<>();
+		private Set<String> chans=new HashSet<>();
 		private Map<String,Tuple2<String,Optional<String>>> locs=new HashMap<>(); //id,name,invariant
 		private Set<Tuple5<String,String,Optional<String>,List<String>,Optional<String>>> edges=new HashSet<>(); 
 		private String initLocName;
 		
 		public void setName(String name) {
 			this.name=name;
+		}
+		
+		public void addSync(String label) {
+			chans.add(label);
 		}
 		
 		public void addClock(String clockName) {
@@ -66,6 +72,10 @@ public class GrmlToXtaTransformer {
 			return clocks;
 		}
 		
+		public Set<String> getChans() {
+			return chans;
+		}
+		
 		public Set<String> getParams() {
 			return params;
 		}
@@ -80,6 +90,16 @@ public class GrmlToXtaTransformer {
 		
 		public Set<Tuple5<String, String, Optional<String>, List<String>, Optional<String>>> getEdges() {
 			return edges;
+		}
+
+		public void addDiscVar(String name) {
+			discVars.add(name);
+		}
+
+		public Set<String> getAllVars() {
+			Set<String> result=new HashSet<>(clocks);
+			result.addAll(discVars);
+			return result;
 		}
 	}
 	
@@ -152,7 +172,27 @@ public class GrmlToXtaTransformer {
 												}
 											}
 										}
-									} else throw new IOException("Non clock variable");
+									} else if (vartypename.equals("discretes")) {
+										NodeList vars=vartype.getChildNodes();
+										for (int var_indx=0;var_indx<vars.getLength();var_indx++) {
+											Node var=vars.item(var_indx);
+											if (var.getNodeType()==Node.ELEMENT_NODE){
+												if (var.getAttributes().getLength()!=1) throw new IOException("Weird attributes in discrete");
+												if (!((Element)var).getAttribute("name").equals("discrete"))
+													throw new IOException("Not discrete");
+												NodeList varlist=var.getChildNodes();
+												for (int disc_indx=0;disc_indx<varlist.getLength();disc_indx++) {
+													Node varnode=varlist.item(disc_indx);
+													if (varnode.getNodeType()==Node.ELEMENT_NODE){
+														if (varnode.getAttributes().getLength()!=1) throw new IOException("Weird attributes in varname");
+														if (!((Element)varnode).getAttribute("name").equals("name"))
+															throw new IOException("Varname name attribute not name");
+														result.addDiscVar(varnode.getTextContent());
+													}
+												}
+											}
+										}
+									} else throw new IOException("Variable type "+vartypename+" not yet supported.");
 								}
 							}
 						} else if (attrname.equals("constants")) {
@@ -234,7 +274,7 @@ public class GrmlToXtaTransformer {
 											Node invnameattr=nodeinv.getAttributes().item(0);
 											if (!invnameattr.getNodeName().equals("name")) throw new IOException("Not name attribute in node invariant element");
 											if (!invnameattr.getNodeValue().equals("boolExpr")) throw new IOException("Node invariant "+invnameattr.getNodeValue()+" not yet supported.");
-											node_inv=Optional.of(parseBoolExpr(nodeinv,result.clocks));
+											node_inv=Optional.of(parseBoolExpr(nodeinv,result.getAllVars()));
 										}
 									}
 								} else throw new IOException("Node attribute type "+nodeattrname+" not yet supported.");
@@ -260,6 +300,13 @@ public class GrmlToXtaTransformer {
 						NodeList arcattributes=inode.getChildNodes();
 						for (int arcattr_indx=0;arcattr_indx<arcattributes.getLength();arcattr_indx++) {
 							Node arcattr=arcattributes.item(arcattr_indx);
+							if (arcattr.getNodeName().contains("comment")) {
+								String comment=arcattr.getNodeValue();
+								String[] spacesplit=comment.split(" ");
+								String sync=spacesplit[2];
+								arc_label=Optional.of(sync);
+								result.addSync(sync);
+							}
 							if (arcattr.getNodeType()==Node.ELEMENT_NODE){
 								String arcattrname=((Element) arcattr).getAttribute("name");								
 								if (arcattrname.equals("label")) {
@@ -323,9 +370,24 @@ public class GrmlToXtaTransformer {
 		System.out.println(";");
 	}
 
-	private static void printVars(XtaProcessStringRepresentation result) {
-		for (String s:result.params) {
-			System.out.println("const int "+s+";");
+	private static void printVars(Set<String> clocks, Set<String> vars, Set<String> params, Set<String> validChans) {
+		for (String p:params) {
+			System.out.println("const int "+p+";");
+		}
+		System.out.println();
+		
+		for (String v: vars) {
+			System.out.println("int "+v+";");
+		}
+		System.out.println();
+		
+		for (String c: clocks) {
+			System.out.println("clock "+c+";");
+		}
+		System.out.println();
+		
+		for (String c:validChans) {
+			System.out.println("chan "+c+";");
 		}
 		System.out.println();
 	}
@@ -334,10 +396,10 @@ public class GrmlToXtaTransformer {
 		Map<String, Tuple2<String, Optional<String>>> locs=result.locs;
 		Set<Tuple5<String, String, Optional<String>, List<String>, Optional<String>>> edges=result.edges;
 		System.out.println("process "+result.getName()+"() {");
-		for (String s:result.clocks) {
+		/*for (String s:result.clocks) {
 			System.out.println("\t"+"clock "+s+";");
 		}
-		System.out.println();
+		System.out.println();*/
 		System.out.println("\t"+"state");
 		int cntr=0;
 		for (String locid:locs.keySet()){
@@ -362,7 +424,7 @@ public class GrmlToXtaTransformer {
 			cntr++;
 			System.out.print("\t"+"\t"+locs.get(edge.get1()).get1()+" -> "+locs.get(edge.get2()).get1());
 			
-			boolean haslabel=edge.get3().isPresent();
+			boolean haslabel=edge.get3().isPresent() && result.chans.contains(edge.get3().get());
 			boolean hasupdate=!edge.get4().isEmpty();
 			boolean hasguard=edge.get5().isPresent();
 			if (hasguard || haslabel || hasupdate) {
@@ -371,7 +433,9 @@ public class GrmlToXtaTransformer {
 					System.out.print(" guard "+ edge.get5().get()+";");
 				}
 				if (haslabel) {
-					System.out.print(" sync "+ edge.get3().get()+";");
+					String type="?";
+					if (hasguard) type="!";
+					System.out.print(" sync "+ edge.get3().get()+type+";");
 				}
 				if (hasupdate) {
 					System.out.print(" assign");
@@ -438,10 +502,39 @@ public class GrmlToXtaTransformer {
 					return parseGreater(exprtypenode,clocks);
 				} else if (exprType.equals("and")) {
 					return parseAnd(exprtypenode,clocks);
+				} else if (exprType.equals("equal")) {
+					return parseEqual(exprtypenode,clocks);
+				} else if (exprType.equals("*")) {
+					return parseMulExpr(exprtypenode);
 				} else throw new IOException("Expression type "+exprType+" not yet supported.");
 			}
 		}
 		return null;
+	}
+
+	private static String parseEqual(Node exprnode, Set<String> clocks) throws IOException {
+		Node leftExprNode=null;
+		Node rightExprNode=null;
+		NodeList exprs=exprnode.getChildNodes();
+		for (int i=0; i<exprs.getLength();i++) {
+			Node exprtypenode=exprs.item(i);
+			if (exprtypenode.getNodeType()==Node.ELEMENT_NODE){
+				if (exprtypenode.getAttributes().getLength()!=1) throw new IOException("Weird attributes in expr element.");
+				Node exprnameattr=exprtypenode.getAttributes().item(0);
+				if (!exprnameattr.getNodeName().equals("name")) throw new IOException("Not name attribute in expr element");
+				if (!exprnameattr.getNodeValue().equals("expr")) throw new IOException("Name attribute not expr in element");
+				if (leftExprNode==null) leftExprNode=exprtypenode;
+				else if (rightExprNode==null) rightExprNode=exprtypenode;
+				else throw new IOException("Too many subexprs");
+			}
+		}
+		if (leftExprNode==null || rightExprNode==null) throw new IOException("Too few subexprs");
+		String leftexpr=parseExpr(leftExprNode);
+		String rightexpr=parseExpr(rightExprNode);
+		
+		if (clocks.contains(rightexpr)) {
+			return rightexpr+" == "+leftexpr;
+		} else return leftexpr+" == "+rightexpr;
 	}
 
 	private static String parseAnd(Node exprnode, Set<String> clocks) throws IOException {
@@ -458,8 +551,12 @@ public class GrmlToXtaTransformer {
 					expr=parseGreaterEqual(exprtypenode,clocks);
 				} else if (exprType.equals("greater")) {
 					expr=parseGreater(exprtypenode,clocks);
+				} else if (exprType.equals("equal")) {
+					expr=parseEqual(exprtypenode,clocks);
 				} else if (exprType.equals("and")) {
 					expr=parseAnd(exprtypenode,clocks);
+				} else if (exprType.equals("*")) {
+					expr=parseMulExpr(exprtypenode);
 				} else throw new IOException("Expression type "+exprType+" not yet supported.");
 			
 				if (leftExpr==null) leftExpr=expr;
@@ -494,7 +591,8 @@ public class GrmlToXtaTransformer {
 			return leftexpr+" > "+rightexpr;
 		} else if (clocks.contains(rightexpr)) {
 			return rightexpr+" < "+leftexpr;
-		} else throw new IOException("Expr type not yet supported");
+		} else return leftexpr+" > "+rightexpr;
+			//throw new IOException("Expr type not yet supported "+leftexpr+" ? "+rightexpr);
 	}
 
 	private static String parseGreaterEqual(Node exprnode,Set<String> clocks) throws IOException {
@@ -518,9 +616,9 @@ public class GrmlToXtaTransformer {
 		String rightexpr=parseExpr(rightExprNode);
 		if (clocks.contains(leftexpr)){
 			return leftexpr+" >= "+rightexpr;
-		} else if (clocks.contains(rightexpr)) {
+		} else //if (clocks.contains(rightexpr)) {
 			return rightexpr+" <= "+leftexpr;
-		} else throw new IOException("Expr type not yet supported");
+		//} else throw new IOException("Expr type not yet supported "+leftexpr+" ? "+rightexpr);
 	}
 
 	private static String parseExpr(Node exprnode) throws IOException {
@@ -538,10 +636,41 @@ public class GrmlToXtaTransformer {
 					return exprtypenode.getTextContent();
 				} else if (exprtype.equals("*")) {
 					return parseMulExpr(exprtypenode);
-				} else  throw new IOException("Expression type "+exprtype+" not yet supported.");
+				} else if (exprtype.equals("+")) {
+					return parseAddExpr(exprtypenode);
+				}else  throw new IOException("Expression type "+exprtype+" not yet supported.");
 			}
 		}
 		return null;
+	}
+
+	private static String parseAddExpr(Node exprnode) throws IOException {
+		String leftExpr=null;
+		String rightExpr=null;
+		NodeList exprs=exprnode.getChildNodes();
+		for (int i=0; i<exprs.getLength();i++) {
+			Node exprtypenode=exprs.item(i);
+			if (exprtypenode.getNodeType()==Node.ELEMENT_NODE){
+				if (exprtypenode.getAttributes().getLength()!=1) throw new IOException("Weird attributes in expr element.");
+				Node exprnameattr=exprtypenode.getAttributes().item(0);
+				if (!exprnameattr.getNodeName().equals("name")) throw new IOException("Not name attribute in expr element");
+				String exprtype=exprnameattr.getNodeValue();
+				String expr;
+				if (exprtype.equals("const")) {
+					expr= exprtypenode.getTextContent();
+				} else if (exprtype.equals("name")) {
+					expr= exprtypenode.getTextContent();
+				} else if (exprtype.equals("*")) {
+					expr= parseMulExpr(exprtypenode);
+				} else  throw new IOException("Expression type "+exprtype+" not yet supported.");
+			
+				if (leftExpr==null) leftExpr=expr;
+				else if (rightExpr==null) rightExpr=expr;
+				else throw new IOException("Too many subexprs");
+			}
+		}
+		if (leftExpr==null || rightExpr==null) throw new IOException("Too few subexprs");
+		return leftExpr+" + "+rightExpr;
 	}
 
 	private static String parseMulExpr(Node exprnode) throws IOException {
@@ -560,6 +689,8 @@ public class GrmlToXtaTransformer {
 					expr= exprtypenode.getTextContent();
 				} else if (exprtype.equals("name")) {
 					expr= exprtypenode.getTextContent();
+				} else if (exprtype.equals("*")) {
+					expr= parseMulExpr(exprtypenode);
 				} else  throw new IOException("Expression type "+exprtype+" not yet supported.");
 			
 				if (leftExpr==null) leftExpr=expr;
@@ -571,61 +702,43 @@ public class GrmlToXtaTransformer {
 		return leftExpr+" * "+rightExpr;
 	}
 
-	private static void printNote(NodeList nodeList) {
-
-	    for (int count = 0; count < nodeList.getLength(); count++) {
-
-		Node tempNode = nodeList.item(count);
-
-		// make sure it's element node.
-		if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
-
-			// get node name and value
-			System.out.println("\nNode Name =" + tempNode.getNodeName() + " [OPEN]");
-			System.out.println("Node Value =" + tempNode.getTextContent());
-
-			if (tempNode.hasAttributes()) {
-
-				// get attributes names and values
-				NamedNodeMap nodeMap = tempNode.getAttributes();
-
-				for (int i = 0; i < nodeMap.getLength(); i++) {
-
-					Node node = nodeMap.item(i);
-					System.out.println("attr name : " + node.getNodeName());
-					System.out.println("attr value : " + node.getNodeValue());
-
-				}
-
-			}
-
-			if (tempNode.hasChildNodes()) {
-
-				// loop again if has child nodes
-				printNote(tempNode.getChildNodes());
-
-			}
-
-			System.out.println("Node Name =" + tempNode.getNodeName() + " [CLOSE]");
-
-		}
-
-	    }
-
-	  }
-
 	public static void transform(List<String> inputs) {
 		List<XtaProcessStringRepresentation> results=new ArrayList<>();
-		boolean varsprinted=false;
 		for (String proc:inputs) {
 			XtaProcessStringRepresentation result=read(proc);
 			results.add(result);
-			if (!varsprinted) {
-				printVars(result);
-				varsprinted=true;
-			}
+		}
+		Set<String> validChans=handleChans(results);
+		printVars(results.get(0).clocks,results.get(0).discVars,results.get(0).params,validChans);
+		for (XtaProcessStringRepresentation result:results) {
 			printXta(result);
 		}
 		printSys(results);
+	}
+
+	private static Set<String> handleChans(List<XtaProcessStringRepresentation> procs) {
+		Set<String> result=new HashSet<>();
+		Map<String,Integer> chanCnt=new HashMap<>();
+		//count occurences of channels
+		for (XtaProcessStringRepresentation proc:procs) {
+			Set<String> chans=proc.getChans();
+			for (String chan:chans) {
+				int cnt=chanCnt.getOrDefault(chan, 0)+1;
+				chanCnt.put(chan, cnt);
+			}
+		}
+		//only keep channels of at least two occurences
+		for (XtaProcessStringRepresentation proc:procs) {
+			Set<String> chans=proc.getChans();
+			Set<String> chansToRemove=new HashSet<>();
+			for (String chan:chans) {
+				int cnt=chanCnt.get(chan);
+				if (cnt<2) chansToRemove.add(chan);
+			}
+			chans.removeAll(chansToRemove);
+			result.addAll(chans);
+		}
+		return result;
+		
 	}
 }

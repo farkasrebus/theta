@@ -11,20 +11,20 @@ import hu.bme.mit.theta.tools.xta.XtaMain;
 
 public class GrmlToXtaTests {
 	
-	@Test
+	//@Test
 	public void run_transformation() {
 		List<String> sources=new ArrayList<>();
-		sources.add("TrainAHV93-train");
-		sources.add("TrainAHV93-gate");
-		sources.add("TrainAHV93-controller");
+		for (int i=1; i<=3;i++) {
+			sources.add("wlan/wlan-"+i);
+		}
 		GrmlToXtaTransformer.transform(sources);
 		
 	}
 	
-	@Ignore
+	
 	@Test
 	public void test_parse() {
-		String[] args={"-a","LU","-m","src/test/resources/grml/exSITH.xta","-s","BFS"};
+		String[] args={"-a","LU","-m","src/test/resources/xta/external/engine.xta","-s","BFS"};
 		XtaMain.fromArgs(args);
 	}
 }

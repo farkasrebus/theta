@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model formalismUrl="http://formalisms.cosyverif.org/parametric-timed-automaton.fml"
+    xmlns="http://cosyverif.org/ns/model">
+<!-- ************************************************************
+ automaton Frame_Generator_B
+ ************************************************************ -->
+
+	 <attribute name="variables">
+		 <attribute name="clocks">
+			<attribute name="clock">
+				<attribute name="name">A_c</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">B_c</attribute>
+			</attribute>
+		</attribute>
+		 <attribute name="discretes">
+			<attribute name="discrete">
+				<attribute name="name">A_Pn</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_Pn</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_no</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_no</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_msg</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_msg</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_eof</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_eof</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_start</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_start</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_stop</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_stop</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_T4</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_T4</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_frame</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_frame</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_new_Pn</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_new_Pn</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_reset</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_reset</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_check</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_check</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_err</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_err</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_res</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_res</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_diff</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_diff</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_observe</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_observe</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_S1</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_S1</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_S2</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_S2</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">A_Pf</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">B_Pf</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">one</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">zero</attribute>
+			</attribute>
+		</attribute>
+	</attribute>
+
+	 <attribute name="constants">
+		 <attribute name="parameters">
+			<attribute name="parameter">
+				<attribute name="name">t781</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">t40</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">t50000</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">t25000</attribute>
+			</attribute>
+		</attribute>
+	</attribute>
+ 
+	<node id="0" nodeType="state">
+		<attribute name="name">start</attribute>
+		<attribute name="type">
+			<attribute name="initialState"/>
+		</attribute>
+	</node>
+ 
+	<node id="1" nodeType="state">
+		<attribute name="name">first</attribute>
+	</node>
+ 
+	<node id="2" nodeType="state">
+		<attribute name="name">msg</attribute>
+	</node>
+ 
+	<node id="3" nodeType="state">
+		<attribute name="name">last</attribute>
+	</node>
+ 
+	<node id="4" nodeType="state">
+		<attribute name="name">c_set_stop</attribute>
+	</node>
+ 
+	<node id="5" nodeType="state">
+		<attribute name="name">c_continue</attribute>
+	</node>
+ 
+	<node id="6" nodeType="state">
+		<attribute name="name">c_set_msg</attribute>
+	</node>
+ 
+	<arc id="70" arcType="transition" source="0" target="1">
+		<attribute name="label">nosync_70</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">B_frame</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">1</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_no</attribute>
+				<attribute name="expr">
+					<attribute name="const">1</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_msg</attribute>
+				<attribute name="expr">
+					<attribute name="const">10</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_eof</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_stop</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_T4</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="71" arcType="transition" source="1" target="2">
+		<attribute name="label">nosync_71</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">B_new_Pn</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">1</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_Pn</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="72" arcType="transition" source="2" target="6">
+		<attribute name="label">nosync_72</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="and">
+						<attribute name="and">
+							<attribute name="equal">
+								<attribute name="expr">
+									<attribute name="name">B_reset</attribute>
+								</attribute>
+								<attribute name="expr">
+									<attribute name="const">0</attribute>
+								</attribute>
+							</attribute>
+							<attribute name="equal">
+								<attribute name="expr">
+									<attribute name="name">B_new_Pn</attribute>
+								</attribute>
+								<attribute name="expr">
+									<attribute name="const">1</attribute>
+								</attribute>
+							</attribute>
+						</attribute>
+						<attribute name="equal">
+							<attribute name="expr">
+								<attribute name="name">B_T4</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="const">0</attribute>
+							</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="equal">
+						<attribute name="expr">
+							<attribute name="name">B_msg</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_no</attribute>
+				<attribute name="expr">
+					<attribute name="+">
+						<attribute name="name">B_no</attribute>
+						<attribute name="const">1</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_Pn</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_start</attribute>
+				<attribute name="expr">
+					<attribute name="const">1</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_Pn</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="73" arcType="transition" source="2" target="4">
+		<attribute name="label">nosync_73</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="and">
+						<attribute name="equal">
+							<attribute name="expr">
+								<attribute name="name">B_reset</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="const">0</attribute>
+							</attribute>
+						</attribute>
+						<attribute name="equal">
+							<attribute name="expr">
+								<attribute name="name">B_new_Pn</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="const">1</attribute>
+							</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="greater">
+						<attribute name="expr">
+							<attribute name="name">B_msg</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_Pn</attribute>
+				<attribute name="expr">
+					<attribute name="const">1</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_msg</attribute>
+				<attribute name="expr">
+					<attribute name="+">
+						<attribute name="name">B_msg</attribute>
+						<attribute name="const">-1</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="74" arcType="transition" source="2" target="0">
+		<attribute name="label">nosync_74</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">B_reset</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">1</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_reset</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="75" arcType="transition" source="2" target="3">
+		<attribute name="label">nosync_75</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="and">
+						<attribute name="and">
+							<attribute name="equal">
+								<attribute name="expr">
+									<attribute name="name">B_reset</attribute>
+								</attribute>
+								<attribute name="expr">
+									<attribute name="const">0</attribute>
+								</attribute>
+							</attribute>
+							<attribute name="equal">
+								<attribute name="expr">
+									<attribute name="name">B_new_Pn</attribute>
+								</attribute>
+								<attribute name="expr">
+									<attribute name="const">0</attribute>
+								</attribute>
+							</attribute>
+						</attribute>
+						<attribute name="equal">
+							<attribute name="expr">
+								<attribute name="name">B_T4</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="const">1</attribute>
+							</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="equal">
+						<attribute name="expr">
+							<attribute name="name">B_msg</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_Pn</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="76" arcType="transition" source="3" target="0">
+		<attribute name="label">nosync_76</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">B_new_Pn</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">1</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_Pn</attribute>
+				<attribute name="expr">
+					<attribute name="const">1</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_eof</attribute>
+				<attribute name="expr">
+					<attribute name="const">1</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_start</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="77" arcType="transition" source="4" target="5">
+		<attribute name="label">nosync_77</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="equal">
+					<attribute name="expr">
+						<attribute name="name">B_T4</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="78" arcType="transition" source="4" target="5">
+		<attribute name="label">nosync_78</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="equal">
+						<attribute name="expr">
+							<attribute name="name">B_T4</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">1</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="greaterEqual">
+						<attribute name="expr">
+							<attribute name="name">B_msg</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">7</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="79" arcType="transition" source="4" target="5">
+		<attribute name="label">nosync_79</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="equal">
+						<attribute name="expr">
+							<attribute name="name">B_T4</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">1</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="greater">
+						<attribute name="expr">
+							<attribute name="const">7</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="name">B_msg</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_stop</attribute>
+				<attribute name="expr">
+					<attribute name="const">4</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+
+	<arc id="80" arcType="transition" source="5" target="2">
+		<attribute name="label">nosync_80</attribute>
+	</arc>
+
+	<arc id="81" arcType="transition" source="6" target="2">
+		<attribute name="label">nosync_81</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="greater">
+					<attribute name="expr">
+						<attribute name="const">2</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">B_no</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_msg</attribute>
+				<attribute name="expr">
+					<attribute name="const">2</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="82" arcType="transition" source="6" target="2">
+		<attribute name="label">nosync_82</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="greater">
+					<attribute name="expr">
+						<attribute name="const">2</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">B_no</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_msg</attribute>
+				<attribute name="expr">
+					<attribute name="const">4</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="83" arcType="transition" source="6" target="2">
+		<attribute name="label">nosync_83</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="greater">
+					<attribute name="expr">
+						<attribute name="const">2</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="name">B_no</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_msg</attribute>
+				<attribute name="expr">
+					<attribute name="const">6</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="84" arcType="transition" source="6" target="2">
+		<attribute name="label">nosync_84</attribute>
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="greaterEqual">
+						<attribute name="expr">
+							<attribute name="const">2</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="name">B_no</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="greater">
+						<attribute name="expr">
+							<attribute name="name">B_no</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">1</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">B_msg</attribute>
+				<attribute name="expr">
+					<attribute name="const">8</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">B_T4</attribute>
+				<attribute name="expr">
+					<attribute name="const">1</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+</model>

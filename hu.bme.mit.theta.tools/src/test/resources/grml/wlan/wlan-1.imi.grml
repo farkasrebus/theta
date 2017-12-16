@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model formalismUrl="http://formalisms.cosyverif.org/parametric-timed-automaton.fml"
+    xmlns="http://cosyverif.org/ns/model">
+<!-- ************************************************************
+ automaton medium
+ ************************************************************ -->
+
+	 <attribute name="variables">
+		 <attribute name="clocks">
+			<attribute name="clock">
+				<attribute name="name">x1</attribute>
+			</attribute>
+			<attribute name="clock">
+				<attribute name="name">x2</attribute>
+			</attribute>
+		</attribute>
+		 <attribute name="discretes">
+			<attribute name="discrete">
+				<attribute name="name">col</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">c1</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">c2</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">slot1</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">slot2</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">backoff1</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">backoff2</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">bc1</attribute>
+			</attribute>
+			<attribute name="discrete">
+				<attribute name="name">bc2</attribute>
+			</attribute>
+		</attribute>
+	</attribute>
+
+	 <attribute name="constants">
+		 <attribute name="parameters">
+			<attribute name="parameter">
+				<attribute name="name">ASLOTTIME</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">DIFS</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">VULN</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">TRANS_TIME_MAX</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">TRANS_TIME_MIN</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">ACK_TO</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">ACK</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">SIFS</attribute>
+			</attribute>
+			<attribute name="parameter">
+				<attribute name="name">BOFF</attribute>
+			</attribute>
+		</attribute>
+	</attribute>
+ 
+	<node id="0" nodeType="state">
+		<attribute name="name">Idle</attribute>
+		<attribute name="type">
+			<attribute name="initialState"/>
+		</attribute>
+	</node>
+ 
+	<arc id="1" arcType="transition" source="0" target="0">
+		<!-- Nosync send2 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="equal">
+						<attribute name="expr">
+							<attribute name="name">c2</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="equal">
+						<attribute name="expr">
+							<attribute name="name">c1</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">c2</attribute>
+				<attribute name="expr">
+					<attribute name="const">1</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="2" arcType="transition" source="0" target="0">
+		<!-- Nosync send1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="and">
+						<attribute name="equal">
+							<attribute name="expr">
+								<attribute name="name">c2</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="const">0</attribute>
+							</attribute>
+						</attribute>
+						<attribute name="equal">
+							<attribute name="expr">
+								<attribute name="name">col</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="const">8</attribute>
+							</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="greater">
+						<attribute name="expr">
+							<attribute name="name">c1</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">c1</attribute>
+				<attribute name="expr">
+					<attribute name="const">2</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">c2</attribute>
+				<attribute name="expr">
+					<attribute name="const">2</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="3" arcType="transition" source="0" target="0">
+		<!-- Nosync send1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="and">
+						<attribute name="equal">
+							<attribute name="expr">
+								<attribute name="name">c2</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="const">0</attribute>
+							</attribute>
+						</attribute>
+						<attribute name="greater">
+							<attribute name="expr">
+								<attribute name="const">8</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="name">col</attribute>
+							</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="greater">
+						<attribute name="expr">
+							<attribute name="name">c1</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">c1</attribute>
+				<attribute name="expr">
+					<attribute name="const">2</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">c2</attribute>
+				<attribute name="expr">
+					<attribute name="const">2</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">col</attribute>
+				<attribute name="expr">
+					<attribute name="+">
+						<attribute name="name">col</attribute>
+						<attribute name="const">1</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="4" arcType="transition" source="0" target="0">
+		<!-- Nosync send1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="and">
+						<attribute name="equal">
+							<attribute name="expr">
+								<attribute name="name">c1</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="const">0</attribute>
+							</attribute>
+						</attribute>
+						<attribute name="equal">
+							<attribute name="expr">
+								<attribute name="name">col</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="const">8</attribute>
+							</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="greater">
+						<attribute name="expr">
+							<attribute name="name">c2</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">c1</attribute>
+				<attribute name="expr">
+					<attribute name="const">2</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">c2</attribute>
+				<attribute name="expr">
+					<attribute name="const">2</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="5" arcType="transition" source="0" target="0">
+		<!-- Nosync send1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="and">
+						<attribute name="equal">
+							<attribute name="expr">
+								<attribute name="name">c1</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="const">0</attribute>
+							</attribute>
+						</attribute>
+						<attribute name="greater">
+							<attribute name="expr">
+								<attribute name="const">8</attribute>
+							</attribute>
+							<attribute name="expr">
+								<attribute name="name">col</attribute>
+							</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="greater">
+						<attribute name="expr">
+							<attribute name="name">c2</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">c1</attribute>
+				<attribute name="expr">
+					<attribute name="const">2</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">c2</attribute>
+				<attribute name="expr">
+					<attribute name="const">2</attribute>
+				</attribute>
+			</attribute>
+			<attribute name="update">
+				<attribute name="name">col</attribute>
+				<attribute name="expr">
+					<attribute name="+">
+						<attribute name="name">col</attribute>
+						<attribute name="const">1</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="6" arcType="transition" source="0" target="0">
+		<!-- Nosync send1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="and">
+					<attribute name="equal">
+						<attribute name="expr">
+							<attribute name="name">c2</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+					<attribute name="equal">
+						<attribute name="expr">
+							<attribute name="name">c1</attribute>
+						</attribute>
+						<attribute name="expr">
+							<attribute name="const">0</attribute>
+						</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">c1</attribute>
+				<attribute name="expr">
+					<attribute name="const">1</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="7" arcType="transition" source="0" target="0">
+		<!-- Nosync finish1 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="greater">
+					<attribute name="expr">
+						<attribute name="name">c1</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">c1</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+	<arc id="8" arcType="transition" source="0" target="0">
+		<!-- Nosync finish2 -->
+		<attribute name="guard">
+			<attribute name="boolExpr">
+				<attribute name="greater">
+					<attribute name="expr">
+						<attribute name="name">c2</attribute>
+					</attribute>
+					<attribute name="expr">
+						<attribute name="const">0</attribute>
+					</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+		<attribute name="updates">
+			<attribute name="update">
+				<attribute name="name">c2</attribute>
+				<attribute name="expr">
+					<attribute name="const">0</attribute>
+				</attribute>
+			</attribute>
+		</attribute>
+	</arc>
+</model>

@@ -18,7 +18,9 @@ import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.common.table.TableWriter;
 import hu.bme.mit.theta.common.table.impl.BasicTableWriter;
+import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
+import hu.bme.mit.theta.formalism.xta.XtaVisualizer;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.ActStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.BinItpStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.ItpStrategy.ItpOperator;
@@ -159,7 +161,7 @@ public final class XtaMain {
 		try {
 			JCommander.newBuilder().addObject(result).programName(JAR_NAME).build().parse(args);
 			final XtaSystem xta = result.loadModel();
-			//System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(xta)));
+			System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(xta)));
 			//final XtaSystem resultSys=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xta, XtaExample.getExampleBySource(result.model)).result));
 			/*long start=System.currentTimeMillis();
 			//FFDI

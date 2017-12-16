@@ -339,7 +339,7 @@ final class XtaExpression {
 					return Not(TypeUtils.cast(op, Bool()));
 				} else {
 					// TODO Auto-generated method stub
-					throw new UnsupportedOperationException("TODO: auto-generated method stub");
+					throw new UnsupportedOperationException("TODO: auto-generated method stub ");
 				}
 
 			}
