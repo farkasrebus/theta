@@ -18,12 +18,12 @@ package hu.bme.mit.theta.formalism.cfa;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -47,13 +47,12 @@ public final class CFA {
 	private final Collection<Edge> edges;
 
 	private CFA(final Builder builder) {
-		this.initLoc = checkNotNull(builder.initLoc, "Initial location must be set.");
-		this.finalLoc = checkNotNull(builder.finalLoc, "Final location must be set.");
-		this.errorLoc = checkNotNull(builder.errorLoc, "Error location must be set.");
-		this.locs = ImmutableSet.copyOf(builder.locs);
-		this.edges = ImmutableList.copyOf(builder.edges);
-		this.vars = Collections.unmodifiableCollection(
-				this.edges.stream().flatMap(e -> StmtUtils.getVars(e.getStmt()).stream()).collect(Collectors.toSet()));
+		initLoc = builder.initLoc;
+		finalLoc = builder.finalLoc;
+		errorLoc = builder.errorLoc;
+		locs = ImmutableSet.copyOf(builder.locs);
+		edges = ImmutableList.copyOf(builder.edges);
+		vars = edges.stream().flatMap(e -> StmtUtils.getVars(e.getStmt()).stream()).collect(toImmutableSet());
 	}
 
 	public Loc getInitLoc() {
@@ -93,7 +92,7 @@ public final class CFA {
 		private final Collection<Edge> outEdges;
 
 		private Loc(final String name) {
-			this.name = name;
+			this.name = checkNotNull(name);
 			inEdges = new LinkedList<>();
 			outEdges = new LinkedList<>();
 		}
@@ -126,9 +125,9 @@ public final class CFA {
 		private final Stmt stmt;
 
 		private Edge(final Loc source, final Loc target, final Stmt stmt) {
-			this.source = source;
-			this.target = target;
-			this.stmt = stmt;
+			this.source = checkNotNull(source);
+			this.target = checkNotNull(target);
+			this.stmt = checkNotNull(stmt);
 		}
 
 		public Loc getSource() {
@@ -173,7 +172,7 @@ public final class CFA {
 		}
 
 		public void setInitLoc(final Loc initLoc) {
-			checkState(!built, "A CFA was already built.");
+			checkNotBuilt();
 			checkNotNull(initLoc);
 			checkArgument(locs.contains(initLoc), "Initial location not present in CFA.");
 			checkArgument(!initLoc.equals(finalLoc), "Initial location cannot be same as final.");
@@ -182,7 +181,7 @@ public final class CFA {
 		}
 
 		public void setFinalLoc(final Loc finalLoc) {
-			checkState(!built, "A CFA was already built.");
+			checkNotBuilt();
 			checkNotNull(finalLoc);
 			checkArgument(locs.contains(finalLoc), "Final location not present in CFA.");
 			checkArgument(!finalLoc.equals(initLoc), "Final location cannot be same as init.");
@@ -191,7 +190,7 @@ public final class CFA {
 		}
 
 		public void setErrorLoc(final Loc errorLoc) {
-			checkState(!built, "A CFA was already built.");
+			checkNotBuilt();
 			checkNotNull(errorLoc);
 			checkArgument(locs.contains(errorLoc), "Error location not present in CFA.");
 			checkArgument(!errorLoc.equals(initLoc), "Error location cannot be same as init.");
@@ -200,17 +199,14 @@ public final class CFA {
 		}
 
 		public Loc createLoc(final String name) {
-			checkState(!built, "A CFA was already built.");
+			checkNotBuilt();
 			final Loc loc = new Loc(name);
 			locs.add(loc);
 			return loc;
 		}
 
 		public Edge createEdge(final Loc source, final Loc target, final Stmt stmt) {
-			checkState(!built, "A CFA was already built.");
-			checkNotNull(source);
-			checkNotNull(target);
-			checkNotNull(stmt);
+			checkNotBuilt();
 			checkArgument(locs.contains(source), "Invalid source.");
 			checkArgument(locs.contains(target), "Invalid target.");
 
@@ -222,8 +218,15 @@ public final class CFA {
 		}
 
 		public CFA build() {
+			checkState(initLoc != null, "Initial location must be set.");
+			checkState(finalLoc != null, "Final location must be set.");
+			checkState(errorLoc != null, "Error location must be set.");
 			built = true;
 			return new CFA(this);
+		}
+
+		private void checkNotBuilt() {
+			checkState(!built, "A CFA was already built.");
 		}
 	}
 

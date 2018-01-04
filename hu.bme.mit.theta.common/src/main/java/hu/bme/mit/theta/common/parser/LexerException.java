@@ -13,29 +13,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package hu.bme.mit.theta.analysis.unit;
+package hu.bme.mit.theta.common.parser;
 
-import hu.bme.mit.theta.analysis.State;
+public final class LexerException extends RuntimeException {
 
-public final class UnitState implements State {
+	private static final long serialVersionUID = 1646917145187066377L;
 
-	private static final UnitState INSTANCE = new UnitState();
-
-	private UnitState() {
+	public LexerException(final String message) {
+		super(message);
 	}
 
-	public static UnitState getInstance() {
-		return INSTANCE;
-	}
-
-	@Override
-	public boolean isBottom() {
-		return false;
-	}
-
-	@Override
-	public String toString() {
-		return getClass().getSimpleName();
+	public LexerException(final Throwable cause) {
+		super(cause);
 	}
 
 }
