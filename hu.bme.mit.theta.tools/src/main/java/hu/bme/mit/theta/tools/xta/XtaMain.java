@@ -161,7 +161,8 @@ public final class XtaMain {
 		try {
 			JCommander.newBuilder().addObject(result).programName(JAR_NAME).build().parse(args);
 			final XtaSystem xta = result.loadModel();
-			System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(xta)));
+			XtaSystemUnfolder.printStuff(xta);
+			//System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(xta)));
 			//final XtaSystem resultSys=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xta, XtaExample.getExampleBySource(result.model)).result));
 			/*long start=System.currentTimeMillis();
 			//FFDI

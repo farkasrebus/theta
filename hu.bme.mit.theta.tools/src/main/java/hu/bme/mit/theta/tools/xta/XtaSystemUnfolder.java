@@ -25,6 +25,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import hu.bme.mit.theta.common.Tuple2;
 import hu.bme.mit.theta.core.clock.constr.AndConstr;
 import hu.bme.mit.theta.core.clock.constr.AtomicConstr;
 import hu.bme.mit.theta.core.clock.constr.CanonizeDiffConstrVisitor;
@@ -355,8 +356,7 @@ public class XtaSystemUnfolder {
 		return result;
 	}
 
-	
-	/*public static UnfoldedXtaSystem getFlatSystem(XtaSystem sys, String name) {
+	public static UnfoldedXtaSystem getFlatSystem(XtaSystem sys, String name) {
 		BiMap<Loc,Map<XtaProcess, Loc>> locMap=HashBiMap.create();
 		XtaProcess result=XtaProcess.create(name);
 		
@@ -380,6 +380,7 @@ public class XtaSystemUnfolder {
 		locMap.put(initLoc, initLocs);
 		result.setInitLoc(initLoc);
 		//System.out.println("InitLoc set: "+result.getInitLoc().getName());
+		
 		//creating locs and edges via exploration
 		List<Loc> unfinished=new ArrayList<>();
 		unfinished.add(initLoc);
@@ -396,39 +397,31 @@ public class XtaSystemUnfolder {
 			if (committedLocs.isEmpty()) committedLocs=currLoc.values();
 			
 			List<Edge> asyncEdges=new ArrayList<>();
-			Map<VarDecl<ChanType>,Set<Edge>> syncGroups=new HashMap<>();
-			Map<VarDecl<ArrayType<?,ChanType>>,Set<Edge>> arraySyncGroups=new HashMap<>();
+			Map<Label,Set<Edge>> syncGroups=new HashMap<>();
+			Map<Label,Set<Edge>> arraySyncGroups=new HashMap<>();
 			for (Loc src : committedLocs) {
 				for (Edge tran: src.getOutEdges()) {
 					Optional<Sync> sync=tran.getSync();
 					if (sync.isPresent()) {
-						Label syncLabel=sync.get().getLabel();
-						Expr<ChanType> syncExpr=sync;
-						if (syncExpr instanceof RefExpr) {
-							RefExpr<ChanType> chan= (RefExpr<ChanType>) syncExpr;
-							VarDecl<ChanType> v=(VarDecl<ChanType>) chan.getDecl();
-							if (syncGroups.containsKey(v)) {
-								syncGroups.get(v).add(tran);
+						Label chan=sync.get().getLabel();
+						List<Expr<?>> indices=sync.get().getArgs();
+						if (indices.isEmpty()) {
+							if (syncGroups.containsKey(chan)) {//TODO
+								syncGroups.get(chan).add(tran);
 							} else {
 								Set<Edge> edgeSet=new HashSet<>();
 								edgeSet.add(tran);
-								syncGroups.put((VarDecl<ChanType>) v, edgeSet);
+								syncGroups.put(chan, edgeSet);
 							}
-						} else if (syncExpr instanceof ArrayReadExpr) {
-							@SuppressWarnings("unchecked")
-							ArrayReadExpr<?, ChanType> chans=(ArrayReadExpr<?, ChanType>) syncExpr;
-							Expr<?> array=chans.getArray();
-							@SuppressWarnings("unchecked")
-							RefExpr<ArrayType<?,ChanType>> chref= (RefExpr<ArrayType<?,ChanType>> ) array;
-							VarDecl<ArrayType<?,ChanType>> varr=(VarDecl<ArrayType<?,ChanType>>) chref.getDecl();
-							if (arraySyncGroups.containsKey(varr)) {
-								arraySyncGroups.get(varr).add(tran);
+						} else {
+							if (arraySyncGroups.containsKey(chan)) {
+								arraySyncGroups.get(chan).add(tran);
 							} else {
 								Set<Edge> edgeSet=new HashSet<>();
 								edgeSet.add(tran);
-								arraySyncGroups.put(varr, edgeSet);
+								arraySyncGroups.put(chan, edgeSet);
 							}
-						} else throw new UnsupportedOperationException("What kind of chan is this?");
+						}
 					
 					} else {
 						asyncEdges.add(tran);
@@ -439,12 +432,12 @@ public class XtaSystemUnfolder {
 			for (Edge e: asyncEdges) {
 				edgeGroups.put(ImmutableSet.of(e),Optional.empty());
 			}
-			for (VarDecl<ChanType> chan: syncGroups.keySet()) {
+			for (Label chan: syncGroups.keySet()) {
 				Set<Edge> chanEdges=syncGroups.get(chan);
 				Set<Edge> emitEdges=new HashSet<>();
 				Set<Edge> receiveEdges=new HashSet<>();
 				for (Edge e:chanEdges) {
-					if (e.getLabel().get().getKind()==Kind.EMIT) {
+					if (e.getSync().get().getKind()==Kind.EMIT) {
 						emitEdges.add(e);
 					} else {
 						receiveEdges.add(e);
@@ -459,56 +452,79 @@ public class XtaSystemUnfolder {
 					}
 				}
 			}
-			for (VarDecl<ArrayType<?, ChanType>> chan: arraySyncGroups.keySet()) {
+			for (Label chan: arraySyncGroups.keySet()) {
+				//only integer parameters are supported (for now)
+				for (Type t: chan.getParamTypes()) {
+					if (!(t instanceof IntType)) throw new UnsupportedOperationException("Parameters of type "+t+" are not yet supported");
+				}
+				
+				
 				Set<Edge> chanEdges=arraySyncGroups.get(chan);
 				Set<Edge> emitEdges=new HashSet<>();
 				Set<Edge> receiveEdges=new HashSet<>();
 				for (Edge e:chanEdges) {
-					if (e.getLabel().get().getKind()==Kind.EMIT) {
+					if (e.getSync().get().getKind()==Kind.EMIT) {
 						emitEdges.add(e);
 					} else {
 						receiveEdges.add(e);
 					}
 				}
-				for (Edge e1: emitEdges) {
-					Expr<ChanType> syncExpr1=e1.getLabel().get().getExpr();
-					@SuppressWarnings("unchecked")
-					ArrayReadExpr<?, ChanType> chans1=(ArrayReadExpr<?, ChanType>) syncExpr1;
-					Expr<?> indx1=chans1.getIndex();
+				for (Edge ee: emitEdges) {
+					Sync esync=ee.getSync().get();
+					/* Indices can be ints or references to int vars. 
+					 * Integers are easy to handle but refs have to
+					 * be compared.
+					 */
+					List<Boolean> isEmitIdxInt=new ArrayList<>();
 					
-					boolean isInt1=false;
-					if (indx1 instanceof IntLitExpr) {
-						isInt1=true;
-					} else if (!(indx1 instanceof RefExpr)){
-						throw new UnsupportedOperationException("What kind of index is this?");
+					for (Expr<?> idx:esync.getArgs()) {
+						if (idx instanceof IntLitExpr) {
+							isEmitIdxInt.add(true);
+						} else if (idx instanceof RefExpr){
+							isEmitIdxInt.add(false);
+						} else {
+							throw new UnsupportedOperationException("What kind of index is this?");
+						}
 					}
-					for (Edge e2: receiveEdges) {
+					
+					for (Edge re: receiveEdges) {
 						Set<Edge> edgepair=new HashSet<>();
-						edgepair.add(e1);
-						edgepair.add(e2);
+						edgepair.add(ee);
+						edgepair.add(re);
 						
-						Expr<ChanType> syncExpr2=e2.getLabel().get().getExpr();
-						@SuppressWarnings("unchecked")
-						ArrayReadExpr<?, ChanType> chans2=(ArrayReadExpr<?, ChanType>) syncExpr2;
-						Expr<?> indx2=chans2.getIndex();
-						if (indx2 instanceof IntLitExpr) {
-							if (isInt1) {
-								if (((IntLitExpr)indx1).getValue()==((IntLitExpr)indx2).getValue()) {
-									edgeGroups.put(edgepair, Optional.empty());
-								}
+						Sync rsync=re.getSync().get();
+						List<Boolean> isRcvIdxInt=new ArrayList<>();
+						
+						for (Expr<?> idx:rsync.getArgs()) {
+							if (idx instanceof IntLitExpr) {
+								isRcvIdxInt.add(true);
+							} else if (idx instanceof RefExpr){
+								isRcvIdxInt.add(false);
 							} else {
-								edgeGroups.put(edgepair, Optional.of(Eq((RefExpr<IntType>)indx1,(IntLitExpr)indx2)));
+								throw new UnsupportedOperationException("What kind of index is this?");
 							}
-						} else if (indx2 instanceof RefExpr) {
-							if (isInt1) {
-								edgeGroups.put(edgepair, Optional.of(Eq((IntLitExpr)indx1,(RefExpr<IntType>)indx2)));
+						}
+						
+						for (int i=0; i<chan.getParamTypes().size();i++) {
+							@SuppressWarnings("unchecked")
+							Expr<IntType> eExpr=(Expr<IntType>) esync.getArgs().get(i);
+							@SuppressWarnings("unchecked")
+							Expr<IntType> rExpr=(Expr<IntType>) rsync.getArgs().get(i);
+							boolean eInt=isEmitIdxInt.get(i);
+							boolean rInt=isRcvIdxInt.get(i);
+							
+							if (eInt && rInt) {
+								int eVal=((IntLitExpr)(esync.getArgs().get(i))).getValue();
+								int rVal=((IntLitExpr)(rsync.getArgs().get(i))).getValue();
+								if (eVal==rVal) edgeGroups.put(edgepair,Optional.empty());
 							} else {
-								edgeGroups.put(edgepair, Optional.of(Eq((RefExpr<IntType>)indx1,(RefExpr<IntType>)indx2)));
+								edgeGroups.put(edgepair, Optional.of(Eq(eExpr, rExpr)));
 							}
 						}
 					}
 				}
 			}
+			
 			for (Set<Edge> trans:edgeGroups.keySet()){
 				BiMap<XtaProcess,Loc> nextFlatLoc = HashBiMap.create(currLoc);
 				List<Stmt> updates=new ArrayList<>();
@@ -556,7 +572,7 @@ public class XtaSystemUnfolder {
 		UnfoldedXtaSystem ret=new UnfoldedXtaSystem(result, locMap,null);
 		return ret;
 	}
-	*/
+	
 	private static Loc createFlatLoc(XtaProcess proc,Map<XtaProcess, Loc> location) {
 
 		//It has to be created
@@ -747,7 +763,7 @@ public class XtaSystemUnfolder {
 		return result;
 	}
 	
-	private static void addErrorLoc(UnfoldedXtaSystem result, XtaExample input) {
+	private static void addErrorLoc(UnfoldedXtaSystem result, XtaExample input) {//TODO
 		XtaProcess sys=result.result;
 		Loc errorLoc=sys.createLoc("errorloc", LocKind.NORMAL, ImmutableSet.of());
 		Map<Loc, Map<XtaProcess, Loc>> locmap=result.locmap;
@@ -974,6 +990,28 @@ public class XtaSystemUnfolder {
 
 		public Valuation getValuation() {
 			return valuation;
+		}
+	}
+
+	public static void printStuff(XtaSystem xta) {
+		Set<Label> labels=new HashSet<>();
+		for (XtaProcess p: xta.getProcesses()) {
+			System.out.println("Process "+p.getName());
+			for (Loc l:p.getLocs()) {
+				for (Edge e: l.getOutEdges()) {
+					if (e.getSync().isPresent() && !e.getSync().get().getArgs().isEmpty()) {
+						System.out.println("----------------");
+						System.out.println("Label param types: "+e.getSync().get().getLabel().getParamTypes());
+						for (Expr<?> indx:e.getSync().get().getArgs()) {
+							System.out.println("Sync arg class: "+indx.getClass());
+							System.out.println("Sync arg type: "+indx.getType());
+							System.out.println("Sync arg arity: "+indx.getArity());
+							System.out.println("Sync arg ops: "+indx.getOps());
+						}
+						
+					}
+				}
+			}
 		}
 	}
 	

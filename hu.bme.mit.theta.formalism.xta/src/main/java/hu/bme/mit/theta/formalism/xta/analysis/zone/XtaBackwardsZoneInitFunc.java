@@ -32,7 +32,7 @@ public class XtaBackwardsZoneInitFunc implements InitFunc<ZoneState, ZonePrec>{
 		checkNotNull(prec);
 		Set<VarDecl<RatType>> initPrec=new HashSet<>();
 		if (!act) initPrec.addAll(prec.getVars());
-		return Collections.singleton(ZoneState.top(initPrec));
+		return Collections.singleton(ZoneState.top());
 	}
 
 
