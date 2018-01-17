@@ -34,18 +34,21 @@ import hu.bme.mit.theta.analysis.zone.lu.LuZoneState;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
+import hu.bme.mit.theta.formalism.xta.analysis.expl.XtaExplAnalysis;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaStatistics.Builder;
 import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaLuZoneUtils;
 import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaZoneAnalysis;
 
-public final class LuStrategy implements LazyXtaChecker.AlgorithmStrategy<LuZoneState> {
+public final class LuStrategy implements LazyXtaChecker.AlgorithmStrategy<ExplState,LuZoneState> {
 
-	private final Analysis<LuZoneState, XtaAction, UnitPrec> analysis;
+	private final Analysis<LuZoneState, XtaAction, UnitPrec> timeAnalysis;
+	private final Analysis<ExplState, XtaAction, UnitPrec> dataAnalysis;
 
 	public LuStrategy(final XtaSystem system) {
 		checkNotNull(system);
 		final ZonePrec prec = ZonePrec.of(system.getClockVars());
-		analysis = PrecMappingAnalysis.create(LuZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> prec);
+		timeAnalysis = PrecMappingAnalysis.create(LuZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> prec);
+		dataAnalysis =XtaExplAnalysis.create(system);
 	}
 
 	public static LuStrategy create(final XtaSystem system) {
@@ -53,10 +56,15 @@ public final class LuStrategy implements LazyXtaChecker.AlgorithmStrategy<LuZone
 	}
 
 	////
+	
+	@Override
+	public Analysis<LuZoneState, XtaAction, UnitPrec> getTimeAnalysis() {
+		return timeAnalysis;
+	}
 
 	@Override
-	public Analysis<LuZoneState, XtaAction, UnitPrec> getAnalysis() {
-		return analysis;
+	public Analysis<ExplState, XtaAction, UnitPrec> getDataAnalysis() {
+		return dataAnalysis;
 	}
 
 	@Override

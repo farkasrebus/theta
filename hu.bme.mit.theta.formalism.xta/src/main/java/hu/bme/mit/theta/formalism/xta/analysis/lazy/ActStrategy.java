@@ -39,27 +39,35 @@ import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
+import hu.bme.mit.theta.formalism.xta.analysis.expl.XtaExplAnalysis;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaStatistics.Builder;
 import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaActZoneUtils;
 import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaZoneAnalysis;
 
-public final class ActStrategy implements LazyXtaChecker.AlgorithmStrategy<ActZoneState> {
+public final class ActStrategy implements LazyXtaChecker.AlgorithmStrategy<ExplState,ActZoneState> {
 
-	private final Analysis<ActZoneState,XtaAction,UnitPrec> analysis;
+	private final Analysis<ActZoneState,XtaAction,UnitPrec> timeAnalysis;
+	private final Analysis<ExplState, XtaAction, UnitPrec> dataAnalysis;
 
 	private ActStrategy(final XtaSystem system) {
 		checkNotNull(system);
 		final ZonePrec prec = ZonePrec.of(system.getClockVars());
-		analysis = PrecMappingAnalysis.create(ActZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> prec);
+		timeAnalysis = PrecMappingAnalysis.create(ActZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> prec);
+		dataAnalysis =XtaExplAnalysis.create(system);
 	}
 
 	public static ActStrategy create(final XtaSystem system) {
 		return new ActStrategy(system);
 	}
+	
+	@Override
+	public Analysis<ActZoneState, XtaAction, UnitPrec> getTimeAnalysis() {
+		return timeAnalysis;
+	}
 
 	@Override
-	public Analysis<ActZoneState, XtaAction, UnitPrec> getAnalysis() {
-		return analysis;
+	public Analysis<ExplState, XtaAction, UnitPrec> getDataAnalysis() {
+		return dataAnalysis;
 	}
 
 	@Override

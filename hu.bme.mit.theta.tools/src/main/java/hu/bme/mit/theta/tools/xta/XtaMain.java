@@ -60,42 +60,42 @@ public final class XtaMain {
 
 		SEQITP {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return SeqItpStrategy.create(system, ItpOperator.DEFAULT);
 			}
 		},
 
 		BINITP {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return BinItpStrategy.create(system, ItpOperator.DEFAULT);
 			}
 		},
 
 		WEAKSEQITP {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return SeqItpStrategy.create(system, ItpOperator.WEAK);
 			}
 		},
 
 		WEAKBINITP {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return BinItpStrategy.create(system, ItpOperator.WEAK);
 			}
 		},
 
 		LU {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return LuStrategy.create(system);
 			}
 		},
 
 		ACT {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return ActStrategy.create(system);
 			}
 		}/*,
@@ -114,7 +114,7 @@ public final class XtaMain {
 			}
 		}*/;
 
-		public abstract LazyXtaChecker.AlgorithmStrategy<?> create(final XtaSystem system);
+		public abstract LazyXtaChecker.AlgorithmStrategy<?,?> create(final XtaSystem system);
 	}
 	private static enum PreProcType {
 		NO,DIAG,UNFOLD,SMART;
@@ -272,7 +272,7 @@ public final class XtaMain {
 	}
 
 	private SafetyChecker<?, ?, UnitPrec> buildChecker(final XtaSystem xta) {
-		final LazyXtaChecker.AlgorithmStrategy<?> algorithmStrategy = algorithm.create(xta);
+		final LazyXtaChecker.AlgorithmStrategy<?,?> algorithmStrategy = algorithm.create(xta);
 		final SearchStrategy searchStrategy = search.create();
 
 		final SafetyChecker<?, ?, UnitPrec> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy,
