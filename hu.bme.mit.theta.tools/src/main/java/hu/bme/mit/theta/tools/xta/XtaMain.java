@@ -30,7 +30,6 @@ import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaStatistics;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.LuStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.SeqItpStrategy;
 import hu.bme.mit.theta.formalism.xta.dsl.XtaDslManager;
-import hu.bme.mit.theta.tools.XtaExample;
 
 public final class XtaMain {
 	private static final String JAR_NAME = "theta-xta.jar";

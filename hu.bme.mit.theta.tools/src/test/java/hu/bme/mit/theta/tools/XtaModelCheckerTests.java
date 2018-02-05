@@ -3,10 +3,11 @@ package hu.bme.mit.theta.tools;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import org.junit.runners.Parameterized;
 
+import hu.bme.mit.theta.tools.xta.XtaExample;
 import hu.bme.mit.theta.tools.xta.XtaMain;
 
 @RunWith(Parameterized.class)
@@ -37,7 +38,7 @@ public class XtaModelCheckerTests {
 		
 	}
 	
-	//@Ignore("Not benchmarking now")
+	@Ignore("Not benchmarking now")
 	@Test
 	public void benchmark() throws InterruptedException {
 		XtaMain.Algorithm[] algs=XtaMain.Algorithm.values();
@@ -103,7 +104,7 @@ public class XtaModelCheckerTests {
 		}*/
 	}
 	
-	//@Ignore("Works fine")
+	@Ignore("Works fine")
 	@Test
 	public void analyze_run() {
 		/*try {

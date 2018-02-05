@@ -5,43 +5,43 @@ import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.InitFunc;
 import hu.bme.mit.theta.analysis.PartialOrd;
 import hu.bme.mit.theta.analysis.TransFunc;
-import hu.bme.mit.theta.analysis.pred.PredInitFunc;
-import hu.bme.mit.theta.analysis.pred.PredOrd;
 import hu.bme.mit.theta.analysis.pred.PredPrec;
-import hu.bme.mit.theta.analysis.pred.PredState;
+import hu.bme.mit.theta.analysis.expr.BasicExprInitFunc;
+import hu.bme.mit.theta.analysis.expr.ExprState;
+import hu.bme.mit.theta.analysis.expr.ExprOrd;
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.booltype.BoolExprs;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.solver.Solver;
 
-public class WeakestPreconditionAnalysis<A extends Action> implements Analysis<PredState, A, PredPrec> {
-	private final InitFunc<PredState, PredPrec> initFunc;
-	private final TransFunc<PredState, A, PredPrec> TransFunc;
-	private final PredOrd predOrd;
+public class WeakestPreconditionAnalysis<A extends Action> implements Analysis<ExprState, A, PredPrec> {
+	private final InitFunc<ExprState, PredPrec> initFunc;
+	private final TransFunc<ExprState, A, PredPrec> TransFunc;
+	private final ExprOrd exprOrd;
 	
-	private WeakestPreconditionAnalysis(final Solver solver, final Expr<BoolType> initExpr, TransFunc<PredState, A, PredPrec> TransFunc) {
-		initFunc = PredInitFunc.create(solver, initExpr);
+	private WeakestPreconditionAnalysis(final Solver solver, final Expr<BoolType> initExpr, TransFunc<ExprState, A, PredPrec> TransFunc) {
+		initFunc = BasicExprInitFunc.create(initExpr);
 		this.TransFunc=WeakestPreconditionTransFunc.create(TransFunc);
-		predOrd=PredOrd.create(solver);
+		exprOrd=ExprOrd.create(solver);
 	}
 	
-	public static <A extends Action> WeakestPreconditionAnalysis<A> create(Solver solver,TransFunc<PredState, A, PredPrec> TransFunc) {
+	public static <A extends Action> WeakestPreconditionAnalysis<A> create(Solver solver,TransFunc<ExprState, A, PredPrec> TransFunc) {
 		return new WeakestPreconditionAnalysis<A>(solver, BoolExprs.True(), TransFunc);
 	}
 
 	@Override
-	public InitFunc<PredState, PredPrec> getInitFunc() {
+	public InitFunc<ExprState, PredPrec> getInitFunc() {
 		return initFunc;
 	}
 
 	@Override
-	public TransFunc<PredState, A, PredPrec> getTransFunc() {
+	public TransFunc<ExprState, A, PredPrec> getTransFunc() {
 		return TransFunc;
 	}
 
 	@Override
-	public PartialOrd<PredState> getPartialOrd() {
-		return predOrd;
+	public PartialOrd<ExprState> getPartialOrd() {
+		return exprOrd;
 	}
 
 }

@@ -15,13 +15,12 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import hu.bme.mit.theta.analysis.TransFunc;
+import hu.bme.mit.theta.analysis.expr.BasicExprState;
+import hu.bme.mit.theta.analysis.expr.ExprState;
 import hu.bme.mit.theta.analysis.pred.PredPrec;
-import hu.bme.mit.theta.analysis.pred.PredState;
-import hu.bme.mit.theta.core.stmt.AssignStmt;
 import hu.bme.mit.theta.core.stmt.Stmt;
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.Type;
-import hu.bme.mit.theta.core.type.abstracttype.Equational;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.type.inttype.IntType;
 import hu.bme.mit.theta.core.type.rattype.RatType;
@@ -36,7 +35,7 @@ import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.SyncedXtaAction;
 import hu.bme.mit.theta.solver.Solver;
 import hu.bme.mit.theta.solver.SolverStatus;
 
-public class XtaWeakestPreconditionTransFunc implements TransFunc<PredState, XtaAction, PredPrec>{
+public class XtaWeakestPreconditionTransFunc implements TransFunc<ExprState, XtaAction, PredPrec>{
 	
 	private final Solver solver;
 	
@@ -49,7 +48,7 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<PredState, Xta
 }
 	
 	@Override
-	public Collection<? extends PredState> getSuccStates(PredState state, XtaAction action, PredPrec prec) {
+	public Collection<? extends ExprState> getSuccStates(ExprState state, XtaAction action, PredPrec prec) {
 		checkNotNull(state);
 		checkNotNull(action);
 		checkNotNull(prec);
@@ -63,7 +62,7 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<PredState, Xta
 		}
 	}
 
-	private Collection<? extends PredState> getSuccStatesForSyncedAction(PredState state, SyncedXtaAction action) {
+	private Collection<? extends ExprState> getSuccStatesForSyncedAction(ExprState state, SyncedXtaAction action) {
 		final Edge emitEdge = action.getEmitEdge();
 		final Edge recvEdge = action.getRecvEdge();
 		final List<Loc> locs = action.getSourceLocs();
@@ -142,13 +141,13 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<PredState, Xta
 		if (solver.getStatus()==SolverStatus.UNSAT) {
 			return Collections.emptySet();
 		} else  {
-			return Collections.singleton(PredState.of(preds));
+			return Collections.singleton(BasicExprState.of(And(preds)));
 		}
 		
 		
 	}
 
-	private Collection<? extends PredState> getSuccStatesForBasicAction(PredState state, BasicXtaAction action) {
+	private Collection<? extends ExprState> getSuccStatesForBasicAction(ExprState state, BasicXtaAction action) {
 		Expr<BoolType> expr = state.toExpr();
 		final Edge edge = action.getEdge();
 		final List<Loc> locs=action.getSourceLocs();
@@ -183,7 +182,7 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<PredState, Xta
 		if (solver.getStatus()==SolverStatus.UNSAT) {
 			return Collections.emptySet();
 		} else  {
-			return Collections.singleton(PredState.of(preds));
+			return Collections.singleton(BasicExprState.of(And(preds)));
 		}
 	}
 

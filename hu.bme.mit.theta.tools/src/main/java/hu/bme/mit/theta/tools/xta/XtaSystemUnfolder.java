@@ -76,7 +76,6 @@ import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.LocKind;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.utils.ChanType;
-import hu.bme.mit.theta.tools.XtaExample;
 
 public class XtaSystemUnfolder {
 	

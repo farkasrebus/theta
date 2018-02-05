@@ -1,4 +1,4 @@
-package hu.bme.mit.theta.tools;
+package hu.bme.mit.theta.tools.xta;
 
 public enum XtaExample {
 	CRITICAL ("-25-50",4),
