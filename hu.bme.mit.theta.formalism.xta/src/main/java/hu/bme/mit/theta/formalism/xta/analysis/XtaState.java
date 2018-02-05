@@ -24,19 +24,46 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import hu.bme.mit.theta.analysis.State;
+import hu.bme.mit.theta.analysis.expr.ExprState;
 import hu.bme.mit.theta.common.Utils;
+import hu.bme.mit.theta.core.type.Expr;
+import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
+import hu.bme.mit.theta.formalism.xta.XtaProcess.LocKind;
 
-public final class XtaState<S extends State> implements State {
+public final class XtaState<S extends State> implements ExprState {
 	private static final int HASH_SEED = 8291;
 	private volatile int hashCode = 0;
 
 	private final List<Loc> locs;
 	private final S state;
+	private final boolean committed;
+	private final boolean urgent;
 
 	private XtaState(final List<Loc> locs, final S state) {
 		this.locs = ImmutableList.copyOf(checkNotNull(locs));
 		this.state = checkNotNull(state);
+		final LocKind locKind = extractKind(locs);
+		committed = locKind == LocKind.COMMITTED;
+		urgent = locKind != LocKind.NORMAL;
+	}
+
+	private static final LocKind extractKind(final List<Loc> locs) {
+		boolean urgent = false;
+		for (final Loc loc : locs) {
+			switch (loc.getKind()) {
+			case COMMITTED:
+				return LocKind.COMMITTED;
+			case URGENT:
+				urgent = true;
+				break;
+			case NORMAL:
+				break;
+			default:
+				throw new AssertionError();
+			}
+		}
+		return urgent ? LocKind.URGENT : LocKind.NORMAL;
 	}
 
 	public static <S extends State> XtaState<S> of(final List<Loc> locs, final S state) {
@@ -61,6 +88,14 @@ public final class XtaState<S extends State> implements State {
 		return state;
 	}
 
+	public boolean isCommitted() {
+		return committed;
+	}
+
+	public boolean isUrgent() {
+		return urgent;
+	}
+
 	public <S2 extends State> XtaState<S2> withState(final S2 state) {
 		return XtaState.of(this.locs, state);
 	}
@@ -68,6 +103,16 @@ public final class XtaState<S extends State> implements State {
 	@Override
 	public boolean isBottom() {
 		return state.isBottom();
+	}
+
+	@Override
+	public Expr<BoolType> toExpr() {
+		if (state instanceof ExprState) {
+			final ExprState exprState = (ExprState) state;
+			return exprState.toExpr();
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override

@@ -53,6 +53,7 @@ import hu.bme.mit.theta.analysis.expr.refinement.JoiningPrecRefiner;
 import hu.bme.mit.theta.analysis.expr.refinement.SingleExprTraceRefiner;
 import hu.bme.mit.theta.analysis.pred.ExprSplitters;
 import hu.bme.mit.theta.analysis.pred.ItpRefToPredPrec;
+import hu.bme.mit.theta.analysis.pred.PredAbstractors;
 import hu.bme.mit.theta.analysis.pred.PredAnalysis;
 import hu.bme.mit.theta.analysis.pred.PredPrec;
 import hu.bme.mit.theta.analysis.pred.PredState;
@@ -90,10 +91,11 @@ public class StsPredTest {
 	@Test
 	public void testPredPrec() {
 
-		final Analysis<PredState, ExprAction, PredPrec> analysis = PredAnalysis.create(solver, sts.getInit());
+		final Analysis<PredState, ExprAction, PredPrec> analysis = PredAnalysis.create(solver,
+				PredAbstractors.booleanSplitAbstractor(solver), sts.getInit());
 		final Predicate<ExprState> target = new ExprStatePredicate(Not(sts.getProp()), solver);
 
-		final PredPrec prec = PredPrec.create(solver);
+		final PredPrec prec = PredPrec.of();
 
 		final LTS<State, StsAction> lts = StsLts.create(sts);
 
@@ -106,8 +108,8 @@ public class StsPredTest {
 				Not(sts.getProp()), solver);
 
 		final SingleExprTraceRefiner<PredState, StsAction, PredPrec, ItpRefutation> refiner = SingleExprTraceRefiner
-				.create(exprTraceChecker,
-						JoiningPrecRefiner.create(new ItpRefToPredPrec(solver, ExprSplitters.atoms())), logger);
+				.create(exprTraceChecker, JoiningPrecRefiner.create(new ItpRefToPredPrec(ExprSplitters.atoms())),
+						logger);
 
 		final SafetyChecker<PredState, StsAction, PredPrec> checker = CegarChecker.create(abstractor, refiner, logger);
 

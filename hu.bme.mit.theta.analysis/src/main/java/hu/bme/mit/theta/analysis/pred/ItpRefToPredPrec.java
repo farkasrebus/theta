@@ -18,24 +18,22 @@ package hu.bme.mit.theta.analysis.pred;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.function.Function;
 
 import hu.bme.mit.theta.analysis.expr.refinement.ItpRefutation;
 import hu.bme.mit.theta.analysis.expr.refinement.RefutationToPrec;
 import hu.bme.mit.theta.analysis.pred.ExprSplitters.ExprSplitter;
+import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
-import hu.bme.mit.theta.core.utils.ExprUtils;
-import hu.bme.mit.theta.solver.Solver;
 
+/**
+ * Transformer from interpolant refutation to predicate precision.
+ */
 public class ItpRefToPredPrec implements RefutationToPrec<PredPrec, ItpRefutation> {
 
-	private final Solver solver;
 	private final ExprSplitter exprSplitter;
 
-	public ItpRefToPredPrec(final Solver solver, final ExprSplitter exprSplitter) {
-		this.solver = checkNotNull(solver);
+	public ItpRefToPredPrec(final ExprSplitter exprSplitter) {
 		this.exprSplitter = checkNotNull(exprSplitter);
 	}
 
@@ -43,7 +41,7 @@ public class ItpRefToPredPrec implements RefutationToPrec<PredPrec, ItpRefutatio
 	public PredPrec toPrec(final ItpRefutation refutation, final int index) {
 		final Expr<BoolType> expr = refutation.get(index);
 		final Collection<Expr<BoolType>> exprs = exprSplitter.apply(expr);
-		final PredPrec prec = PredPrec.create(exprs, solver);
+		final PredPrec prec = PredPrec.of(exprs);
 		return prec;
 	}
 
@@ -56,20 +54,6 @@ public class ItpRefToPredPrec implements RefutationToPrec<PredPrec, ItpRefutatio
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName(); // TODO: splitting strategy should be
-											// included
+		return Utils.lispStringBuilder(getClass().getSimpleName()).aligned().add(exprSplitter).toString();
 	}
-
-	public static Function<Expr<BoolType>, Collection<Expr<BoolType>>> whole() {
-		return Collections::singleton;
-	}
-
-	public static Function<Expr<BoolType>, Collection<Expr<BoolType>>> conjuncts() {
-		return ExprUtils::getConjuncts;
-	}
-
-	public static Function<Expr<BoolType>, Collection<Expr<BoolType>>> atoms() {
-		return ExprUtils::getAtoms;
-	}
-
 }

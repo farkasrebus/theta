@@ -44,7 +44,7 @@ public final class LuStrategy implements LazyXtaChecker.AlgorithmStrategy<ExplSt
 	private final Analysis<LuZoneState, XtaAction, UnitPrec> timeAnalysis;
 	private final Analysis<ExplState, XtaAction, UnitPrec> dataAnalysis;
 
-	public LuStrategy(final XtaSystem system) {
+	private LuStrategy(final XtaSystem system) {
 		checkNotNull(system);
 		final ZonePrec prec = ZonePrec.of(system.getClockVars());
 		timeAnalysis = PrecMappingAnalysis.create(LuZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> prec);
