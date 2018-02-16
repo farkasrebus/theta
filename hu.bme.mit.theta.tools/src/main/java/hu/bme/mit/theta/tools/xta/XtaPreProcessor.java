@@ -77,7 +77,7 @@ import hu.bme.mit.theta.formalism.xta.XtaProcess.LocKind;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.utils.ChanType;
 
-public class XtaSystemUnfolder {
+public class XtaPreProcessor {
 	
 	public static class UnfoldedXtaSystem {
 		public XtaProcess result;
@@ -1014,4 +1014,26 @@ public class XtaSystemUnfolder {
 		}
 	}
 	
+	public static XtaSystem prepareSystemForBackwardExploration(XtaSystem sys, XtaExample type) {
+		List<XtaProcess> processes=sys.getProcesses();
+		//TODO
+		/*switch (type) {
+		case CRITICAL:
+			break;
+		case CSMA:
+			break;
+		case FDDI:
+			break;
+		case FISCHER:
+			break;
+		case LYNCH:
+			break;
+		case SPLIT:
+			break;
+		default:
+			throw new UnsupportedOperationException("This example is not yet supported");
+		
+		}*/
+		return XtaSystem.of(processes);
+	}
 }
