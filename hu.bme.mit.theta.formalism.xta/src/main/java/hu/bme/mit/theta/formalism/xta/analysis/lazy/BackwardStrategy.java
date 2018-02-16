@@ -46,6 +46,10 @@ public class BackwardStrategy implements LazyXtaChecker.AlgorithmStrategy<ExprSt
 		dataAnalysis=PrecMappingAnalysis.create(WeakestPreconditionAnalysis.create(solver, XtaWeakestPreconditionTransFunc.create(solver)),u->pprec);
 	}
 	
+	public static BackwardStrategy create(final XtaSystem system, boolean enableAct){
+		return new BackwardStrategy(system, enableAct);
+	}
+	
 	@Override
 	public Analysis<BackwardsZoneState, XtaAction, UnitPrec> getTimeAnalysis() {
 		return timeAnalysis;

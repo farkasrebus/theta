@@ -6,15 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import hu.bme.mit.theta.analysis.LTS;
-import hu.bme.mit.theta.core.type.Expr;
-import hu.bme.mit.theta.core.utils.ExprUtils;
 import hu.bme.mit.theta.formalism.xta.Label;
 import hu.bme.mit.theta.formalism.xta.Sync;
 import hu.bme.mit.theta.formalism.xta.Sync.Kind;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Edge;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import hu.bme.mit.theta.formalism.xta.utils.ChanType;
 
 public class BackwardsXtaLts implements LTS<XtaState<?>, XtaAction> {
 	
@@ -77,7 +74,7 @@ public class BackwardsXtaLts implements LTS<XtaState<?>, XtaAction> {
 				final Label recvLabel = recvSync.getLabel();
 
 				if (emitLabel.equals(recvLabel)) {
-					final XtaAction action = XtaAction.synced(system, state.getLocs(), emitEdge, recvEdge);
+					final XtaAction action = XtaAction.syncedBackward(system, state.getLocs(), emitEdge, recvEdge);
 					result.add(action);
 				}
 			}
@@ -86,9 +83,7 @@ public class BackwardsXtaLts implements LTS<XtaState<?>, XtaAction> {
 	
 	private static void addSimpleActionsForEdge(final Collection<XtaAction> result, final XtaSystem system,
 			final XtaState<?> state, final Edge edge) {
-		XtaAction action = XtaAction.simple(system, state.getLocs(), edge);
-		//final XtaAction action = XtaAction.simple(system, state.getLocs(), edge, false);
-		//TODO:majd hátrafelét kell csinálni!!!
+		XtaAction action = XtaAction.simpleBackward(system, state.getLocs(), edge);
 		result.add(action);
 	}
 

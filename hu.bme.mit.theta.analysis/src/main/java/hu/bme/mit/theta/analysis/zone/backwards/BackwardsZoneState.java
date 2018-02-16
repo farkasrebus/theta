@@ -57,9 +57,9 @@ public class BackwardsZoneState implements ExprState{
 	@Override
 	public String toString() {
 		final StringJoiner sj = new StringJoiner(" ");
-		sj.add("Active vars:");
-		activeVars.forEach(c -> sj.add(c.getName()));
-		sj.add("\n");
+		//sj.add("Active vars:");
+		//activeVars.forEach(c -> sj.add(c.getName()));
+		//sj.add("\n");
 		sj.add(zone.toString());
 		return sj.toString();
 	}

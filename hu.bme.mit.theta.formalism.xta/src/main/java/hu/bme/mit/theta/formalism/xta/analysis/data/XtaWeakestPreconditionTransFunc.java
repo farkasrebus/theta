@@ -30,8 +30,8 @@ import hu.bme.mit.theta.formalism.xta.Update;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Edge;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
-import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.BasicXtaAction;
-import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.SyncedXtaAction;
+import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.BasicBackwardXtaAction;
+import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.SyncedBackwardXtaAction;
 import hu.bme.mit.theta.solver.Solver;
 import hu.bme.mit.theta.solver.SolverStatus;
 
@@ -53,16 +53,16 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<ExprState, Xta
 		checkNotNull(action);
 		checkNotNull(prec);
 		
-		if (action.isBasic()) {
-			return getSuccStatesForBasicAction(state, action.asBasic());
-		} else if (action.isSynced()) {
-			return getSuccStatesForSyncedAction(state, action.asSynced());
+		if (action.isBasicBackward()) {
+			return getSuccStatesForBasicAction(state, action.asBasicBackward());
+		} else if (action.isSyncedBackward()) {
+			return getSuccStatesForSyncedAction(state, action.asSyncedBackward());
 		} else {
 			throw new AssertionError();
 		}
 	}
 
-	private Collection<? extends ExprState> getSuccStatesForSyncedAction(ExprState state, SyncedXtaAction action) {
+	private Collection<? extends ExprState> getSuccStatesForSyncedAction(ExprState state, SyncedBackwardXtaAction action) {
 		final Edge emitEdge = action.getEmitEdge();
 		final Edge recvEdge = action.getRecvEdge();
 		final List<Loc> locs = action.getSourceLocs();
@@ -147,7 +147,7 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<ExprState, Xta
 		
 	}
 
-	private Collection<? extends ExprState> getSuccStatesForBasicAction(ExprState state, BasicXtaAction action) {
+	private Collection<? extends ExprState> getSuccStatesForBasicAction(ExprState state, BasicBackwardXtaAction action) {
 		Expr<BoolType> expr = state.toExpr();
 		final Edge edge = action.getEdge();
 		final List<Loc> locs=action.getSourceLocs();

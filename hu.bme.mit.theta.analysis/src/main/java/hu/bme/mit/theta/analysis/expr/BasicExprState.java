@@ -42,5 +42,9 @@ public final class BasicExprState implements ExprState {
 	public boolean isBottom() {
 		return expr.equals(False());
 	}
-
+	
+	@Override
+	public String toString(){
+		return expr.toString();
+	}
 }

@@ -166,19 +166,19 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 				assert v.isLeaf();
 
 				if (algorithm.shouldRefine(v)) {
-					//System.out.println("Shouldrefine");//TODO
+					System.out.println("Shouldrefine");//TODO
 					statistics.startRefinement();
 					final Collection<ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction>> uncoveredNodes = algorithm
 							.refine(v, statistics);
 					statistics.stopRefinement();
-					//System.out.println("Uncovered: "+uncoveredNodes);//TODO
+					System.out.println("Uncovered: "+uncoveredNodes);//TODO
 					waitlist.addAll(uncoveredNodes);
 				} else if (v.isTarget()) {
-					//System.out.println("Target");//TODO
+					System.out.println("Target");//TODO
 					statistics.stopAlgorithm();
 					return Optional.of(v);
 				} else {
-					//System.out.println("Else");//TODO
+					System.out.println("Else");//TODO
 					close(v);
 					if (!v.isCovered()) {
 						System.out.println("Not covered");//TODO
@@ -187,11 +187,11 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 						System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
 					}//TODO
 				}
-				//System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
+				System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
 				//System.out.println("waitlist: "+waitlist);//TODO
 			}
 			statistics.stopAlgorithm();
-			//System.out.println("Algorithm ends");//TODO
+			System.out.println("Algorithm ends");//TODO
 			return Optional.empty();
 		}
 

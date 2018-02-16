@@ -176,7 +176,8 @@ public abstract class Prod2State<S1 extends State, S2 extends State> implements 
 
 		@Override
 		public String toString() {
-			return Utils.lispStringBuilder(Prod2State.class.getSimpleName()).body().add(state1).add(state2).toString();
+			return "<"+state1.toString()+","+state2.toString()+">";
+			//return Utils.lispStringBuilder(Prod2State.class.getSimpleName()).body().add(state1).add(state2).toString();
 		}
 	}
 
