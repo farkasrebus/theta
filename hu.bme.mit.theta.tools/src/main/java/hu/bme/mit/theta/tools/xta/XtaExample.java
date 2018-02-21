@@ -10,9 +10,9 @@ public enum XtaExample {
 	CSMA("",9),
 	FDDI("",4),
 	FISCHER("-32-64",8),
-	LYNCH("-16",4),
+	LYNCH("-16",4)/*,
 	SPLIT("",6),
-	BACKEX("",7);
+	BACKEX("",7)*/;
 	
 	private final String params;
 	private final int maxThreads;
@@ -27,7 +27,7 @@ public enum XtaExample {
 	}
 	
 	public String getFileLocation(int threads) {
-		return "src/test/resources/xta/"+this.toString().toLowerCase()+"-"+threads+this.params+".xta";
+		return "src/test/resources/benchmark/"+this.toString().toLowerCase()+"-"+threads+this.params+".xta";
 	}
 
 	public static XtaExample getExampleBySource(String model) {
