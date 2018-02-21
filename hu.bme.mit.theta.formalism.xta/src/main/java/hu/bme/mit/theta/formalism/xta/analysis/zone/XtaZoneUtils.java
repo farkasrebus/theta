@@ -34,7 +34,9 @@ import hu.bme.mit.theta.formalism.xta.XtaProcess.Edge;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.LocKind;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
+import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.BasicBackwardXtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.BasicXtaAction;
+import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.SyncedBackwardXtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.SyncedXtaAction;
 
 public final class XtaZoneUtils {
@@ -112,10 +114,57 @@ public final class XtaZoneUtils {
 			return preForSimpleAction(state, action.asBasic(), prec);
 		} else if (action.isSynced()) {
 			return preForSyncedAction(state, action.asSynced(), prec);
+		} else if (action.isBasicBackward()) {
+			return preForSimpleBackwardAction(state, action.asBasicBackward(), prec);
+		} else if (action.isSyncedBackward()) {
+			return preForSyncedBackwardAction(state, action.asSyncedBackward(), prec);
 		} else {
 			throw new AssertionError();
 		}
 
+	}
+
+	private static ZoneState preForSyncedBackwardAction(ZoneState state, SyncedBackwardXtaAction action,
+			ZonePrec prec) {
+		final ZoneState.Builder preStateBuilder = state.project(prec.getVars());
+
+		final List<Loc> sourceLocs = action.getSourceLocs();
+		final Edge emittingEdge = action.getEmitEdge();
+		final Edge receivingEdge = action.getRecvEdge();
+		final List<Loc> targetLocs = action.getTargetLocs();
+
+		if (shouldApplyDelay(action.getTargetLocs())) {
+			applyInverseDelay(preStateBuilder);
+		}
+		applyInvariants(preStateBuilder, targetLocs);
+		applyInverseUpdates(preStateBuilder, receivingEdge);
+		applyInverseUpdates(preStateBuilder, emittingEdge);
+		applyGuards(preStateBuilder, receivingEdge);
+		applyGuards(preStateBuilder, emittingEdge);
+		applyInvariants(preStateBuilder, sourceLocs);
+
+		final ZoneState succState = preStateBuilder.build();
+		return succState;
+	}
+
+	private static ZoneState preForSimpleBackwardAction(ZoneState state, BasicBackwardXtaAction action,
+			ZonePrec prec) {
+		final ZoneState.Builder preStateBuilder = state.project(prec.getVars());
+
+		final List<Loc> sourceLocs = action.getSourceLocs();
+		final Edge edge = action.getEdge();
+		final List<Loc> targetLocs = action.getTargetLocs();
+
+		if (shouldApplyDelay(action.getTargetLocs())) {
+			applyInverseDelay(preStateBuilder);
+		}
+		applyInvariants(preStateBuilder, targetLocs);
+		applyInverseUpdates(preStateBuilder, edge);
+		applyGuards(preStateBuilder, edge);
+		applyInvariants(preStateBuilder, sourceLocs);
+
+		final ZoneState preState = preStateBuilder.build();
+		return preState;
 	}
 
 	private static ZoneState preForSimpleAction(final ZoneState state, final BasicXtaAction action,

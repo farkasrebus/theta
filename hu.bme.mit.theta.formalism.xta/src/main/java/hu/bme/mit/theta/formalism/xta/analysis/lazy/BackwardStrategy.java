@@ -1,10 +1,13 @@
 package hu.bme.mit.theta.formalism.xta.analysis.lazy;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static hu.bme.mit.theta.core.decl.Decls.Const;
 import static hu.bme.mit.theta.core.type.booltype.BoolExprs.And;
 import static hu.bme.mit.theta.core.type.booltype.BoolExprs.Not;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.algorithm.ArgNode;
@@ -17,6 +20,8 @@ import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.backwards.BackwardsZoneAnalysis;
 import hu.bme.mit.theta.analysis.zone.backwards.BackwardsZoneState;
+import hu.bme.mit.theta.core.decl.ConstDecl;
+import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
@@ -35,15 +40,22 @@ public class BackwardStrategy implements LazyXtaChecker.AlgorithmStrategy<ExprSt
 	private final Solver solver;
 	private final Analysis<BackwardsZoneState, XtaAction, UnitPrec> timeAnalysis;
 	private final Analysis<ExprState, XtaAction, UnitPrec> dataAnalysis;
+	private Map<VarDecl<?>,ConstDecl<?>> vars;
 	
 	private BackwardStrategy(final XtaSystem system, boolean enableAct) {
 		checkNotNull(system);
 		act=enableAct;
 		solver=Z3SolverFactory.getInstace().createSolver();
+		solver.push();
 		final ZonePrec zprec = ZonePrec.of(system.getClockVars());
 		final PredPrec pprec = PredPrec.of();
 		timeAnalysis= PrecMappingAnalysis.create(BackwardsZoneAnalysis.create(XtaBackwardsZoneAnalysis.getInstance(enableAct), enableAct),u->zprec);
-		dataAnalysis=PrecMappingAnalysis.create(WeakestPreconditionAnalysis.create(solver, XtaWeakestPreconditionTransFunc.create(solver)),u->pprec);
+		dataAnalysis=PrecMappingAnalysis.create(WeakestPreconditionAnalysis.create(solver, XtaWeakestPreconditionTransFunc.create(solver,system)),u->pprec);
+		this.vars=new HashMap<>();
+		for (VarDecl<?> v:system.getDataVars()) {
+			final ConstDecl<?> cd=Const(v.getName(),v.getType());
+			vars.put(v, cd);
+		}
 	}
 	
 	public static BackwardStrategy create(final XtaSystem system, boolean enableAct){
@@ -80,9 +92,10 @@ public class BackwardStrategy implements LazyXtaChecker.AlgorithmStrategy<ExprSt
 		Expr<BoolType> cp = coveringPred.toExpr();
 		Expr<BoolType> notCp=Not(cp);
 		Expr<BoolType> ptcAndNotCp=And(ptc,notCp);
-		//TODO: solvermágia
-		solver.reset();
-		solver.add(ptcAndNotCp);
+		Expr<BoolType> solverexpr=XtaWeakestPreconditionTransFunc.changeVariables(ptcAndNotCp,vars);
+		solver.pop();
+		solver.push();
+		solver.add(solverexpr);
 		solver.check();
 		return solver.getStatus().equals(SolverStatus.UNSAT);
 	}

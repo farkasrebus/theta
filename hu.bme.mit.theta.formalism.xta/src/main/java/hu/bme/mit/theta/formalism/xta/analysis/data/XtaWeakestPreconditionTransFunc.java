@@ -1,16 +1,22 @@
 package hu.bme.mit.theta.formalism.xta.analysis.data;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static hu.bme.mit.theta.core.decl.Decls.Const;
 import static hu.bme.mit.theta.core.type.booltype.BoolExprs.And;
 import static hu.bme.mit.theta.core.type.booltype.BoolExprs.Iff;
+import static hu.bme.mit.theta.core.type.booltype.BoolExprs.True;
 import static hu.bme.mit.theta.core.type.inttype.IntExprs.Eq;
+import static hu.bme.mit.theta.core.type.inttype.IntExprs.Int;
 import static hu.bme.mit.theta.core.type.rattype.RatExprs.Eq;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.Lists;
 
@@ -18,17 +24,23 @@ import hu.bme.mit.theta.analysis.TransFunc;
 import hu.bme.mit.theta.analysis.expr.BasicExprState;
 import hu.bme.mit.theta.analysis.expr.ExprState;
 import hu.bme.mit.theta.analysis.pred.PredPrec;
+import hu.bme.mit.theta.core.decl.ConstDecl;
+import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.stmt.Stmt;
 import hu.bme.mit.theta.core.type.Expr;
+import hu.bme.mit.theta.core.type.LitExpr;
 import hu.bme.mit.theta.core.type.Type;
+import hu.bme.mit.theta.core.type.anytype.RefExpr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.type.inttype.IntType;
 import hu.bme.mit.theta.core.type.rattype.RatType;
+import hu.bme.mit.theta.core.utils.ExprUtils;
 import hu.bme.mit.theta.core.utils.WpState;
 import hu.bme.mit.theta.formalism.xta.Guard;
 import hu.bme.mit.theta.formalism.xta.Update;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Edge;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
+import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.BasicBackwardXtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction.SyncedBackwardXtaAction;
@@ -38,13 +50,19 @@ import hu.bme.mit.theta.solver.SolverStatus;
 public class XtaWeakestPreconditionTransFunc implements TransFunc<ExprState, XtaAction, PredPrec>{
 	
 	private final Solver solver;
+	private Map<VarDecl<?>,ConstDecl<?>> vars;
 	
-	private XtaWeakestPreconditionTransFunc(Solver solver) {
+	private XtaWeakestPreconditionTransFunc(Solver solver, XtaSystem system) {
 		this.solver=solver;
+		this.vars=new HashMap<>();
+		for (VarDecl<?> v:system.getDataVars()) {
+			final ConstDecl<?> cd=Const(v.getName(),v.getType());
+			vars.put(v, cd);
+		}
 	}
 	
-	public static XtaWeakestPreconditionTransFunc create(Solver solver) {
-		return new XtaWeakestPreconditionTransFunc(solver);
+	public static XtaWeakestPreconditionTransFunc create(Solver solver, XtaSystem system) {
+		return new XtaWeakestPreconditionTransFunc(solver,system);
 }
 	
 	@Override
@@ -132,16 +150,22 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<ExprState, Xta
 			
 		}
 		
-		//TODO: solvermágia
-		solver.reset();
-		solver.add(preds);
+		solver.pop();
+		solver.push();
+		solver.add(transformPreds(preds));
 		solver.add(args);
 		solver.check();
 		
 		if (solver.getStatus()==SolverStatus.UNSAT) {
 			return Collections.emptySet();
 		} else  {
-			return Collections.singleton(BasicExprState.of(And(preds)));
+			if (preds.isEmpty()) {
+				return Collections.singleton(BasicExprState.of(True()));
+			} else if (preds.size()==1) {
+				return Collections.singleton(BasicExprState.of(ExprUtils.simplify(preds.iterator().next())));
+			} else {
+				return Collections.singleton(BasicExprState.of(ExprUtils.simplify(And(preds))));
+			}
 		}
 		
 		
@@ -174,15 +198,42 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<ExprState, Xta
 			}
 		}
 		
-		//TODO: solvermágia
-		solver.reset();
-		solver.add(preds);
+		solver.pop();
+		solver.push();
+		solver.add(transformPreds(preds));
 		solver.check();
 		
 		if (solver.getStatus()==SolverStatus.UNSAT) {
 			return Collections.emptySet();
 		} else  {
-			return Collections.singleton(BasicExprState.of(And(preds)));
+			if (preds.isEmpty()) {
+				return Collections.singleton(BasicExprState.of(True()));
+			} else if (preds.size()==1) {
+				return Collections.singleton(BasicExprState.of(ExprUtils.simplify(preds.iterator().next())));
+			} else {
+				return Collections.singleton(BasicExprState.of(ExprUtils.simplify(And(preds))));
+			}
+		}		
+	}
+	
+	private Set<Expr<BoolType>> transformPreds(Collection<Expr<BoolType>> preds) {
+		Set<Expr<BoolType>> result=new HashSet<>();
+		for (Expr<BoolType> pred:preds) {
+			result.add(changeVariables(pred, vars));
+		}
+		return result;
+	}
+	
+	public static <T extends Type> Expr<T> changeVariables(Expr<T> expr,Map<VarDecl<?>,ConstDecl<?>> vars) {
+		if (expr instanceof RefExpr) {
+			VarDecl<T> decl=(VarDecl<T>) ((RefExpr<T>)expr).getDecl();
+			if (vars.keySet().contains(decl)) {
+				return  (Expr<T>) vars.get(decl).getRef();
+			} else return expr;
+		} else if (expr instanceof LitExpr) return expr;
+		else {
+			//System.out.println(expr+" "+expr.getClass()+" "+expr.getType());
+			return expr.map(op -> changeVariables(op,vars));
 		}
 	}
 

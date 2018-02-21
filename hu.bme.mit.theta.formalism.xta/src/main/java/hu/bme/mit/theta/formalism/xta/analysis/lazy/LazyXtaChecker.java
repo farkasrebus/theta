@@ -126,14 +126,14 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 	private final class CheckMethod {
 		private final ARG<XtaState<Prod2State<VS, CS>>, XtaAction> arg;
 		private final Waitlist<ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction>> waitlist;
-		private final Partition<ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction>, Tuple2<List<Loc>, VS>> reachedSet;
+		private final Partition<ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction>, List<Loc>> reachedSet;
 
 		private final LazyXtaStatistics.Builder statistics;
 
 		private CheckMethod() {
 			arg = argBuilder.createArg();
 			waitlist = search.createWaitlist();
-			reachedSet = Partition.of(n -> Tuple2.of(n.getState().getLocs(), n.getState().getState().getState1()));
+			reachedSet = Partition.of(n -> n.getState().getLocs());
 
 			statistics = LazyXtaStatistics.builder(arg);
 
@@ -158,12 +158,13 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 
 			statistics.startAlgorithm();
 			
-			
 			while (!waitlist.isEmpty()) {
 				final ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction> v = waitlist.remove();
 				System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				//System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
 				assert v.isLeaf();
+				
+				if (v.getState().isBottom()) continue;
 
 				if (algorithm.shouldRefine(v)) {
 					System.out.println("Shouldrefine");//TODO
@@ -199,10 +200,10 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 
 	private void close(final ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction> nodeToCover) {
 			assert nodeToCover.isLeaf();
-			/*if (nodeToCover.getId()==8) {//TODO
-				System.out.println("Intereseting node");//TODO
-			}//TODO*/
-
+			if (nodeToCover.getId()==13) {//TODO
+				System.out.println("Intereseting node");//
+			}//TODO
+			
 			final Collection<ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction>> candidates = reachedSet
 					.get(nodeToCover);
 			if (!candidates.isEmpty()) {
@@ -232,7 +233,6 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
     private void expand(final ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction> v) {
 			argBuilder.expand(v, UnitPrec.getInstance());
 			reachedSet.add(v);
-			//System.out.println("Expand called");//TODO
 			waitlist.addAll(v.getSuccNodes().filter(n -> !n.getState().getState().isBottom1()));
 		}
 	}
