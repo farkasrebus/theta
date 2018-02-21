@@ -758,101 +758,9 @@ public class XtaPreProcessor {
 		//System.out.println("Locs before data unfold: "+usys.result.getLocs().size());
 		
 		UnfoldedXtaSystem result= unfoldDataVariables(usys, input.toString());
-		addErrorLoc(result,input);
 		return result;
 	}
-	
-	private static void addErrorLoc(UnfoldedXtaSystem result, XtaExample input) {//TODO
-		XtaProcess sys=result.result;
-		Loc errorLoc=sys.createLoc("errorloc", LocKind.NORMAL, ImmutableSet.of());
-		Map<Loc, Map<XtaProcess, Loc>> locmap=result.locmap;
-		for (Loc l:locmap.keySet()) {
-			Map<XtaProcess, Loc> origLocs=locmap.get(l);
-			boolean allerror=true;
-			for (XtaProcess p:origLocs.keySet()) {
-				if (!origLocs.get(p).getName().contains("errorloc")) allerror=false;
-			}
-			if (allerror) sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
-		}
-		/*switch (input) {
-		case FISCHER:
-			for (Loc l:locmap.keySet()) {
-				Map<XtaProcess, Loc> origLocs=locmap.get(l);
-				int cntr=0;
-				for (XtaProcess p:origLocs.keySet()) {
-					if (origLocs.get(p).getName().contains("cs")) {
-						cntr++;
-					}
-				}
-				if (cntr>1) {
-					sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
-				}
-			}
-			break;
-		case CRITICAL:
-			for (Loc l:locmap.keySet()) {
-				Map<XtaProcess, Loc> origLocs=locmap.get(l);
-				int cntr=0;
-				for (XtaProcess p:origLocs.keySet()) {
-					if (p.getName().contains("ProdCell")) {
-						if (origLocs.get(p).getName().contains("critical")) {
-							cntr++;
-						}
-					}
-				}
-				if (cntr>1) {
-					sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
-				}
-			}
-			break;
-		case CSMA:
-			for (Loc l:locmap.keySet()) {
-				Map<XtaProcess, Loc> origLocs=locmap.get(l);
-				List<XtaProcess> criticals=new ArrayList<XtaProcess>();
-				for (XtaProcess p:origLocs.keySet()) {
-					if (p.getName().contains("Station")) {
-						if (origLocs.get(p).getName().contains("transm")) {
-							criticals.add(p);
-						}
-					}
-				}
-				if (criticals.size()>1) {
-					XtaProcess firstcrit=criticals.get(0);
-					Expr<BoolType> guard=null;
-					Loc retry=null;
-					for (Loc loc:firstcrit.getLocs()) if (loc.getName().contains("retry")) retry=loc;
-					UnitLeqConstr inv=(UnitLeqConstr) retry.getInvars().iterator().next().asClockGuard().getClockConstr();
-					guard=Gt(inv.getVar(),inv.getBound()).toExpr();
-					sys.createEdge(l, errorLoc, ImmutableSet.of(guard), Optional.empty(), ImmutableList.of());
-				}
-			}
-			break;
-		/*case FDDI://intentionally empty
-			break;
-		case LYNCH:*/
-			/*Decl counter=null;
-			for (Decl d: result.valmap.entrySet().iterator().next().getValue().getDecls()){
-				if (d.getName().contains("count")) counter=d;
-			}
-			for (Loc l:locmap.keySet()) {
-				Map<XtaProcess, Loc> origLocs=locmap.get(l);
-				Valuation val=result.valmap.get(l);
-				boolean unsafe=false;
-				if ((Integer)val.eval(counter).get()>1) {
-					sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
-				}
-			}*/
-			//break;
-		/*case SPLIT:
-			for (Loc l:locmap.keySet()) {
-				if (l.getName().contains("S3"))
-					sys.createEdge(l, errorLoc, ImmutableSet.of(), Optional.empty(), ImmutableList.of());
-			}
-			break;*/
-		/*default:
-			break;
-		}*/
-	}
+
 
 	private static UnfoldedXtaSystem unfoldDataVariables(UnfoldedXtaSystem usys,String name) {
 		XtaProcess proc=usys.result;
@@ -1014,26 +922,5 @@ public class XtaPreProcessor {
 		}
 	}
 	
-	public static XtaSystem prepareSystemForBackwardExploration(XtaSystem sys, XtaExample type) {
-		List<XtaProcess> processes=sys.getProcesses();
-		//TODO
-		/*switch (type) {
-		case CRITICAL:
-			break;
-		case CSMA:
-			break;
-		case FDDI:
-			break;
-		case FISCHER:
-			break;
-		case LYNCH:
-			break;
-		case SPLIT:
-			break;
-		default:
-			throw new UnsupportedOperationException("This example is not yet supported");
-		
-		}*/
-		return XtaSystem.of(processes);
-	}
+
 }

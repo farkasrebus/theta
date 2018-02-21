@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import hu.bme.mit.theta.analysis.Analysis;
@@ -40,9 +41,7 @@ import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.analysis.reachedset.Partition;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.waitlist.Waitlist;
-import hu.bme.mit.theta.common.Tuple;
-import hu.bme.mit.theta.common.Tuple2;
-import hu.bme.mit.theta.core.model.Valuation;
+import hu.bme.mit.theta.formalism.xta.XtaProcess;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.BackwardsXtaLts;
@@ -51,7 +50,6 @@ import hu.bme.mit.theta.formalism.xta.analysis.XtaAnalysis;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaBackwardAnalysis;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaLts;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
-import hu.bme.mit.theta.formalism.xta.analysis.expl.XtaExplAnalysis;
 
 public final class LazyXtaChecker<VS extends State,CS extends State>
 		implements SafetyChecker<XtaState<Prod2State<VS, CS>>, XtaAction, UnitPrec> {
@@ -85,37 +83,50 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 	private final ArgBuilder<XtaState<Prod2State<VS, CS>>, XtaAction, UnitPrec> argBuilder;
 
 	private LazyXtaChecker(final XtaSystem system, final AlgorithmStrategy<VS,CS> algorithm, final SearchStrategy search,
-			final Predicate<? super List<? extends Loc>> errorLocs) {
+			final Predicate<XtaState<Prod2State<VS, CS>>> errorState, final Predicate<XtaState<Prod2State<VS, CS>>> initState) {
 		checkNotNull(system);
-		checkNotNull(errorLocs);
+		checkNotNull(errorState);
 
 		this.algorithm = checkNotNull(algorithm);
 		this.search = checkNotNull(search);
 		
 		final LTS<XtaState<?>, XtaAction> lts;
 		final Predicate<XtaState<?>> target;
+		//final Predicate<XtaState<Prod2State<VS,CS>>> initial = s -> isInitial(s,system);
 		final Prod2Prec<UnitPrec, UnitPrec> prec = Prod2Prec.of(UnitPrec.getInstance(), UnitPrec.getInstance());
 		final Analysis<Prod2State<VS, CS>, XtaAction, UnitPrec> prodAnalysis = PrecMappingAnalysis
 				.create(Prod2Analysis.create(algorithm.getDataAnalysis(), algorithm.getTimeAnalysis()), u -> prec);
 		final Analysis<XtaState<Prod2State<VS, CS>>, XtaAction, UnitPrec> analysis;
 		if (algorithm.isForward()){
 			lts= XtaLts.create(system); 
-			target= s -> errorLocs.test(s.getLocs());
 			analysis = XtaAnalysis.create(system,prodAnalysis);
+			argBuilder = ArgBuilder.create(lts, analysis, errorState);
 		} else {
 			lts=BackwardsXtaLts.create(system);
 			//Collection<? extends XtaState<S>> initStates=XtaAnalysis.create(system, algorithm.getAnalysis(), true).getInitFunc().getInitStates(UnitPrec.getInstance());
 			//target= s -> initStates.contains(s);//TODO: Target based on initial states
-			target= s -> errorLocs.test(s.getLocs());
-			analysis = XtaBackwardAnalysis.create(system,prodAnalysis);
+			Set<List<Loc>> trgStates=createErrorLocs(system,errorState);
+			analysis = XtaBackwardAnalysis.create(system,trgStates,prodAnalysis);
+			argBuilder = ArgBuilder.create(lts, analysis, initState);
 		}
-		argBuilder = ArgBuilder.create(lts, analysis, target);
+	}
+
+	private boolean isInitial(XtaState<Prod2State<VS,CS>> s, XtaSystem sys) {
+		for (XtaProcess proc:sys.getProcesses()) {
+			if (!s.getLocs().contains(proc.getInitLoc())) return false;
+		}
+		return true;
+	}
+
+	private Set<List<Loc>> createErrorLocs(XtaSystem system, Predicate<XtaState<Prod2State<VS, CS>>> errorState) {
+		// TODO Make it waaaay faster
+		return null;
 	}
 
 	public static <VS extends State,CS extends State> LazyXtaChecker<VS,CS> create(final XtaSystem system,
 			final AlgorithmStrategy<VS,CS> algorithmStrategy, final SearchStrategy searchStrategy,
-			final Predicate<? super List<? extends Loc>> errorLocs) {
-		return new LazyXtaChecker<>(system, algorithmStrategy, searchStrategy, errorLocs);
+			final Predicate<XtaState<Prod2State<VS, CS>>> errorState, final Predicate<XtaState<Prod2State<VS, CS>>> initState) {
+		return new LazyXtaChecker<>(system, algorithmStrategy, searchStrategy, errorState,initState);
 	}
 
 	@Override
@@ -160,39 +171,39 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 			
 			while (!waitlist.isEmpty()) {
 				final ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction> v = waitlist.remove();
-				System.out.println("Node "+v.getId()+": "+v.getState());//TODO
+				//System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				//System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
 				assert v.isLeaf();
 				
 				if (v.getState().isBottom()) continue;
 
 				if (algorithm.shouldRefine(v)) {
-					System.out.println("Shouldrefine");//TODO
+					//System.out.println("Shouldrefine");//TODO
 					statistics.startRefinement();
 					final Collection<ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction>> uncoveredNodes = algorithm
 							.refine(v, statistics);
 					statistics.stopRefinement();
-					System.out.println("Uncovered: "+uncoveredNodes);//TODO
+					//System.out.println("Uncovered: "+uncoveredNodes);//TODO
 					waitlist.addAll(uncoveredNodes);
 				} else if (v.isTarget()) {
-					System.out.println("Target");//TODO
+					//System.out.println("Target");//TODO
 					statistics.stopAlgorithm();
 					return Optional.of(v);
 				} else {
-					System.out.println("Else");//TODO
+					//System.out.println("Else");//TODO
 					close(v);
 					if (!v.isCovered()) {
-						System.out.println("Not covered");//TODO
+						//System.out.println("Not covered");//TODO
 						expand(v);
 					} else {//TODO
-						System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
+						//System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
 					}//TODO
 				}
-				System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
+				//System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
 				//System.out.println("waitlist: "+waitlist);//TODO
 			}
 			statistics.stopAlgorithm();
-			System.out.println("Algorithm ends");//TODO
+			//System.out.println("Algorithm ends");//TODO
 			return Optional.empty();
 		}
 
@@ -200,9 +211,9 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 
 	private void close(final ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction> nodeToCover) {
 			assert nodeToCover.isLeaf();
-			if (nodeToCover.getId()==13) {//TODO
+			/*if (nodeToCover.getId()==13) {//TODO
 				System.out.println("Intereseting node");//
-			}//TODO
+			}*///TODO
 			
 			final Collection<ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction>> candidates = reachedSet
 					.get(nodeToCover);

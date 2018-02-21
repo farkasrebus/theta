@@ -1,5 +1,10 @@
 package hu.bme.mit.theta.tools.xta;
 
+import java.util.function.Predicate;
+
+import hu.bme.mit.theta.formalism.xta.XtaSystem;
+import hu.bme.mit.theta.tools.xta.XtaMain.Algorithm;
+
 public enum XtaExample {
 	CRITICAL ("-25-50",4),
 	CSMA("",9),
@@ -30,6 +35,16 @@ public enum XtaExample {
 		String[] split2=split1[split1.length-1].split("-");
 		String name=split2[0];
 		return XtaExample.valueOf(name.toUpperCase());
+	}
+
+	public Predicate getErrorPredicate(XtaSystem xta) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Predicate getInitialPredicate(XtaExample ex, Algorithm algorithm) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/*public static long getPreprocTime(String model) {

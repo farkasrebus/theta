@@ -83,7 +83,7 @@ public final class XtaCheckerBuilder {
 		final LazyXtaChecker.AlgorithmStrategy<?,?> algorithmStrategy = algorithm.create(xta);
 
 		final SafetyChecker<?, ?, UnitPrec> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy,
-				l -> false);
+				l -> false,l -> false);
 		return checker;
 	}
 }

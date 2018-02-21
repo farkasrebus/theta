@@ -52,7 +52,7 @@ public final class XtaMain {
 	@Parameter(names = { "--header" }, description = "Print only a header (for benchmarks)", help = true)
 	boolean headerOnly = false;
 	
-	PreProcType preProc=PreProcType.UNFOLD;
+	//PreProcType preProc=PreProcType.UNFOLD;
 
 	public static enum Algorithm {
 
@@ -209,7 +209,7 @@ public final class XtaMain {
 				xta=XtaPreProcessor.unfoldDiagonalConstraints(xta);
 				ppw.stop();
 				preProcTime=ppw.elapsed(TimeUnit.MILLISECONDS);
-				this.preProc=PreProcType.DIAG;
+				//this.preProc=PreProcType.DIAG;
 			}
 			//Új alg - Régi input*/
 			/*if (newAlgs.contains(algorithm) && !newEx.contains(ex)) {//TODO: wp-re ez nem kell
@@ -232,7 +232,7 @@ public final class XtaMain {
 			System.gc();
 			System.gc();
 			Thread.sleep(5000);*/ //benchmark mode
-			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta);
+			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta,ex);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
 			printResult(result, preProcTime);
 			/*if (dotfile != null) {
@@ -250,7 +250,7 @@ public final class XtaMain {
 	public void printHeader() {
 		writer.cell("Expected");
 		writer.cell("Model");
-		writer.cell("PreProcessing");
+		//writer.cell("PreProcessing");
 		writer.cell("Algorithm");
 		writer.cell("Result");
 		writer.cell("PreProcTimeInMs");
@@ -269,12 +269,12 @@ public final class XtaMain {
 		return XtaDslManager.createSystem(inputStream);
 	}
 
-	private SafetyChecker<?, ?, UnitPrec> buildChecker(final XtaSystem xta) {
+	private SafetyChecker<?, ?, UnitPrec> buildChecker(final XtaSystem xta,XtaExample ex) {
 		final LazyXtaChecker.AlgorithmStrategy<?,?> algorithmStrategy = algorithm.create(xta);
 		final SearchStrategy searchStrategy = search.create();
 
 		final SafetyChecker<?, ?, UnitPrec> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy,
-				l -> false);
+				ex.getErrorPredicate(xta),ex.getInitialPredicate(ex,algorithm));
 		return checker;
 	}
 
@@ -284,7 +284,7 @@ public final class XtaMain {
 		if (benchmarkMode) {
 			writer.cell("");
 			writer.cell(model);
-			writer.cell(preProc);
+			//writer.cell(preProc);
 			writer.cell(algorithm);
 			writer.cell("true");
 			writer.cell(ppT);
