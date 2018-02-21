@@ -32,9 +32,15 @@ import hu.bme.mit.theta.analysis.impl.PrecMappingAnalysis;
 import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
+import hu.bme.mit.theta.analysis.zone.ZoneState;
 import hu.bme.mit.theta.analysis.zone.act.ActZoneAnalysis;
 import hu.bme.mit.theta.analysis.zone.act.ActZoneState;
+import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.VarDecl;
+import hu.bme.mit.theta.core.type.booltype.BoolLitExpr;
+import hu.bme.mit.theta.core.type.booltype.BoolType;
+import hu.bme.mit.theta.core.type.inttype.IntLitExpr;
+import hu.bme.mit.theta.core.type.inttype.IntType;
 import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
@@ -160,6 +166,22 @@ public final class ActStrategy implements LazyXtaChecker.AlgorithmStrategy<ExplS
 
 	@Override
 	public boolean isForward() {
+		return true;
+	}
+
+	@Override
+	public boolean containsInitState(XtaState<Prod2State<ExplState, ActZoneState>> state, Collection<VarDecl<RatType>> clocks) {
+		boolean zonecontains=state.getState().getState2().isLeq(ActZoneState.of(ZoneState.zero(clocks), state.getState().getState2().getActiveVars())) ;
+		if (!zonecontains) return false;
+		for (Decl<?> v: state.getState().getState1().getDecls()) {
+			if (v.getType() instanceof IntType ) {
+				IntLitExpr value= (IntLitExpr) state.getState().getState1().eval(v).get();
+				if (value.getValue() !=0) return false;
+			} else if (v.getType() instanceof BoolType ) {
+				BoolLitExpr value= (BoolLitExpr) state.getState().getState1().eval(v).get();
+				if (value.getValue() !=false) return false;
+			}
+		}
 		return true;
 	}
 

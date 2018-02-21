@@ -2,8 +2,13 @@ package hu.bme.mit.theta.tools.xta;
 
 import java.util.function.Predicate;
 
+import hu.bme.mit.theta.analysis.State;
+import hu.bme.mit.theta.analysis.expr.ExprState;
+import hu.bme.mit.theta.analysis.prod2.Prod2State;
+import hu.bme.mit.theta.analysis.zone.ZoneState;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import hu.bme.mit.theta.tools.xta.XtaMain.Algorithm;
+import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaChecker.AlgorithmStrategy;
 
 public enum XtaExample {
 	CRITICAL ("-25-50",4),
@@ -37,13 +42,7 @@ public enum XtaExample {
 		return XtaExample.valueOf(name.toUpperCase());
 	}
 
-	public Predicate getErrorPredicate(XtaSystem xta) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Predicate getInitialPredicate(XtaExample ex, Algorithm algorithm) {
-		// TODO Auto-generated method stub
+	public <VS extends State, CS extends State> Predicate<XtaState<Prod2State<VS, CS>>> getErrorPredicate(XtaSystem xta, AlgorithmStrategy<VS,CS> alg) {
 		return null;
 	}
 

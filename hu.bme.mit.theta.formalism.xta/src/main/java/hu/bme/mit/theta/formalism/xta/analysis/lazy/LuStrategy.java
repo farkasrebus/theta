@@ -31,6 +31,8 @@ import hu.bme.mit.theta.analysis.zone.BoundFunc;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.lu.LuZoneAnalysis;
 import hu.bme.mit.theta.analysis.zone.lu.LuZoneState;
+import hu.bme.mit.theta.core.decl.VarDecl;
+import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
@@ -158,6 +160,12 @@ public final class LuStrategy implements LazyXtaChecker.AlgorithmStrategy<ExplSt
 	@Override
 	public boolean isForward() {
 		return true;
+	}
+
+	@Override
+	public boolean containsInitState(XtaState<Prod2State<ExplState, LuZoneState>> state,
+			Collection<VarDecl<RatType>> clocks) {
+		throw new UnsupportedOperationException();
 	}
 
 }

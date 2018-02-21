@@ -4,6 +4,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static hu.bme.mit.theta.core.decl.Decls.Const;
 import static hu.bme.mit.theta.core.type.booltype.BoolExprs.And;
 import static hu.bme.mit.theta.core.type.booltype.BoolExprs.Not;
+import static hu.bme.mit.theta.core.type.inttype.IntExprs.Int;
+import static hu.bme.mit.theta.core.type.inttype.IntExprs.Eq;
+import static hu.bme.mit.theta.core.type.booltype.BoolExprs.False;
+import static hu.bme.mit.theta.core.type.booltype.BoolExprs.Iff;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,12 +22,19 @@ import hu.bme.mit.theta.analysis.pred.backwards.WeakestPreconditionAnalysis;
 import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
+import hu.bme.mit.theta.analysis.zone.ZoneState;
+import hu.bme.mit.theta.analysis.zone.act.ActZoneState;
 import hu.bme.mit.theta.analysis.zone.backwards.BackwardsZoneAnalysis;
 import hu.bme.mit.theta.analysis.zone.backwards.BackwardsZoneState;
 import hu.bme.mit.theta.core.decl.ConstDecl;
+import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.type.Expr;
+import hu.bme.mit.theta.core.type.booltype.BoolLitExpr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
+import hu.bme.mit.theta.core.type.inttype.IntLitExpr;
+import hu.bme.mit.theta.core.type.inttype.IntType;
+import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
@@ -40,7 +51,8 @@ public class BackwardStrategy implements LazyXtaChecker.AlgorithmStrategy<ExprSt
 	private final Solver solver;
 	private final Analysis<BackwardsZoneState, XtaAction, UnitPrec> timeAnalysis;
 	private final Analysis<ExprState, XtaAction, UnitPrec> dataAnalysis;
-	private Map<VarDecl<?>,ConstDecl<?>> vars;
+	private final Map<VarDecl<?>,ConstDecl<?>> vars;
+	
 	
 	private BackwardStrategy(final XtaSystem system, boolean enableAct) {
 		checkNotNull(system);
@@ -122,6 +134,29 @@ public class BackwardStrategy implements LazyXtaChecker.AlgorithmStrategy<ExprSt
 	public Collection<ArgNode<XtaState<Prod2State<ExprState, BackwardsZoneState>>, XtaAction>> refine(
 			ArgNode<XtaState<Prod2State<ExprState, BackwardsZoneState>>, XtaAction> node, Builder statistics) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean containsInitState(XtaState<Prod2State<ExprState, BackwardsZoneState>> state,
+			Collection<VarDecl<RatType>> clocks) {
+		boolean zonecontains=state.getState().getState2().getZone().isLeq(ZoneState.zero(clocks)) ;
+		if (!zonecontains) return false;
+		
+		solver.pop();
+		solver.push();
+		Expr<BoolType> solverexpr=XtaWeakestPreconditionTransFunc.changeVariables(state.getState().getState1().toExpr(),vars);
+		solver.add(solverexpr);
+		for (VarDecl<?> v: vars.keySet()) {
+			if (v.getType() instanceof IntType ) {
+				ConstDecl<IntType> vd=(ConstDecl<IntType>) vars.get(v);
+				solver.add(Eq(vd.getRef(),Int(0)));
+			} else if (v.getType() instanceof BoolType ) {
+				ConstDecl<BoolType> vd=(ConstDecl<BoolType>) vars.get(v);
+				solver.add(Iff(vd.getRef(),False()));
+			}
+		}
+		
+		return solver.check().equals(SolverStatus.SAT);
 	}
 
 }

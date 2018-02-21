@@ -34,6 +34,7 @@ import hu.bme.mit.theta.analysis.algorithm.ArgTrace;
 import hu.bme.mit.theta.analysis.algorithm.SafetyChecker;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
 import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
+import hu.bme.mit.theta.analysis.expl.ExplState;
 import hu.bme.mit.theta.analysis.impl.PrecMappingAnalysis;
 import hu.bme.mit.theta.analysis.prod2.Prod2Analysis;
 import hu.bme.mit.theta.analysis.prod2.Prod2Prec;
@@ -41,6 +42,9 @@ import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.analysis.reachedset.Partition;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.waitlist.Waitlist;
+import hu.bme.mit.theta.analysis.zone.act.ActZoneState;
+import hu.bme.mit.theta.core.decl.VarDecl;
+import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.formalism.xta.XtaProcess;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
@@ -75,6 +79,8 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 
 		Collection<ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction>> refine(
 				ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction> node, LazyXtaStatistics.Builder statistics);
+		boolean containsInitState(XtaState<Prod2State<VS, CS>> state,
+				Collection<VarDecl<RatType>> clocks);
 	}
 
 	private final AlgorithmStrategy<VS,CS> algorithm;
@@ -83,7 +89,7 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 	private final ArgBuilder<XtaState<Prod2State<VS, CS>>, XtaAction, UnitPrec> argBuilder;
 
 	private LazyXtaChecker(final XtaSystem system, final AlgorithmStrategy<VS,CS> algorithm, final SearchStrategy search,
-			final Predicate<XtaState<Prod2State<VS, CS>>> errorState, final Predicate<XtaState<Prod2State<VS, CS>>> initState) {
+			final Predicate<XtaState<Prod2State<VS, CS>>> errorState) {
 		checkNotNull(system);
 		checkNotNull(errorState);
 
@@ -91,8 +97,7 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 		this.search = checkNotNull(search);
 		
 		final LTS<XtaState<?>, XtaAction> lts;
-		final Predicate<XtaState<?>> target;
-		//final Predicate<XtaState<Prod2State<VS,CS>>> initial = s -> isInitial(s,system);
+		final Predicate<XtaState<Prod2State<VS,CS>>> initial = s -> isInitial(s,system);
 		final Prod2Prec<UnitPrec, UnitPrec> prec = Prod2Prec.of(UnitPrec.getInstance(), UnitPrec.getInstance());
 		final Analysis<Prod2State<VS, CS>, XtaAction, UnitPrec> prodAnalysis = PrecMappingAnalysis
 				.create(Prod2Analysis.create(algorithm.getDataAnalysis(), algorithm.getTimeAnalysis()), u -> prec);
@@ -103,19 +108,19 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 			argBuilder = ArgBuilder.create(lts, analysis, errorState);
 		} else {
 			lts=BackwardsXtaLts.create(system);
-			//Collection<? extends XtaState<S>> initStates=XtaAnalysis.create(system, algorithm.getAnalysis(), true).getInitFunc().getInitStates(UnitPrec.getInstance());
-			//target= s -> initStates.contains(s);//TODO: Target based on initial states
 			Set<List<Loc>> trgStates=createErrorLocs(system,errorState);
 			analysis = XtaBackwardAnalysis.create(system,trgStates,prodAnalysis);
-			argBuilder = ArgBuilder.create(lts, analysis, initState);
+			
+			argBuilder = ArgBuilder.create(lts, analysis, initial);
 		}
 	}
 
-	private boolean isInitial(XtaState<Prod2State<VS,CS>> s, XtaSystem sys) {
+	//TODO: ezt majd máshol felhasználni
+	public boolean isInitial(XtaState<Prod2State<VS,CS>> s, XtaSystem sys) {
 		for (XtaProcess proc:sys.getProcesses()) {
 			if (!s.getLocs().contains(proc.getInitLoc())) return false;
 		}
-		return true;
+		return algorithm.containsInitState(s, sys.getClockVars());
 	}
 
 	private Set<List<Loc>> createErrorLocs(XtaSystem system, Predicate<XtaState<Prod2State<VS, CS>>> errorState) {
@@ -125,8 +130,8 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 
 	public static <VS extends State,CS extends State> LazyXtaChecker<VS,CS> create(final XtaSystem system,
 			final AlgorithmStrategy<VS,CS> algorithmStrategy, final SearchStrategy searchStrategy,
-			final Predicate<XtaState<Prod2State<VS, CS>>> errorState, final Predicate<XtaState<Prod2State<VS, CS>>> initState) {
-		return new LazyXtaChecker<>(system, algorithmStrategy, searchStrategy, errorState,initState);
+			final Predicate<XtaState<Prod2State<VS, CS>>> errorState) {
+		return new LazyXtaChecker<>(system, algorithmStrategy, searchStrategy, errorState);
 	}
 
 	@Override

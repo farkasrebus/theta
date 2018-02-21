@@ -202,7 +202,7 @@ public final class XtaMain {
 			XtaExample ex=XtaExample.getExampleBySource(model);
 			long preProcTime=0;
 			Set<Algorithm> newAlgs=ImmutableSet.of(/*Algorithm.BW,Algorithm.BACT*/);
-			Set<XtaExample> newEx=ImmutableSet.of(XtaExample.BACKEX,XtaExample.SPLIT);
+			Set<XtaExample> newEx=ImmutableSet.of(/*XtaExample.BACKEX,XtaExample.SPLIT*/);
 			
 			if  (!newAlgs.contains(algorithm) && newEx.contains(ex)) {
 				Stopwatch ppw=Stopwatch.createStarted();
@@ -274,7 +274,7 @@ public final class XtaMain {
 		final SearchStrategy searchStrategy = search.create();
 
 		final SafetyChecker<?, ?, UnitPrec> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy,
-				ex.getErrorPredicate(xta),ex.getInitialPredicate(ex,algorithm));
+				s -> false);
 		return checker;
 	}
 

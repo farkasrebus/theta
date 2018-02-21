@@ -77,7 +77,7 @@ public final class LazyXtaCheckerTest {
 	public void testBinItpStrategy() {
 		// Arrange
 		final LazyXtaChecker<ExplState,ItpZoneState> checker = LazyXtaChecker.create(system,
-				BinItpStrategy.create(system, ItpOperator.DEFAULT), SearchStrategy.BFS, l -> false,l -> false);
+				BinItpStrategy.create(system, ItpOperator.DEFAULT), SearchStrategy.BFS, l -> false);
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());
@@ -91,7 +91,7 @@ public final class LazyXtaCheckerTest {
 	public void testSeqItpStrategy() {
 		// Arrange
 		final LazyXtaChecker<ExplState,ItpZoneState> checker = LazyXtaChecker.create(system,
-				SeqItpStrategy.create(system, ItpOperator.DEFAULT), SearchStrategy.BFS, l -> false,l -> false);
+				SeqItpStrategy.create(system, ItpOperator.DEFAULT), SearchStrategy.BFS, l -> false);
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());
@@ -105,7 +105,7 @@ public final class LazyXtaCheckerTest {
 	public void testLuStrategy() {
 		// Arrange
 		final LazyXtaChecker<ExplState,?> checker = LazyXtaChecker.create(system, LuStrategy.create(system), SearchStrategy.BFS,
-				l -> false,l -> false);
+				l -> false);
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());
@@ -119,7 +119,7 @@ public final class LazyXtaCheckerTest {
 	public void testActStrategy() {
 		// Arrange
 		final LazyXtaChecker<ExplState,?> checker = LazyXtaChecker.create(system, ActStrategy.create(system), SearchStrategy.BFS,
-				l -> false,l -> false);
+				l -> false);
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());
