@@ -3,14 +3,11 @@ package hu.bme.mit.theta.tools.xta;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableSet;
 
 import hu.bme.mit.theta.analysis.algorithm.SafetyChecker;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
@@ -18,6 +15,7 @@ import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.common.table.TableWriter;
 import hu.bme.mit.theta.common.table.impl.BasicTableWriter;
+import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.ActStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.BackwardStrategy;
@@ -45,7 +43,7 @@ public final class XtaMain {
 	Search search;
 
 	@Parameter(names = { "-bm", "--benchmark" }, description = "Benchmark mode (only print metrics)")
-	Boolean benchmarkMode = true;
+	Boolean benchmarkMode = false;
 	@Parameter(names = { "-v", "--visualize" }, description = "Write proof or counterexample to file in dot format")
 	String dotfile = null;
 
@@ -114,9 +112,6 @@ public final class XtaMain {
 
 		public abstract LazyXtaChecker.AlgorithmStrategy<?,?> create(final XtaSystem system);
 	}
-	private static enum PreProcType {
-		NO,DIAG,UNFOLD,SMART;
-	}
 
 	private static enum Search {
 
@@ -159,7 +154,8 @@ public final class XtaMain {
 		try {
 			JCommander.newBuilder().addObject(result).programName(JAR_NAME).build().parse(args);
 			final XtaSystem xta = result.loadModel();
-			XtaPreProcessor.printStuff(xta);
+			
+			//XtaPreProcessor.printStuff(xta);
 			//System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(xta)));
 			//final XtaSystem resultSys=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xta, XtaExample.getExampleBySource(result.model)).result));
 			/*long start=System.currentTimeMillis();
@@ -200,44 +196,7 @@ public final class XtaMain {
 		try {
 			XtaSystem xta = loadModel();
 			XtaExample ex=XtaExample.getExampleBySource(model);
-			long preProcTime=0;
-			Set<Algorithm> newAlgs=ImmutableSet.of(/*Algorithm.BW,Algorithm.BACT*/);
-			Set<XtaExample> newEx=ImmutableSet.of(/*XtaExample.BACKEX,XtaExample.SPLIT*/);
 			
-			if  (!newAlgs.contains(algorithm) && newEx.contains(ex)) {
-				Stopwatch ppw=Stopwatch.createStarted();
-				xta=XtaPreProcessor.unfoldDiagonalConstraints(xta);
-				ppw.stop();
-				preProcTime=ppw.elapsed(TimeUnit.MILLISECONDS);
-				//this.preProc=PreProcType.DIAG;
-			}
-			//Új alg - Régi input*/
-			/*if (newAlgs.contains(algorithm) && !newEx.contains(ex)) {//TODO: wp-re ez nem kell
-				Stopwatch ppw=Stopwatch.createUnstarted();
-				if (ex.equals(XtaExample.CSMA)) {
-					this.preProc=PreProcType.SMART;
-					ppw.start();
-					xta=XtaSystemUnfolder.unfoldDataSmart(xta, XtaExample.CSMA);
-					ppw.stop();
-				} else {
-				this.preProc=PreProcType.DATA;
-					ppw.start();
-					final UnfoldedXtaSystem unfolded=XtaSystemUnfolder.getPureFlatSystem(xta,ex);
-					ppw.stop();
-					xta=XtaSystem.of(ImmutableList.of(unfolded.result));
-				}
-				preProcTime=ppw.elapsed(TimeUnit.MILLISECONDS);
-			}*/
-			/*System.gc();
-			System.gc();
-			System.gc();
-			Thread.sleep(5000);*/ //benchmark mode
-			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta,ex);
-			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
-			printResult(result, preProcTime);
-			/*if (dotfile != null) {
-				writeVisualStatus(result, dotfile);
-			}*/
 		} catch (final Throwable ex) {
 			ex.printStackTrace();
 			printError(ex);
@@ -274,7 +233,7 @@ public final class XtaMain {
 		final SearchStrategy searchStrategy = search.create();
 
 		final SafetyChecker<?, ?, UnitPrec> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy,
-				s -> false);
+				ex.getErrorLocs(xta));
 		return checker;
 	}
 

@@ -89,9 +89,9 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 	private final ArgBuilder<XtaState<Prod2State<VS, CS>>, XtaAction, UnitPrec> argBuilder;
 
 	private LazyXtaChecker(final XtaSystem system, final AlgorithmStrategy<VS,CS> algorithm, final SearchStrategy search,
-			final Predicate<XtaState<Prod2State<VS, CS>>> errorState) {
+			final Set<List<Loc>> trgStates) {
 		checkNotNull(system);
-		checkNotNull(errorState);
+		checkNotNull(trgStates);
 
 		this.algorithm = checkNotNull(algorithm);
 		this.search = checkNotNull(search);
@@ -105,33 +105,28 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 		if (algorithm.isForward()){
 			lts= XtaLts.create(system); 
 			analysis = XtaAnalysis.create(system,prodAnalysis);
+			Predicate<XtaState<Prod2State<VS,CS>>> errorState=s -> trgStates.contains(s.getLocs());
 			argBuilder = ArgBuilder.create(lts, analysis, errorState);
 		} else {
 			lts=BackwardsXtaLts.create(system);
-			Set<List<Loc>> trgStates=createErrorLocs(system,errorState);
 			analysis = XtaBackwardAnalysis.create(system,trgStates,prodAnalysis);
 			
 			argBuilder = ArgBuilder.create(lts, analysis, initial);
 		}
 	}
 
-	//TODO: ezt majd máshol felhasználni
-	public boolean isInitial(XtaState<Prod2State<VS,CS>> s, XtaSystem sys) {
+
+	private boolean isInitial(XtaState<Prod2State<VS,CS>> s, XtaSystem sys) {
 		for (XtaProcess proc:sys.getProcesses()) {
 			if (!s.getLocs().contains(proc.getInitLoc())) return false;
 		}
 		return algorithm.containsInitState(s, sys.getClockVars());
 	}
 
-	private Set<List<Loc>> createErrorLocs(XtaSystem system, Predicate<XtaState<Prod2State<VS, CS>>> errorState) {
-		// TODO Make it waaaay faster
-		return null;
-	}
-
 	public static <VS extends State,CS extends State> LazyXtaChecker<VS,CS> create(final XtaSystem system,
 			final AlgorithmStrategy<VS,CS> algorithmStrategy, final SearchStrategy searchStrategy,
-			final Predicate<XtaState<Prod2State<VS, CS>>> errorState) {
-		return new LazyXtaChecker<>(system, algorithmStrategy, searchStrategy, errorState);
+			final Set<List<Loc>> trgStates) {
+		return new LazyXtaChecker<>(system, algorithmStrategy, searchStrategy, trgStates);
 	}
 
 	@Override

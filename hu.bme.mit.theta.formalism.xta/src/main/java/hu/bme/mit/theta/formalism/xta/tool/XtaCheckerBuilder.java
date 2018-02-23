@@ -15,6 +15,8 @@
  */
 package hu.bme.mit.theta.formalism.xta.tool;
 
+import java.util.HashSet;
+
 import hu.bme.mit.theta.analysis.algorithm.SafetyChecker;
 import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
@@ -83,7 +85,7 @@ public final class XtaCheckerBuilder {
 		final LazyXtaChecker.AlgorithmStrategy<?,?> algorithmStrategy = algorithm.create(xta);
 
 		final SafetyChecker<?, ?, UnitPrec> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy,
-				l -> false);
+				new HashSet<>());
 		return checker;
 	}
 }
