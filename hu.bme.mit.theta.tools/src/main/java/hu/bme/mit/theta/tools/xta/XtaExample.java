@@ -107,8 +107,46 @@ public enum XtaExample {
 	FDDI("",4) {
 		@Override
 		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
-			// TODO Auto-generated method stub
-			return null;
+			int threads=xta.getProcesses().size();
+			HashSet<List<Loc>> result = new HashSet<>();
+			if (threads<2) 
+				return result;
+			
+			List<Loc> ringLocs=new ArrayList<>();
+			Map<XtaProcess,List<Loc>> statLocs=new HashMap<>();
+			for (XtaProcess p: xta.getProcesses()) {
+				String pname=p.getName();
+				if (pname.contains("Ring")) {
+					ringLocs.addAll(p.getLocs());
+				} else {
+					statLocs.put(p, new ArrayList<>(p.getLocs()));
+				}
+			}
+			Iterator<XtaProcess> it=statLocs.keySet().iterator();
+			XtaProcess station0=it.next();
+			XtaProcess station1=it.next();
+			List<Loc> s0locs = statLocs.get(station0);
+			List<Loc> s1locs = statLocs.get(station1);
+			s0locs.removeIf(x -> x.getInvars().isEmpty());//tricky
+			s1locs.removeIf(x -> x.getInvars().isEmpty());
+			statLocs.remove(station0);
+			statLocs.remove(station1);
+			
+			Set<List<Loc>> statConfs=getConfiguirations(statLocs);
+			
+			for (Loc e0:s0locs) {
+				for (Loc e1: s1locs) {
+					for (Loc rl:ringLocs) {
+						for (List<Loc> sc:statConfs) {
+							sc.add(e0);
+							sc.add(e1);
+							sc.add(rl);
+							result.add(sc);
+						}
+					}
+				}
+			}
+			return result;
 		}
 	},
 	FISCHER("-32-64",8) {
