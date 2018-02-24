@@ -3,6 +3,7 @@ package hu.bme.mit.theta.tools.xta;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,31 +18,45 @@ public enum XtaExample {
 		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
 			int threads=xta.getProcesses().size();
 			HashSet<List<Loc>> result = new HashSet<>();
-			if (threads<2) 
+			if (threads<3) 
 				return result;
 			
 			Map<XtaProcess,List<Loc>> arbLocs=new HashMap<>();
 			Map<XtaProcess,List<Loc>> cellLocs=new HashMap<>();
 			List<Loc> cntrLocs=new ArrayList<>();
+			XtaProcess cell = null;
 			for (XtaProcess p: xta.getProcesses()) {
 				String pname=p.getName();
 				if (pname.contains("Counter")) {
 					cntrLocs.addAll(p.getLocs());
 				} else if (pname.contains("ProdCell")) {
+					cell=p;
 					cellLocs.put(p,new ArrayList<>(p.getLocs()));
 				} else if (pname.contains("Arbiter")) {
 					arbLocs.put(p,new ArrayList<>(p.getLocs()));
 				}
 			}
-			Set<List<Loc>> cntrConfs=new HashSet<>();
-			for (Loc l:cntrLocs) {
-				List<Loc> loclist=new ArrayList<>();
-				loclist.add(l);
-				cntrConfs.add(loclist);
+			Loc error=null;
+			for (Loc l: cell.getLocs()) {
+				if (l.getName().contains("error"))
+					error=l;
 			}
+			cellLocs.remove(cell);
+			
 			Set<List<Loc>> arbConfs=getConfiguirations(arbLocs);
 			Set<List<Loc>> cellConfs=getConfiguirations(cellLocs);
-			//TODO
+			for (Loc cl: cntrLocs) {
+				for (List<Loc> ac: arbConfs) {
+					for (List<Loc> cc: cellConfs) {
+						List<Loc> conf=new ArrayList<>();
+						conf.add(error);
+						conf.add(cl);
+						conf.addAll(ac);
+						conf.addAll(cc);
+						result.add(conf);
+					}
+				}
+			}
 			return result;
 			
 		}
@@ -49,8 +64,44 @@ public enum XtaExample {
 	CSMA("",9) {
 		@Override
 		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
-			// TODO Auto-generated method stub
-			return null;
+			int threads=xta.getProcesses().size();
+			HashSet<List<Loc>> result = new HashSet<>();
+			if (threads<3) 
+				return result;
+			
+			List<Loc> busLocs=new ArrayList<>();
+			Map<XtaProcess,List<Loc>> stationLocs=new HashMap<>();
+			for (XtaProcess p: xta.getProcesses()) {
+				if (p.getName().contains("Bus")) {
+					busLocs.addAll(p.getLocs());
+				} else {
+					stationLocs.put(p, new ArrayList<>(p.getLocs()));
+				}
+			}
+			Iterator<XtaProcess> it=stationLocs.keySet().iterator();
+			XtaProcess station0=it.next();
+			XtaProcess station1=it.next();
+			Loc error0=null;
+			Loc transm1=null;
+			for (Loc l: station0.getLocs()) {
+				if (l.getName().contains("error")) error0=l;
+			}
+			for (Loc l: station1.getLocs()) {
+				if (l.getName().contains("transm")) transm1=l;
+			}
+			stationLocs.remove(station0);
+			stationLocs.remove(station1);
+			Set<List<Loc>> statConfs=getConfiguirations(stationLocs);
+			for (List<Loc> conf:statConfs) {
+				for (Loc l:busLocs) {
+					conf.add(l);
+					conf.add(error0);
+					conf.add(transm1);
+					result.add(conf);
+				}
+			}
+			
+			return result;
 		}
 	},
 	FDDI("",4) {
@@ -90,12 +141,36 @@ public enum XtaExample {
 	LYNCH("-16",4) {
 		@Override
 		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
-			// TODO Auto-generated method stub
-			return null;
+			int threads=xta.getProcesses().size();
+			HashSet<List<Loc>> result = new HashSet<>();
+			if (threads<2) 
+				return result;
+			Map<XtaProcess,List<Loc>> allLocs=new HashMap<>();
+			for (XtaProcess p: xta.getProcesses()) {
+				allLocs.put(p, new ArrayList<>(p.getLocs()));
+			}
+			XtaProcess p1=xta.getProcesses().get(0);
+			XtaProcess p2=xta.getProcesses().get(1);
+			Loc crit1 = null;
+			Loc crit2 = null;
+			for (Loc l: p1.getLocs()) {
+				if (l.getName().contains("CS")) crit1=l;
+			}
+			for (Loc l: p2.getLocs()) {
+				if (l.getName().contains("CS")) crit2=l;
+			}
+			allLocs.remove(p1);
+			allLocs.remove(p2);
+			Set<List<Loc>> variations=getConfiguirations(allLocs);
+			
+			for (List<Loc> l:variations) {
+				l.add(crit1);
+				l.add(crit2);
+			}
+			result.addAll(variations);
+			return result;
 		}
-	}/*,
-	SPLIT("",6),
-	BACKEX("",7)*/;
+	};
 	
 	private final String params;
 	private final int maxThreads;

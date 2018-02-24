@@ -16,7 +16,7 @@ public class XtaModelCheckerTests {
 	@Parameters
 	  public static XtaExample[] data() {
 	    //return XtaExample.values();
-		XtaExample[] result={XtaExample.FISCHER};
+		XtaExample[] result={XtaExample.LYNCH};
 		return result;
 	  }
 	
@@ -116,8 +116,10 @@ public class XtaModelCheckerTests {
 			e.printStackTrace();
 		}*/
 		for (int i=2;i<=input.getMaxThreads();i++) {
+			System.out.println("Errorlocs for param="+i+":");
 			String[] args={"-a","BW","-m",input.getFileLocation(i),"-s","BFS"};
 			XtaMain.main(args);
+			System.out.println("-----------------------------");
 		}
 		
 	}

@@ -39,7 +39,8 @@ process Station(const id_t id) {
 	state
 		wait,
 		transm { x <= LAMDA },
-		retry { x <= 2 * SIGMA };
+		retry { x <= 2 * SIGMA },
+    error;
 	
 	init wait;
 	
@@ -51,7 +52,8 @@ process Station(const id_t id) {
 		transm -> wait { guard x >= LAMDA; sync end!; assign x = 0; },
 		transm -> retry { guard x <= 2 * SIGMA; sync cd[id]?; assign x = 0; },
 		retry -> transm { guard x <= 2 * SIGMA; sync begin!; assign x = 0; },
-		retry -> retry { guard x <= 2 * SIGMA; sync cd[id]?; assign x = 0; };
+		retry -> retry { guard x <= 2 * SIGMA; sync cd[id]?; assign x = 0; },
+    transm -> error { guard x > 2 * SIGMA; };
 }
 
 system Bus, Station;
