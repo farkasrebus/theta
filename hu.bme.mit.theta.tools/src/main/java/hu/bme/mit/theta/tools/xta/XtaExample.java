@@ -207,10 +207,12 @@ public enum XtaExample {
 			}
 			result.addAll(variations);
 			return result;
-		}
+		}//,
+		//EXSITH()
 	};
 	
 	private final String params;
+	
 	private final int maxThreads;
 	
 	XtaExample(String params, int maxThreads) {
