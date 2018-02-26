@@ -29,13 +29,13 @@ import static hu.bme.mit.theta.core.type.rattype.RatExprs.Rat;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
 import hu.bme.mit.theta.analysis.expr.StmtAction;
+import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.stmt.Stmt;
 import hu.bme.mit.theta.core.type.Expr;
@@ -51,12 +51,10 @@ public abstract class XtaAction extends StmtAction {
 	private static final VarDecl<RatType> DELAY = Var("_delay", Rat());
 
 	private final Collection<VarDecl<RatType>> clockVars;
-	private final List<Loc> sourceLocs;
-
-	private XtaAction(final XtaSystem system, final List<Loc> source) {
+	
+	private XtaAction(final XtaSystem system) {
 		checkNotNull(system);
 		this.clockVars = system.getClockVars();
-		this.sourceLocs = ImmutableList.copyOf(checkNotNull(source));
 	}
 
 	public static BasicXtaAction simple(final XtaSystem system, final List<Loc> sourceLocs, final Edge edge) {
@@ -67,14 +65,21 @@ public abstract class XtaAction extends StmtAction {
 			final Edge recvEdge) {
 		return new SyncedXtaAction(system, sourceLocs, emitEdge, recvEdge);
 	}
+	
+	public static BasicBackwardXtaAction simpleBackward(final XtaSystem system, final List<Loc> targetLocs, final Edge edge) {
+		return new BasicBackwardXtaAction(system, targetLocs, edge);
+	}
+	
+	public static SyncedBackwardXtaAction syncedBackward(final XtaSystem system, final List<Loc> targetLocs, final Edge emitEdge,
+			final Edge recvEdge) {
+		return new SyncedBackwardXtaAction(system, targetLocs, emitEdge, recvEdge);
+	}
 
 	public Collection<VarDecl<RatType>> getClockVars() {
 		return clockVars;
 	}
 
-	public List<Loc> getSourceLocs() {
-		return sourceLocs;
-	}
+	public abstract List<Loc> getSourceLocs();
 
 	public abstract List<Loc> getTargetLocs();
 
@@ -85,6 +90,14 @@ public abstract class XtaAction extends StmtAction {
 	public boolean isSynced() {
 		return false;
 	}
+	
+	public boolean isBasicBackward() {
+		return false;
+	}
+
+	public boolean isSyncedBackward() {
+		return false;
+	}
 
 	public BasicXtaAction asBasic() {
 		throw new ClassCastException();
@@ -93,16 +106,26 @@ public abstract class XtaAction extends StmtAction {
 	public SyncedXtaAction asSynced() {
 		throw new ClassCastException();
 	}
+	
+	public BasicBackwardXtaAction asBasicBackward() {
+		throw new ClassCastException();
+	}
+
+	public SyncedBackwardXtaAction asSyncedBackward() {
+		throw new ClassCastException();
+	}
 
 	public static final class BasicXtaAction extends XtaAction {
 		private final Edge edge;
+		private final List<Loc> sourceLocs;
 		private final List<Loc> targetLocs;
 
 		private volatile List<Stmt> stmts = null;
 
 		private BasicXtaAction(final XtaSystem system, final List<Loc> sourceLocs, final Edge edge) {
-			super(system, sourceLocs);
+			super(system);
 			this.edge = checkNotNull(edge);
+			this.sourceLocs = ImmutableList.copyOf(checkNotNull(sourceLocs));
 
 			final ImmutableList.Builder<Loc> builder = ImmutableList.builder();
 			final Loc source = edge.getSource();
@@ -123,6 +146,11 @@ public abstract class XtaAction extends StmtAction {
 
 		public Edge getEdge() {
 			return edge;
+		}
+		
+		@Override
+		public List<Loc> getSourceLocs() {
+			return sourceLocs;
 		}
 
 		@Override
@@ -160,10 +188,8 @@ public abstract class XtaAction extends StmtAction {
 
 		@Override
 		public String toString() {
-			final StringJoiner sj = new StringJoiner("\n");
-			edge.getGuards().forEach(g -> sj.add("[" + g + "]"));
-			edge.getUpdates().forEach(u -> sj.add(u.toString()));
-			return sj.toString();
+			return Utils.lispStringBuilder(getClass().getSimpleName()).body().addAll(edge.getGuards())
+					.addAll(edge.getUpdates()).toString();
 		}
 
 	}
@@ -171,13 +197,15 @@ public abstract class XtaAction extends StmtAction {
 	public static final class SyncedXtaAction extends XtaAction {
 		private final Edge emitEdge;
 		private final Edge recvEdge;
+		private final List<Loc> sourceLocs;
 		private final List<Loc> targetLocs;
 
 		private volatile List<Stmt> stmts = null;
 
 		private SyncedXtaAction(final XtaSystem system, final List<Loc> sourceLocs, final Edge emitEdge,
 				final Edge recvEdge) {
-			super(system, sourceLocs);
+			super(system);
+			this.sourceLocs = ImmutableList.copyOf(checkNotNull(sourceLocs));
 			this.emitEdge = checkNotNull(emitEdge);
 			this.recvEdge = checkNotNull(recvEdge);
 
@@ -219,6 +247,11 @@ public abstract class XtaAction extends StmtAction {
 		public Edge getRecvEdge() {
 			return recvEdge;
 		}
+		
+		@Override
+		public List<Loc> getSourceLocs() {
+			return sourceLocs;
+		}
 
 		@Override
 		public List<Loc> getTargetLocs() {
@@ -258,18 +291,197 @@ public abstract class XtaAction extends StmtAction {
 
 		@Override
 		public String toString() {
-			final StringJoiner sj = new StringJoiner("\n");
-			sj.add(emitEdge.getSync().get().toString());
-			sj.add(recvEdge.getSync().get().toString());
-			emitEdge.getGuards().forEach(g -> sj.add("[" + g + "]"));
-			recvEdge.getGuards().forEach(g -> sj.add("[" + g + "]"));
-			emitEdge.getUpdates().forEach(u -> sj.add(u.toString()));
-			recvEdge.getUpdates().forEach(u -> sj.add(u.toString()));
-			return sj.toString();
+			return Utils.lispStringBuilder(getClass().getSimpleName()).add(emitEdge.getSync().get())
+					.add(recvEdge.getSync().get()).body().addAll(emitEdge.getGuards()).addAll(recvEdge.getGuards())
+					.addAll(emitEdge.getUpdates()).addAll(recvEdge.getUpdates()).toString();
 		}
 
 	}
 
+	public static final class BasicBackwardXtaAction extends XtaAction {
+		private final Edge edge;
+		private final List<Loc> sourceLocs;
+		private final List<Loc> targetLocs;
+		
+		private volatile List<Stmt> stmts = null;
+		
+		private BasicBackwardXtaAction(final XtaSystem system, final List<Loc> targetLocs, final Edge edge) {
+			super(system);
+			this.edge = checkNotNull(edge);
+			this.targetLocs = ImmutableList.copyOf(checkNotNull(targetLocs));
+			
+			final ImmutableList.Builder<Loc> builder = ImmutableList.builder();
+			final Loc source = edge.getSource();
+			final Loc target = edge.getTarget();
+			boolean matched = false;
+			for (final Loc loc : targetLocs) {
+				if (loc.equals(target)) {
+					checkArgument(!matched);
+					builder.add(source);
+					matched = true;
+				} else {
+					builder.add(loc);
+				}
+			}
+			checkArgument(matched);
+			sourceLocs = builder.build();
+		}
+		
+		public Edge getEdge() {
+			return edge;
+		}
+		
+		@Override
+		public List<Loc> getSourceLocs() {
+			return sourceLocs;
+		}
+		
+		@Override
+		public List<Loc> getTargetLocs() {
+			return targetLocs;
+		}
+		
+		@Override
+		public boolean isBasicBackward() {
+			return true;
+		}
+		
+		@Override
+		public BasicBackwardXtaAction asBasicBackward() {
+			return this;
+		}
+		
+		@Override
+		public List<Stmt> getStmts() {
+			List<Stmt> result = stmts;
+			if (stmts == null) {
+				final ImmutableList.Builder<Stmt> builder = ImmutableList.builder();
+				addInvariants(builder, sourceLocs);
+				addGuards(builder, edge);
+				addUpdates(builder, edge);
+				addInvariants(builder, getTargetLocs());
+				if (shouldApplyDelay(getTargetLocs())) {
+					addDelay(builder, getClockVars());
+				}
+				result = builder.build();
+				stmts = result;
+			}
+			return result;
+		}
+		
+		@Override
+		public String toString() {
+			return Utils.lispStringBuilder(getClass().getSimpleName()).body().addAll(edge.getGuards())
+					.addAll(edge.getUpdates()).toString();
+		}
+		
+	}
+	
+	public static final class SyncedBackwardXtaAction extends XtaAction {
+		private final Edge emitEdge;
+		private final Edge recvEdge;
+		private final List<Loc> sourceLocs;
+		private final List<Loc> targetLocs;
+		
+		private volatile List<Stmt> stmts = null;
+		
+		private SyncedBackwardXtaAction(final XtaSystem system, final List<Loc> targetLocs, final Edge emitEdge,
+				final Edge recvEdge) {
+			super(system);
+			this.targetLocs = ImmutableList.copyOf(checkNotNull(targetLocs));
+			this.emitEdge = checkNotNull(emitEdge);
+			this.recvEdge = checkNotNull(recvEdge);
+			
+			checkArgument(emitEdge.getSync().isPresent());
+			checkArgument(recvEdge.getSync().isPresent());
+			final Label emitLabel = emitEdge.getSync().get().getLabel();
+			final Label recvLabel = recvEdge.getSync().get().getLabel();
+			checkArgument(emitLabel.equals(recvLabel));
+			
+			final ImmutableList.Builder<Loc> builder = ImmutableList.builder();
+			final Loc emitSource = emitEdge.getSource();
+			final Loc emitarget = emitEdge.getTarget();
+			final Loc recvSource = recvEdge.getSource();
+			final Loc recvTarget = recvEdge.getTarget();
+			boolean emitMatched = false;
+			boolean recvMatched = false;
+			
+			for (final Loc loc : targetLocs) {
+				if (loc.equals(emitarget)) {
+					checkArgument(!emitMatched);
+					builder.add(emitSource);
+					emitMatched=true;
+				} else if (loc.equals(recvTarget)){
+					checkArgument(!recvMatched);
+					builder.add(recvSource);
+					recvMatched=true;
+				} else {
+					builder.add(loc);
+				}
+			}
+			checkArgument(emitMatched);
+			checkArgument(recvMatched);
+			sourceLocs=builder.build();
+		}
+		
+		public Edge getEmitEdge() {
+			return emitEdge;
+		}
+
+		public Edge getRecvEdge() {
+			return recvEdge;
+		}
+		
+		@Override
+		public List<Loc> getSourceLocs() {
+			return sourceLocs;
+		}
+		
+		@Override
+		public List<Loc> getTargetLocs() {
+			return targetLocs;
+		}
+		
+		@Override
+		public boolean isSyncedBackward() {
+			return true;
+		}
+		
+		@Override
+		public SyncedBackwardXtaAction asSyncedBackward() {
+			return this;
+		}
+		
+		@Override
+		public List<Stmt> getStmts() {
+			List<Stmt> result = stmts;
+			if (stmts == null) {
+				final ImmutableList.Builder<Stmt> builder = ImmutableList.builder();
+				addInvariants(builder, sourceLocs);
+				addSync(builder, emitEdge, recvEdge);
+				addGuards(builder, emitEdge);
+				addGuards(builder, recvEdge);
+				addUpdates(builder, emitEdge);
+				addUpdates(builder, recvEdge);
+				addInvariants(builder, getTargetLocs());
+				if (shouldApplyDelay(getTargetLocs())) {
+					addDelay(builder, getClockVars());
+				}
+				result = builder.build();
+				stmts = result;
+			}
+			return result;
+		}
+		
+		@Override
+		public String toString() {
+			return Utils.lispStringBuilder(getClass().getSimpleName()).add(emitEdge.getSync().get())
+					.add(recvEdge.getSync().get()).body().addAll(emitEdge.getGuards()).addAll(recvEdge.getGuards())
+					.addAll(emitEdge.getUpdates()).addAll(recvEdge.getUpdates()).toString();
+		}
+		
+	}
+	
 	private static void addInvariants(final ImmutableList.Builder<Stmt> builder, final List<Loc> locs) {
 		locs.forEach(l -> l.getInvars().forEach(i -> builder.add(Assume(i.toExpr()))));
 	}

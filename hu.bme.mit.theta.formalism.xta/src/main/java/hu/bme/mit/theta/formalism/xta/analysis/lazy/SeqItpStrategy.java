@@ -24,6 +24,8 @@ import hu.bme.mit.theta.analysis.expl.ExplState;
 import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
 import hu.bme.mit.theta.analysis.zone.itp.ItpZoneState;
+import hu.bme.mit.theta.core.decl.VarDecl;
+import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
@@ -113,6 +115,12 @@ public final class SeqItpStrategy extends ItpStrategy {
 	@Override
 	public boolean isForward() {
 		return true;
+	}
+
+	@Override
+	public boolean containsInitState(XtaState<Prod2State<ExplState, ItpZoneState>> state,
+			Collection<VarDecl<RatType>> clocks) {
+		throw new UnsupportedOperationException();
 	}
 
 }

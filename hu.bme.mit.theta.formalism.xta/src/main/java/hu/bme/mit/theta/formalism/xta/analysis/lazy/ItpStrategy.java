@@ -32,10 +32,11 @@ import hu.bme.mit.theta.analysis.zone.itp.ItpZoneState;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
+import hu.bme.mit.theta.formalism.xta.analysis.expl.XtaExplAnalysis;
 import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaZoneAnalysis;
 import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaZoneUtils;
 
-public abstract class ItpStrategy implements LazyXtaChecker.AlgorithmStrategy<ItpZoneState> {
+public abstract class ItpStrategy implements LazyXtaChecker.AlgorithmStrategy<ExplState,ItpZoneState> {
 
 	public enum ItpOperator {
 
@@ -58,14 +59,16 @@ public abstract class ItpStrategy implements LazyXtaChecker.AlgorithmStrategy<It
 	}
 
 	private final ZonePrec prec;
-	private final Analysis<ItpZoneState, XtaAction, UnitPrec> analysis;
+	private final Analysis<ItpZoneState, XtaAction, UnitPrec> timeAnalysis;
+	private final Analysis<ExplState, XtaAction, UnitPrec> dataAnalysis;
 	private final ItpOperator operator;
 
 	ItpStrategy(final XtaSystem system, final ItpOperator operator) {
 		checkNotNull(system);
 		this.operator = checkNotNull(operator);
 		prec = ZonePrec.of(system.getClockVars());
-		analysis = PrecMappingAnalysis.create(ItpZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> prec);
+		timeAnalysis = PrecMappingAnalysis.create(ItpZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> prec);
+		dataAnalysis =XtaExplAnalysis.create(system);
 	}
 
 	////
@@ -104,10 +107,15 @@ public abstract class ItpStrategy implements LazyXtaChecker.AlgorithmStrategy<It
 	}
 
 	////
+	
+	@Override
+	public Analysis<ItpZoneState, XtaAction, UnitPrec> getTimeAnalysis() {
+		return timeAnalysis;
+	}
 
 	@Override
-	public final Analysis<ItpZoneState, XtaAction, UnitPrec> getAnalysis() {
-		return analysis;
+	public Analysis<ExplState, XtaAction, UnitPrec> getDataAnalysis() {
+		return dataAnalysis;
 	}
 
 	@Override

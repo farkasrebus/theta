@@ -26,7 +26,6 @@ import com.google.common.base.Stopwatch;
 import hu.bme.mit.theta.analysis.algorithm.ARG;
 import hu.bme.mit.theta.analysis.algorithm.ArgNode;
 import hu.bme.mit.theta.analysis.algorithm.Statistics;
-import hu.bme.mit.theta.analysis.expl.ExplState;
 import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.common.Tuple2;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
@@ -71,7 +70,7 @@ public final class LazyXtaStatistics extends Statistics {
 		addStat("DiscreteStatesExpanded", this::getDiscreteStatesExpanded);
 	}
 
-	public static Builder builder(final ARG<? extends XtaState<? extends Prod2State<ExplState, ?>>, ?> arg) {
+	public static Builder builder(final ARG<? extends XtaState<? extends Prod2State<?, ?>>, ?> arg) {
 		return new Builder(arg);
 	}
 
@@ -135,7 +134,7 @@ public final class LazyXtaStatistics extends Statistics {
 
 		private State state;
 
-		private final ARG<? extends XtaState<? extends Prod2State<ExplState, ?>>, ?> arg;
+		private final ARG<? extends XtaState<? extends Prod2State<?, ?>>, ?> arg;
 		private final Stopwatch algorithmTimer;
 		private final Stopwatch refinementTimer;
 		private final Stopwatch interpolationTimer;
@@ -144,7 +143,7 @@ public final class LazyXtaStatistics extends Statistics {
 
 		//private long refinementSteps;
 
-		private Builder(final ARG<? extends XtaState<? extends Prod2State<ExplState, ?>>, ?> arg) {
+		private Builder(final ARG<? extends XtaState<? extends Prod2State<?, ?>>, ?> arg) {
 			this.arg = checkNotNull(arg);
 			state = State.CREATED;
 			algorithmTimer = Stopwatch.createUnstarted();

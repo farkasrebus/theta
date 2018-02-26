@@ -1,12 +1,12 @@
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,11 +26,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringJoiner;
 
 import com.google.common.collect.Iterables;
 
 import hu.bme.mit.theta.analysis.expr.ExprState;
+import hu.bme.mit.theta.common.Utils;
 import hu.bme.mit.theta.core.clock.constr.ClockConstr;
 import hu.bme.mit.theta.core.clock.op.ClockOp;
 import hu.bme.mit.theta.core.decl.VarDecl;
@@ -157,6 +157,7 @@ public final class ZoneState implements ExprState {
 		return DBM.top(Collections.emptySet()).getRelation(dbm) == DbmRelation.EQUAL;
 	}
 
+	@Override
 	public boolean isBottom() {
 		return !dbm.isConsistent();
 	}
@@ -219,14 +220,7 @@ public final class ZoneState implements ExprState {
 	@Override
 	public String toString() {
 		final Collection<ClockConstr> constrs = dbm.getConstrs();
-		if (constrs.isEmpty()) {
-			return "true";
-		} else {
-			final StringJoiner sj = new StringJoiner("\n");
-
-			dbm.getConstrs().forEach(c -> sj.add(c.toString()));
-			return sj.toString();
-		}
+		return Utils.lispStringBuilder(getClass().getSimpleName()).aligned().addAll(constrs).toString();
 	}
 
 	////////
@@ -281,13 +275,13 @@ public final class ZoneState implements ExprState {
 			return this;
 		}
 
-		public Builder free(final VarDecl<RatType> var) {
-			dbm.free(var);
+		public Builder free(final VarDecl<RatType> varDecl) {
+			dbm.free(varDecl);
 			return this;
 		}
 
-		public Builder reset(final VarDecl<RatType> var, final int m) {
-			dbm.reset(var, m);
+		public Builder reset(final VarDecl<RatType> varDecl, final int m) {
+			dbm.reset(varDecl, m);
 			return this;
 		}
 
@@ -296,8 +290,8 @@ public final class ZoneState implements ExprState {
 			return this;
 		}
 
-		public Builder shift(final VarDecl<RatType> var, final int m) {
-			dbm.shift(var, m);
+		public Builder shift(final VarDecl<RatType> varDecl, final int m) {
+			dbm.shift(varDecl, m);
 			return this;
 		}
 
@@ -307,7 +301,4 @@ public final class ZoneState implements ExprState {
 		}
 	}
 
-	public static ZoneState top(Set<VarDecl<RatType>> vars) {
-		return new ZoneState(DBM.top(vars));
-	}
 }

@@ -32,34 +32,48 @@ import hu.bme.mit.theta.analysis.impl.PrecMappingAnalysis;
 import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.zone.ZonePrec;
+import hu.bme.mit.theta.analysis.zone.ZoneState;
 import hu.bme.mit.theta.analysis.zone.act.ActZoneAnalysis;
 import hu.bme.mit.theta.analysis.zone.act.ActZoneState;
+import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.VarDecl;
+import hu.bme.mit.theta.core.type.booltype.BoolLitExpr;
+import hu.bme.mit.theta.core.type.booltype.BoolType;
+import hu.bme.mit.theta.core.type.inttype.IntLitExpr;
+import hu.bme.mit.theta.core.type.inttype.IntType;
 import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaAction;
 import hu.bme.mit.theta.formalism.xta.analysis.XtaState;
+import hu.bme.mit.theta.formalism.xta.analysis.expl.XtaExplAnalysis;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaStatistics.Builder;
 import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaActZoneUtils;
 import hu.bme.mit.theta.formalism.xta.analysis.zone.XtaZoneAnalysis;
 
-public final class ActStrategy implements LazyXtaChecker.AlgorithmStrategy<ActZoneState> {
+public final class ActStrategy implements LazyXtaChecker.AlgorithmStrategy<ExplState,ActZoneState> {
 
-	private final Analysis<ActZoneState,XtaAction,UnitPrec> analysis;
+	private final Analysis<ActZoneState,XtaAction,UnitPrec> timeAnalysis;
+	private final Analysis<ExplState, XtaAction, UnitPrec> dataAnalysis;
 
 	private ActStrategy(final XtaSystem system) {
 		checkNotNull(system);
 		final ZonePrec prec = ZonePrec.of(system.getClockVars());
-		analysis = PrecMappingAnalysis.create(ActZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> prec);
+		timeAnalysis = PrecMappingAnalysis.create(ActZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> prec);
+		dataAnalysis =XtaExplAnalysis.create(system);
 	}
 
 	public static ActStrategy create(final XtaSystem system) {
 		return new ActStrategy(system);
 	}
+	
+	@Override
+	public Analysis<ActZoneState, XtaAction, UnitPrec> getTimeAnalysis() {
+		return timeAnalysis;
+	}
 
 	@Override
-	public Analysis<ActZoneState, XtaAction, UnitPrec> getAnalysis() {
-		return analysis;
+	public Analysis<ExplState, XtaAction, UnitPrec> getDataAnalysis() {
+		return dataAnalysis;
 	}
 
 	@Override
@@ -152,6 +166,22 @@ public final class ActStrategy implements LazyXtaChecker.AlgorithmStrategy<ActZo
 
 	@Override
 	public boolean isForward() {
+		return true;
+	}
+
+	@Override
+	public boolean containsInitState(XtaState<Prod2State<ExplState, ActZoneState>> state, Collection<VarDecl<RatType>> clocks) {
+		boolean zonecontains=state.getState().getState2().isLeq(ActZoneState.of(ZoneState.zero(clocks), state.getState().getState2().getActiveVars())) ;
+		if (!zonecontains) return false;
+		for (Decl<?> v: state.getState().getState1().getDecls()) {
+			if (v.getType() instanceof IntType ) {
+				IntLitExpr value= (IntLitExpr) state.getState().getState1().eval(v).get();
+				if (value.getValue() !=0) return false;
+			} else if (v.getType() instanceof BoolType ) {
+				BoolLitExpr value= (BoolLitExpr) state.getState().getState1().eval(v).get();
+				if (value.getValue() !=false) return false;
+			}
+		}
 		return true;
 	}
 

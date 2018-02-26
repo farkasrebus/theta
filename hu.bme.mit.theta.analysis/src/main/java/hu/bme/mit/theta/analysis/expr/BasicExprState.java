@@ -21,7 +21,7 @@ import static hu.bme.mit.theta.core.type.booltype.BoolExprs.False;
 import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
 
-final class BasicExprState implements ExprState {
+public final class BasicExprState implements ExprState {
 
 	private final Expr<BoolType> expr;
 
@@ -42,5 +42,9 @@ final class BasicExprState implements ExprState {
 	public boolean isBottom() {
 		return expr.equals(False());
 	}
-
+	
+	@Override
+	public String toString(){
+		return expr.toString();
+	}
 }

@@ -16,7 +16,6 @@
 package hu.bme.mit.theta.core.model;
 
 import static hu.bme.mit.theta.core.type.abstracttype.AbstractExprs.Eq;
-import static hu.bme.mit.theta.core.type.booltype.BoolExprs.And;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +28,7 @@ import hu.bme.mit.theta.core.type.Expr;
 import hu.bme.mit.theta.core.type.LitExpr;
 import hu.bme.mit.theta.core.type.Type;
 import hu.bme.mit.theta.core.type.booltype.BoolType;
+import hu.bme.mit.theta.core.type.booltype.SmartBoolExprs;
 
 /**
  * Interface for a valuation, which is a mapping from declarations to literal
@@ -48,7 +48,7 @@ public abstract class Valuation implements Substitution {
 			final Expr<BoolType> expr = Eq(decl.getRef(), eval(decl).get());
 			exprs.add(expr);
 		}
-		return And(exprs);
+		return SmartBoolExprs.And(exprs);
 	}
 
 	public boolean isLeq(final Valuation that) {
@@ -56,7 +56,7 @@ public abstract class Valuation implements Substitution {
 			return false;
 		}
 		for (final Decl<?> varDecl : that.getDecls()) {
-			if (!this.getDecls().contains(varDecl) || !that.eval(varDecl).get().equals(this.eval(varDecl).get())) {
+			if (!that.eval(varDecl).equals(this.eval(varDecl))) {
 				return false;
 			}
 		}
@@ -82,8 +82,8 @@ public abstract class Valuation implements Substitution {
 
 	@Override
 	public String toString() {
-		return Utils.lispStringBuilder("valuation")
-				.addAll(getDecls(), d -> String.format("(<- %s %s)", d.getName(), eval(d).get())).toString();
+		return Utils.lispStringBuilder("val").aligned()
+				.addAll(getDecls().stream().map(d -> String.format("(%s %s)", d.getName(), eval(d).get()))).toString();
 	}
 
 }

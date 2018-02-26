@@ -1,12 +1,12 @@
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -78,10 +78,10 @@ public final class ExplPrec implements Prec {
 	public ExplState createState(final Valuation valuation) {
 		checkNotNull(valuation);
 		final ImmutableValuation.Builder builder = ImmutableValuation.builder();
-		for (final VarDecl<?> var : vars) {
-			final Optional<? extends LitExpr<?>> eval = valuation.eval(var);
+		for (final VarDecl<?> varDecl : vars) {
+			final Optional<? extends LitExpr<?>> eval = valuation.eval(varDecl);
 			if (eval.isPresent()) {
-				builder.put(var, eval.get());
+				builder.put(varDecl, eval.get());
 			}
 		}
 		return ExplState.of(builder.build());
@@ -89,7 +89,8 @@ public final class ExplPrec implements Prec {
 
 	@Override
 	public String toString() {
-		return Utils.lispStringBuilder(getClass().getSimpleName()).addAll(vars, VarDecl::getName).toString();
+		return Utils.lispStringBuilder(getClass().getSimpleName()).addAll(vars.stream().map(VarDecl::getName))
+				.toString();
 	}
 
 	@Override

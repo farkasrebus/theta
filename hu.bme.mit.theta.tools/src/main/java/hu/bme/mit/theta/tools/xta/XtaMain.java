@@ -3,14 +3,11 @@ package hu.bme.mit.theta.tools.xta;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableSet;
 
 import hu.bme.mit.theta.analysis.algorithm.SafetyChecker;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
@@ -18,10 +15,10 @@ import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.common.table.TableWriter;
 import hu.bme.mit.theta.common.table.impl.BasicTableWriter;
-import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
+import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import hu.bme.mit.theta.formalism.xta.XtaVisualizer;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.ActStrategy;
+import hu.bme.mit.theta.formalism.xta.analysis.lazy.BackwardStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.BinItpStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.ItpStrategy.ItpOperator;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaChecker;
@@ -30,7 +27,6 @@ import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaStatistics;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.LuStrategy;
 import hu.bme.mit.theta.formalism.xta.analysis.lazy.SeqItpStrategy;
 import hu.bme.mit.theta.formalism.xta.dsl.XtaDslManager;
-import hu.bme.mit.theta.tools.XtaExample;
 
 public final class XtaMain {
 	private static final String JAR_NAME = "theta-xta.jar";
@@ -47,7 +43,7 @@ public final class XtaMain {
 	Search search;
 
 	@Parameter(names = { "-bm", "--benchmark" }, description = "Benchmark mode (only print metrics)")
-	Boolean benchmarkMode = true;
+	Boolean benchmarkMode = false;
 	@Parameter(names = { "-v", "--visualize" }, description = "Write proof or counterexample to file in dot format")
 	String dotfile = null;
 
@@ -60,64 +56,61 @@ public final class XtaMain {
 
 		SEQITP {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return SeqItpStrategy.create(system, ItpOperator.DEFAULT);
 			}
 		},
 
 		BINITP {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return BinItpStrategy.create(system, ItpOperator.DEFAULT);
 			}
 		},
 
 		WEAKSEQITP {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return SeqItpStrategy.create(system, ItpOperator.WEAK);
 			}
 		},
 
 		WEAKBINITP {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return BinItpStrategy.create(system, ItpOperator.WEAK);
 			}
 		},
 
 		LU {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return LuStrategy.create(system);
 			}
 		},
 
 		ACT {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
 				return ActStrategy.create(system);
 			}
-		}/*,
+		},
 		
 		BW {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
-				return BackwardsStrategy.create(system,false);
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
+				return BackwardStrategy.create(system,false);
 			}
 		},
 		
 		BACT {
 			@Override
-			public AlgorithmStrategy<?> create(final XtaSystem system) {
-				return BackwardsStrategy.create(system,true);
+			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
+				return BackwardStrategy.create(system,true);
 			}
-		}*/;
+		};
 
-		public abstract LazyXtaChecker.AlgorithmStrategy<?> create(final XtaSystem system);
-	}
-	private static enum PreProcType {
-		NO,DIAG,UNFOLD,SMART;
+		public abstract LazyXtaChecker.AlgorithmStrategy<?,?> create(final XtaSystem system);
 	}
 	
 	public static boolean success;
@@ -163,7 +156,9 @@ public final class XtaMain {
 		try {
 			JCommander.newBuilder().addObject(result).programName(JAR_NAME).build().parse(args);
 			final XtaSystem xta = result.loadModel();
-			System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(xta)));
+			
+			//XtaPreProcessor.printStuff(xta);
+			//System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(xta)));
 			//final XtaSystem resultSys=XtaSystem.of(ImmutableList.of(XtaSystemUnfolder.getPureFlatSystem(xta, XtaExample.getExampleBySource(result.model)).result));
 			/*long start=System.currentTimeMillis();
 			//FFDI
@@ -202,7 +197,7 @@ public final class XtaMain {
 
 		try {
 			XtaSystem xta = loadModel();
-			//XtaExample ex=XtaExample.getExampleBySource(model);
+			XtaExample ex=XtaExample.getExampleBySource(model);
 			/*long preProcTime=0;
 			Set<Algorithm> newAlgs=ImmutableSet.of(Algorithm.BW,Algorithm.BACT);
 			Set<XtaExample> newEx=ImmutableSet.of(XtaExample.BACKEX,XtaExample.SPLIT);
@@ -235,13 +230,18 @@ public final class XtaMain {
 			System.gc();
 			System.gc();
 			Thread.sleep(5000);
-			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta);
+			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta,ex);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
 			//printResult(result, preProcTime);
 			printResult(result, 0);
 			/*if (dotfile != null) {
 				writeVisualStatus(result, dotfile);
 			}*/
+			/* TODO
+			XtaExample ex=XtaExample.getExampleBySource(model);
+			System.out.println(ex.getErrorLocs(xta).size());
+			*/
+
 		} catch (final Throwable ex) {
 			ex.printStackTrace();
 			printError(ex);
@@ -274,12 +274,12 @@ public final class XtaMain {
 		return XtaDslManager.createSystem(inputStream);
 	}
 
-	private SafetyChecker<?, ?, UnitPrec> buildChecker(final XtaSystem xta) {
-		final LazyXtaChecker.AlgorithmStrategy<?> algorithmStrategy = algorithm.create(xta);
+	private SafetyChecker<?, ?, UnitPrec> buildChecker(final XtaSystem xta,XtaExample ex) {
+		final LazyXtaChecker.AlgorithmStrategy<?,?> algorithmStrategy = algorithm.create(xta);
 		final SearchStrategy searchStrategy = search.create();
 
 		final SafetyChecker<?, ?, UnitPrec> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy,
-				l -> false);
+				ex.getErrorLocs(xta));
 		return checker;
 	}
 

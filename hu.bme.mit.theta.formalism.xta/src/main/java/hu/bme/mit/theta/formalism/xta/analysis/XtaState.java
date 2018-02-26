@@ -16,21 +16,22 @@
 package hu.bme.mit.theta.formalism.xta.analysis;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Stream.concat;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 
 import hu.bme.mit.theta.analysis.State;
+import hu.bme.mit.theta.analysis.expr.ExprState;
+import hu.bme.mit.theta.common.Utils;
+import hu.bme.mit.theta.core.type.Expr;
+import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.formalism.xta.XtaProcess.LocKind;
 
-public final class XtaState<S extends State> implements State {
+public final class XtaState<S extends State> implements ExprState {
 	private static final int HASH_SEED = 8291;
 	private volatile int hashCode = 0;
 
@@ -46,7 +47,7 @@ public final class XtaState<S extends State> implements State {
 		committed = locKind == LocKind.COMMITTED;
 		urgent = locKind != LocKind.NORMAL;
 	}
-	
+
 	private static final LocKind extractKind(final List<Loc> locs) {
 		boolean urgent = false;
 		for (final Loc loc : locs) {
@@ -94,7 +95,7 @@ public final class XtaState<S extends State> implements State {
 	public boolean isUrgent() {
 		return urgent;
 	}
-	
+
 	public <S2 extends State> XtaState<S2> withState(final S2 state) {
 		return XtaState.of(this.locs, state);
 	}
@@ -102,6 +103,16 @@ public final class XtaState<S extends State> implements State {
 	@Override
 	public boolean isBottom() {
 		return state.isBottom();
+	}
+
+	@Override
+	public Expr<BoolType> toExpr() {
+		if (state instanceof ExprState) {
+			final ExprState exprState = (ExprState) state;
+			return exprState.toExpr();
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -130,7 +141,9 @@ public final class XtaState<S extends State> implements State {
 
 	@Override
 	public String toString() {
-		return concat(locs.stream().map(Loc::getName), Stream.of(state).map(Object::toString)).collect(joining(" "));
+		final String prefix = getClass().getSimpleName();
+		final String locString = Utils.lispStringBuilder().addAll(locs.stream().map(Loc::getName)).toString();
+		return Utils.lispStringBuilder(prefix).add(locString).body().add(state).toString();
 	}
 
 }

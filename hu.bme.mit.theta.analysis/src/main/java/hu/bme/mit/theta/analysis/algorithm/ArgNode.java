@@ -28,7 +28,6 @@ import hu.bme.mit.theta.analysis.Action;
 import hu.bme.mit.theta.analysis.State;
 import hu.bme.mit.theta.common.Utils;
 
-
 public final class ArgNode<S extends State, A extends Action> {
 
 	private static final int HASH_SEED = 8543;
@@ -234,8 +233,7 @@ public final class ArgNode<S extends State, A extends Action> {
 	}
 
 	public Stream<ArgNode<S, A>> children() {
-		return outEdges.stream().map(e -> e.getTarget());
-		//return outEdges.stream().map(ArgEdge::getTarget);
+		return outEdges.stream().map(ArgEdge::getTarget);
 	}
 
 	public Stream<ArgNode<S, A>> properDescendants() {
@@ -282,7 +280,7 @@ public final class ArgNode<S extends State, A extends Action> {
 
 	@Override
 	public String toString() {
-		return Utils.lispStringBuilder("ArgNode").add(id).add(state).toString();
+		return Utils.lispStringBuilder("ArgNode").add(id).body().add(state).toString();
 	}
 
 }

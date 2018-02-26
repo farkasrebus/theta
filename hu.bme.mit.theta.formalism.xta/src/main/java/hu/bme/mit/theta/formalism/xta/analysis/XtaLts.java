@@ -81,6 +81,10 @@ public final class XtaLts implements LTS<XtaState<?>, XtaAction> {
 							continue;
 			}
 
+			if (state.isCommitted() && emitLoc.getKind() != COMMITTED && recvLoc.getKind() != COMMITTED) {
+				continue;
+			}
+
 			for (final Edge recvEdge : recvLoc.getOutEdges()) {
 				if (!recvEdge.getSync().isPresent()) {
 					continue;

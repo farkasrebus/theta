@@ -39,7 +39,7 @@ final class XtaSync {
 		checkNotNull(scope);
 		checkNotNull(context);
 		expression = new XtaExpression(scope, context.fExpression);
-		syncKind = context.fReceive != null ? SyncKind.RECV : SyncKind.EMIT;
+		syncKind = context.fRecv != null ? SyncKind.RECV : SyncKind.EMIT;
 	}
 
 	public enum SyncKind {

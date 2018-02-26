@@ -16,25 +16,26 @@
 package hu.bme.mit.theta.analysis.pred;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static hu.bme.mit.theta.core.type.booltype.BoolExprs.And;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import hu.bme.mit.theta.analysis.TransFunc;
 import hu.bme.mit.theta.analysis.expr.ExprAction;
-import hu.bme.mit.theta.analysis.expr.ExprStates;
-import hu.bme.mit.theta.core.type.booltype.BoolExprs;
-import hu.bme.mit.theta.solver.Solver;
+import hu.bme.mit.theta.analysis.pred.PredAbstractors.PredAbstractor;
+import hu.bme.mit.theta.core.utils.VarIndexing;
 
 public final class PredTransFunc implements TransFunc<PredState, ExprAction, PredPrec> {
 
-	private final Solver solver;
+	private final PredAbstractor predAbstractor;
 
-	private PredTransFunc(final Solver solver) {
-		this.solver = checkNotNull(solver);
+	private PredTransFunc(final PredAbstractor predAbstractor) {
+		this.predAbstractor = checkNotNull(predAbstractor);
 	}
 
-	public static PredTransFunc create(final Solver solver) {
-		return new PredTransFunc(solver);
+	public static PredTransFunc create(final PredAbstractor predAbstractor) {
+		return new PredTransFunc(predAbstractor);
 	}
 
 	@Override
@@ -44,8 +45,9 @@ public final class PredTransFunc implements TransFunc<PredState, ExprAction, Pre
 		checkNotNull(action);
 		checkNotNull(prec);
 
-		return ExprStates.createStatesForExpr(solver, BoolExprs.And(state.toExpr(), action.toExpr()), 0,
-				prec::createState, action.nextIndexing());
+		final Collection<PredState> succStates = predAbstractor.createStatesForExpr(
+				And(state.toExpr(), action.toExpr()), VarIndexing.all(0), prec, action.nextIndexing());
+		return succStates.isEmpty() ? Collections.singleton(PredState.bottom()) : succStates;
 	}
 
 }

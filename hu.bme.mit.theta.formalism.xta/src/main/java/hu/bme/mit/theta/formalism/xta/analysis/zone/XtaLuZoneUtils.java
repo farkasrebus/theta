@@ -45,6 +45,7 @@ public final class XtaLuZoneUtils {
 	}
 
 	////
+
 	private static BoundFunc preForSimpleAction(final BoundFunc boundFunction, final BasicXtaAction action) {
 		final BoundFunc.Builder succStateBuilder = boundFunction.transform();
 
@@ -82,8 +83,8 @@ public final class XtaLuZoneUtils {
 		for (final Update update : edge.getUpdates()) {
 			if (update.isClockUpdate()) {
 				final ResetOp op = (ResetOp) update.asClockUpdate().getClockOp();
-				final VarDecl<RatType> var = op.getVar();
-				succStateBuilder.remove(var);
+				final VarDecl<RatType> varDecl = op.getVar();
+				succStateBuilder.remove(varDecl);
 			}
 		}
 	}

@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-This project contains the Symbolic Transition System (STS) formalism. It is a generic, low-level formalism that can describe any kind of system using variables and initial/transition expressions. The project also includes
-
-* a domain specific language (DSL) to parse STSs from a textual representation and
-* a frontend that can parse systems described in the [AIGER](http://fmv.jku.at/aiger/) (And-Inverter Graph) format and represent them using STSs.
-=======
 ## Overview
 
 This project contains the Symbolic Transition System (STS) formalism. It is a generic, low-level formalism that can describe any kind of system using variables and initial/transition expressions. The project includes:
@@ -56,7 +50,6 @@ Use one of the following commands to build the tool.
 
 The runnable file will appear under _build/libs_. The tool also requires [Z3 and GraphViz](../doc/Dependencies.md).
 
-The command line tool can be run with `java -jar theta-sts-cli.jar [arguments]`. If no arguments are given, a help screen is displayed about the arguments and their possible values. For example, put the example above in a file called `counter.system` and call `java -jar theta-sts-cli.jar --model counter.system --domain EXPL --refinement SEQ_ITP --loglevel 3`.
+The command line tool can be run with `java -jar theta-sts-cli.jar [arguments]`. If no arguments are given, a help screen is displayed about the arguments and their possible values. For example, put the example above in a file called `counter.system` and call `java -jar theta-sts-cli.jar --model counter.system --domain EXPL --refinement SEQ_ITP --loglevel INFO`.
 
 The GUI tool can be run simply by executing `theta-sts-gui.jar`. Use the controls to load the model, adjust parameters and run the algorithm. _Note, that the AIGER frontend is only supported by the command line tool._
->>>>>>> upstream/master

@@ -1,4 +1,3 @@
-
 /*
  *  Copyright 2017 Budapest University of Technology and Economics
  *
@@ -14,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package hu.bme.mit.theta.core.utils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -66,7 +64,9 @@ public final class ExprUtils {
 	 * @return Set of atoms
 	 */
 	public static Set<Expr<BoolType>> getAtoms(final Expr<BoolType> expr) {
-		return ExprAtomCollector.getAtoms(expr);
+		final Set<Expr<BoolType>> atoms = new HashSet<>();
+		collectAtoms(expr, atoms);
+		return atoms;
 	}
 
 	/**
@@ -100,11 +100,7 @@ public final class ExprUtils {
 
 		if (expr instanceof AndExpr) {
 			final AndExpr andExpr = (AndExpr) expr;
-
-			//return andExpr.getOps().stream().map(e -> getConjuncts(e)).flatMap(c -> c.stream())
-
 			return andExpr.getOps().stream().map(ExprUtils::getConjuncts).flatMap(Collection::stream)
-
 					.collect(Collectors.toSet());
 		} else {
 			return Collections.singleton(expr);
@@ -122,8 +118,8 @@ public final class ExprUtils {
 			final RefExpr<?> refExpr = (RefExpr<?>) expr;
 			final Decl<?> decl = refExpr.getDecl();
 			if (decl instanceof VarDecl) {
-				final VarDecl<?> var = (VarDecl<?>) decl;
-				collectTo.add(var);
+				final VarDecl<?> varDecl = (VarDecl<?>) decl;
+				collectTo.add(varDecl);
 				return;
 			}
 		}
@@ -207,7 +203,7 @@ public final class ExprUtils {
 	 * @return Simplified expression
 	 */
 	public static <ExprType extends Type> Expr<ExprType> simplify(final Expr<ExprType> expr, final Valuation val) {
-		return new ExprSimplifier(val).simplify(expr);
+		return ExprSimplifier.simplify(expr, val);
 	}
 
 	/**
@@ -281,8 +277,7 @@ public final class ExprUtils {
 	 * @return Node count
 	 */
 	public static int nodeCountSize(final Expr<?> expr) {
-
-		//return 1 + expr.getOps().stream().map(op -> nodeCountSize(op)).reduce(0, (x, y) -> x + y);
 		return 1 + expr.getOps().stream().map(ExprUtils::nodeCountSize).reduce(0, (x, y) -> x + y);
 	}
+
 }

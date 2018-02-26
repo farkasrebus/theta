@@ -3,10 +3,11 @@ package hu.bme.mit.theta.tools;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import org.junit.runners.Parameterized;
 
+import hu.bme.mit.theta.tools.xta.XtaExample;
 import hu.bme.mit.theta.tools.xta.XtaMain;
 
 @RunWith(Parameterized.class)
@@ -14,8 +15,8 @@ public class XtaModelCheckerTests {
 	
 	@Parameters
 	  public static XtaExample[] data() {
-	   //return XtaExample.values();
-		XtaExample[] result= {XtaExample.FDDI};
+	    //return XtaExample.values();
+		XtaExample[] result={XtaExample.FDDI};
 		return result;
 	  }
 	
@@ -39,8 +40,8 @@ public class XtaModelCheckerTests {
 		
 	}
 	
-	//@Ignore("Not benchmarking now")
-	//@Test
+	@Ignore("Not benchmarking now")
+	@Test
 	public void benchmark() throws InterruptedException {
 		XtaMain.Algorithm[] algs=XtaMain.Algorithm.values();
 		for (int i=3;i<=4;i++) {
@@ -115,8 +116,14 @@ public class XtaModelCheckerTests {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		String[] args={"-a","LU","-m",input.getFileLocation(input.getMinThreads()),"-s","BFS"};
-		XtaMain.main(args);
+
+		for (int i=2;i<=4;i++) {
+			System.out.println("Errorlocs for param="+i+":");
+			String[] args={"-a","BW","-m",input.getFileLocation(i),"-s","BFS"};
+			XtaMain.main(args);
+			System.out.println("-----------------------------");
+		}
+		
 	}
 
 }
