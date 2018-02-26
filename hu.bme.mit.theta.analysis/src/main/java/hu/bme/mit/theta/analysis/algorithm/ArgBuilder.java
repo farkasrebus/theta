@@ -56,7 +56,7 @@ public final class ArgBuilder<S extends State, A extends Action, P extends Prec>
 	public static <S extends State, A extends Action, P extends Prec> ArgBuilder<S, A, P> create(
 			final LTS<? super S, ? extends A> lts, final Analysis<S, ? super A, ? super P> analysis,
 			final Predicate<? super S> target) {
-		return create(lts, analysis, target, false);
+		return create(lts, analysis, target, true);
 	}
 
 	public ARG<S, A> createArg() {

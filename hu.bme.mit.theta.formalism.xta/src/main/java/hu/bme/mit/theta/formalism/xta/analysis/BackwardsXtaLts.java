@@ -61,7 +61,7 @@ public class BackwardsXtaLts implements LTS<XtaState<?>, XtaAction> {
 				continue;
 			}
 
-			for (final Edge recvEdge : recvLoc.getOutEdges()) {
+			for (final Edge recvEdge : recvLoc.getInEdges()) {
 				if (!recvEdge.getSync().isPresent()) {
 					continue;
 				}

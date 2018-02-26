@@ -196,7 +196,8 @@ public final class XtaMain {
 		try {
 			XtaSystem xta = loadModel();
 			XtaExample ex=XtaExample.getExampleBySource(model);
-			System.out.println(ex.getErrorLocs(xta).size());
+			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta,ex);
+			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
 		} catch (final Throwable ex) {
 			ex.printStackTrace();
 			printError(ex);
