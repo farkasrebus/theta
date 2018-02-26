@@ -14,7 +14,9 @@ public class XtaModelCheckerTests {
 	
 	@Parameters
 	  public static XtaExample[] data() {
-	    return XtaExample.values();
+	   //return XtaExample.values();
+		XtaExample[] result= {XtaExample.FDDI};
+		return result;
 	  }
 	
 	@Parameter
@@ -38,14 +40,15 @@ public class XtaModelCheckerTests {
 	}
 	
 	//@Ignore("Not benchmarking now")
-	@Test
+	//@Test
 	public void benchmark() throws InterruptedException {
 		XtaMain.Algorithm[] algs=XtaMain.Algorithm.values();
-		for (int i=2;i<=input.getMaxThreads();i++) {
+		for (int i=3;i<=4;i++) {
 			for (XtaMain.Algorithm alg:algs) {
-				for (int j=0; j<15;j++) {
+				for (int j=0; j<5;j++) {
 					String[] args={"-a",alg.toString(),"-m",input.getFileLocation(i),"-s","BFS"};
 					XtaMain.main(args);
+					if (!XtaMain.success) break;
 				}
 			}
 		}
@@ -61,9 +64,9 @@ public class XtaModelCheckerTests {
 				//System.out.println("Model: "+input.toString()+i);
 				XtaMain.main(args);
 			}
-		}*/
+		}
 		
-		/*for (int i=2;i<=input.getMaxThreads();i++) {
+		for (int i=2;i<=input.getMaxThreads();i++) {
 			for (int j=0; j<5;j++) {
 				System.gc();
 				System.gc();
@@ -76,7 +79,7 @@ public class XtaModelCheckerTests {
 			}
 		}
 		
-		/*for (int i=2;i<=input.getMaxThreads();i++) {
+		for (int i=2;i<=input.getMaxThreads();i++) {
 			for (int j=0; j<5;j++) {
 				System.gc();
 				System.gc();
@@ -103,7 +106,7 @@ public class XtaModelCheckerTests {
 		}*/
 	}
 	
-	//@Ignore("Works fine")
+	@Ignore("Works fine")
 	@Test
 	public void analyze_run() {
 		/*try {
@@ -112,10 +115,8 @@ public class XtaModelCheckerTests {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		String[] args={"-a","BW","-m",input.getFileLocation(2),"-s","BFS"};
+		String[] args={"-a","LU","-m",input.getFileLocation(input.getMinThreads()),"-s","BFS"};
 		XtaMain.main(args);
-		String[] args2={"-a","BACT","-m",input.getFileLocation(2),"-s","BFS"};
-		XtaMain.main(args2);
 	}
 
 }

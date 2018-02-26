@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.activation.UnsupportedDataTypeException;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
@@ -91,7 +89,7 @@ public class XtaSystemUnfolder {
 		}
 	}
 	
-	public static XtaSystem unfoldDiagonalConstraints(XtaSystem system) throws UnsupportedDataTypeException {
+	public static XtaSystem unfoldDiagonalConstraints(XtaSystem system) throws Exception {
 		List<XtaProcess> processes=new ArrayList<>();
 		for (XtaProcess proc:system.getProcesses()) processes.add(unfoldDiagonalConstraints(proc));
 		return XtaSystem.of(processes);
@@ -190,7 +188,7 @@ public class XtaSystemUnfolder {
 		
 	}
 	
-	public static XtaProcess unfoldDiagonalConstraints(XtaProcess sys) throws UnsupportedDataTypeException {
+	public static XtaProcess unfoldDiagonalConstraints(XtaProcess sys) {
 		XtaProcess result=sys;
 		//TODO: feltesszük hogy óra csak 0-ra resetelõdik, és mást nem csinál!!!!!
 		//TODO: nem tudom mitörténik, ha egy constraint különbözõ boundokkal szerepel
@@ -254,7 +252,7 @@ public class XtaSystemUnfolder {
 				if (0 <=bound) {
 					result.setInitLoc(trueLocs.get(origInit));
 				} else result.setInitLoc(falseLocs.get(origInit));
-			} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+			} else throw new UnsupportedOperationException("Not canonical diff constr");
 			 //System.out.println(result.getInitLoc());
 			 
 			//élek
@@ -300,7 +298,7 @@ public class XtaSystemUnfolder {
 							target=(bound>0);
 						} else if (constr instanceof DiffLeqConstr) {
 							target=(bound>=0);
-						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+						} else throw new UnsupportedOperationException("Not canonical diff constr");
 						Loc trgloc;
 						if (target)trgloc=trueTrg; else trgloc=falseTrg;
 						result.createEdge(trueSrc, trgloc, guards, e.getSync(), updates);
@@ -315,7 +313,7 @@ public class XtaSystemUnfolder {
 						} else if (constr instanceof DiffLeqConstr) {
 							posGuard=Geq(rightClock,-1*bound).toExpr();
 							negGuard=Lt(rightClock,-1*bound).toExpr();
-						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+						} else throw new UnsupportedOperationException("Not canonical diff constr");
 						guards.add(posGuard);
 						result.createEdge(trueSrc, trueTrg, guards, e.getSync(), updates);
 						if (notGuard) result.createEdge(falseSrc, trueTrg, guards, e.getSync(), updates);
@@ -335,7 +333,7 @@ public class XtaSystemUnfolder {
 						} else if (constr instanceof DiffLeqConstr) {
 							posGuard=Leq(leftClock,bound).toExpr();
 							negGuard=Gt(leftClock,bound).toExpr();
-						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+						} else throw new UnsupportedOperationException("Not canonical diff constr");
 						guards.add(posGuard);
 						result.createEdge(trueSrc, trueTrg, guards, e.getSync(), updates);
 						if (notGuard) result.createEdge(falseSrc, trueTrg, guards, e.getSync(), updates);
@@ -576,7 +574,7 @@ public class XtaSystemUnfolder {
 		return result;
 	}
 	
-	public static XtaSystem unfoldDataSmart(XtaSystem sys, XtaExample input){
+	/*public static XtaSystem unfoldDataSmart(XtaSystem sys, XtaExample input){
 		if (input.equals(XtaExample.CSMA)) {
 			XtaProcess bus=sys.getProcesses().get(0);
 			for (XtaProcess proc:sys.getProcesses()) {
@@ -589,7 +587,7 @@ public class XtaSystemUnfolder {
 			return XtaSystem.of(procs);
 		}
 		return null;
-	}
+	}*/
 
 	/*private static XtaProcess unfoldLocalData(XtaProcess proc) {
 		MutableValuation initVal=new MutableValuation();

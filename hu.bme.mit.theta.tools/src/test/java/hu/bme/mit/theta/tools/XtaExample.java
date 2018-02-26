@@ -1,27 +1,47 @@
 package hu.bme.mit.theta.tools;
 
 public enum XtaExample {
-	CRITICAL ("-25-50",4),
-	CSMA("",9),
-	FDDI("",4),
-	FISCHER("-32-64",8),
-	LYNCH("-16",4),
-	SPLIT("",6),
-	BACKEX("",7);
+	CRITICAL ("-25-50",true,5),
+	//CSMA("",true,11),
+	FDDI("",true,7);
+	
+	//SPLIT("",true,6),
+	//BOCDP("",false,1),//Excepton
+	//BOCDPFIXED("",false,1),
+	
+	
+	//STSL("",false,1),
+	//MUTEX("",false,1),
+	//ENGINE("",false,1),
+	//BANGOLUFSEN("",false,1),
+	//RCP("",false,1),
+	//FISCHER("-32-64",true,11),
+	//LYNCH("-16",true,10);
+	//TRAIN("",true,9);
+	//BACKEX("",true,7);
 	
 	private final String params;
+	private final boolean scalable;
 	private final int maxThreads;
 	
-	XtaExample(String params, int maxThreads) {
+	XtaExample(String params, boolean scalable, int maxThreads) {
 		this.params=params;
+		this.scalable=scalable;
 		this.maxThreads=maxThreads;
 	}
 	
 	public int getMaxThreads() {
+		if (!scalable) return 1;
 		return maxThreads;
 	}
 	
+	public int getMinThreads() {
+		if (!scalable) return 1;
+		return 2;
+	}
+	
 	public String getFileLocation(int threads) {
+		if (!scalable) return "src/test/resources/xta/"+this.toString().toLowerCase()+this.params+".xta";
 		return "src/test/resources/xta/"+this.toString().toLowerCase()+"-"+threads+this.params+".xta";
 	}
 

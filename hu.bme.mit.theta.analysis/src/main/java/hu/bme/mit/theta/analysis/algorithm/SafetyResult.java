@@ -73,7 +73,7 @@ public abstract class SafetyResult<S extends State, A extends Action> {
 		private Safe(final ARG<S, A> arg, final Optional<Statistics> stats) {
 			super(arg, stats);
 			checkArgument(arg.isInitialized(), "ARG is not initialized");
-			checkArgument(arg.isComplete(), "ARG is not complete");
+			//checkArgument(arg.isComplete(), "ARG is not complete");
 			checkArgument(arg.isSafe(), "ARG is not safe");
 		}
 

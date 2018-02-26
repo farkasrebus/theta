@@ -43,12 +43,16 @@ public final class LazyXtaStatistics extends Statistics {
 	private final long argNodesFeasible;
 	private final long argNodesExpanded;
 	private final long discreteStatesExpanded;
+	private final long starttime;
+	private final long timeout;
 
 	private LazyXtaStatistics(final Builder builder) {
 		algorithmTimeInMs = builder.algorithmTimer.elapsed(TimeUnit.MILLISECONDS);
 		//refinementTimeInMs = builder.refinementTimer.elapsed(TimeUnit.MILLISECONDS);
 		//interpolationTimeInMs = builder.interpolationTimer.elapsed(TimeUnit.MILLISECONDS);
 		//refinementSteps = builder.refinementSteps;
+		starttime=builder.starttime;
+		timeout=builder.timeout;
 		argDepth = builder.arg.getDepth();
 		argNodes = builder.arg.getNodes().count();
 		argNodesFeasible = builder.arg.getNodes().filter(ArgNode::isFeasible).count();
@@ -73,6 +77,14 @@ public final class LazyXtaStatistics extends Statistics {
 
 	public long getAlgorithmTimeInMs() {
 		return algorithmTimeInMs;
+	}
+	
+	public long getTimeout() {
+		return timeout;
+	}
+	
+	public boolean isTimeout() {
+	return (algorithmTimeInMs>=timeout);
 	}
 
 /*	public long getRefinementTimeInMs() {
@@ -127,6 +139,8 @@ public final class LazyXtaStatistics extends Statistics {
 		private final Stopwatch algorithmTimer;
 		private final Stopwatch refinementTimer;
 		private final Stopwatch interpolationTimer;
+		private long starttime;
+		private final long timeout=300000;//TODO
 
 		//private long refinementSteps;
 
@@ -136,10 +150,12 @@ public final class LazyXtaStatistics extends Statistics {
 			algorithmTimer = Stopwatch.createUnstarted();
 			refinementTimer = Stopwatch.createUnstarted();
 			interpolationTimer = Stopwatch.createUnstarted();
+			
 			//refinementSteps = 0;
 		}
 
 		public void startAlgorithm() {
+			starttime=System.currentTimeMillis();
 			checkState(state == State.CREATED);
 			state = State.RUNNING;
 			algorithmTimer.start();
@@ -178,6 +194,14 @@ public final class LazyXtaStatistics extends Statistics {
 		public void refine() {
 			checkState(state == State.REFINING);
 			//refinementSteps++;
+		}
+		
+		public boolean isTimeout() {
+			return (algorithmTimer.elapsed(TimeUnit.MILLISECONDS)>timeout);
+		}
+		
+		public long getRemainingTime() {
+			return timeout-algorithmTimer.elapsed(TimeUnit.MILLISECONDS);
 		}
 
 		public LazyXtaStatistics build() {

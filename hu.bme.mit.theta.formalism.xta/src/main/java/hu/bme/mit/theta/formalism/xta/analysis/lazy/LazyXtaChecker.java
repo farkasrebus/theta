@@ -161,11 +161,10 @@ public final class LazyXtaChecker<S extends State>
 		private Optional<ArgNode<XtaState<Prod2State<ExplState, S>>, XtaAction>> searchForUnsafeNode() {
 
 			statistics.startAlgorithm();
-			
-			
+			//int cntr=0;
 			while (!waitlist.isEmpty()) {
 				final ArgNode<XtaState<Prod2State<ExplState, S>>, XtaAction> v = waitlist.remove();
-				System.out.println("Node "+v.getId()+": "+v.getState());//TODO
+				//System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				//System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
 				assert v.isLeaf();
 
@@ -185,14 +184,22 @@ public final class LazyXtaChecker<S extends State>
 					//System.out.println("Else");//TODO
 					close(v);
 					if (!v.isCovered()) {
-						System.out.println("Not covered");//TODO
+						//System.out.println("Not covered");//TODO
 						expand(v);
 					} else {//TODO
-						System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
+						//System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
 					}//TODO
 				}
 				//System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
 				//System.out.println("waitlist: "+waitlist);//TODO
+				if (statistics.isTimeout()) {
+					statistics.stopAlgorithm();
+					return Optional.empty();
+				/*/} else {
+					System.out.println(cntr++ +" "+statistics.getRemainingTime());
+					/*if (statistics.getRemainingTime()<100) 
+						System.out.println("Time to debug");*/
+				}
 			}
 			statistics.stopAlgorithm();
 			//System.out.println("Algorithm ends");//TODO

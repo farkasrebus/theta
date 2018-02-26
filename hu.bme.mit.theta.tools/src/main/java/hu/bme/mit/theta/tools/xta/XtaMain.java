@@ -54,7 +54,7 @@ public final class XtaMain {
 	@Parameter(names = { "--header" }, description = "Print only a header (for benchmarks)", help = true)
 	boolean headerOnly = false;
 	
-	PreProcType preProc=PreProcType.UNFOLD;
+	//PreProcType preProc=PreProcType.UNFOLD;
 
 	public static enum Algorithm {
 
@@ -119,7 +119,9 @@ public final class XtaMain {
 	private static enum PreProcType {
 		NO,DIAG,UNFOLD,SMART;
 	}
-
+	
+	public static boolean success;
+	
 	private static enum Search {
 
 		DFS {
@@ -200,9 +202,9 @@ public final class XtaMain {
 
 		try {
 			XtaSystem xta = loadModel();
-			XtaExample ex=XtaExample.getExampleBySource(model);
-			long preProcTime=0;
-			Set<Algorithm> newAlgs=ImmutableSet.of(/*Algorithm.BW,Algorithm.BACT*/);
+			//XtaExample ex=XtaExample.getExampleBySource(model);
+			/*long preProcTime=0;
+			Set<Algorithm> newAlgs=ImmutableSet.of(Algorithm.BW,Algorithm.BACT);
 			Set<XtaExample> newEx=ImmutableSet.of(XtaExample.BACKEX,XtaExample.SPLIT);
 			
 			if  (!newAlgs.contains(algorithm) && newEx.contains(ex)) {
@@ -211,7 +213,7 @@ public final class XtaMain {
 				ppw.stop();
 				preProcTime=ppw.elapsed(TimeUnit.MILLISECONDS);
 				this.preProc=PreProcType.DIAG;
-			}
+			}*/
 			//Új alg - Régi input*/
 			/*if (newAlgs.contains(algorithm) && !newEx.contains(ex)) {//TODO: wp-re ez nem kell
 				Stopwatch ppw=Stopwatch.createUnstarted();
@@ -235,13 +237,15 @@ public final class XtaMain {
 			Thread.sleep(5000);
 			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
-			printResult(result, preProcTime);
+			//printResult(result, preProcTime);
+			printResult(result, 0);
 			/*if (dotfile != null) {
 				writeVisualStatus(result, dotfile);
 			}*/
 		} catch (final Throwable ex) {
 			ex.printStackTrace();
 			printError(ex);
+			success=false;
 		}
 		if (benchmarkMode) {
 			writer.newRow();
@@ -249,19 +253,19 @@ public final class XtaMain {
 	}
 
 	public void printHeader() {
-		writer.cell("Expected");
+		//writer.cell("Expected");
 		writer.cell("Model");
-		writer.cell("PreProcessing");
+		//writer.cell("PreProcessing");
 		writer.cell("Algorithm");
-		writer.cell("Result");
-		writer.cell("PreProcTimeInMs");
-		writer.cell("AlgorithmTimeInMs");
+		//writer.cell("Result");
+		//writer.cell("PreProcTimeInMs");
+		//writer.cell("AlgorithmTimeInMs");
 		writer.cell("TimeMs");
-		writer.cell("ArgDepth");
-		writer.cell("ArgNodes");
-		writer.cell("ArgNodesFeasible");
-		writer.cell("ArgNodesExpanded");
-		writer.cell("DiscreteStatesExpanded");
+		//writer.cell("ArgDepth");
+		//writer.cell("ArgNodes");
+		//writer.cell("ArgNodesFeasible");
+		//writer.cell("ArgNodesExpanded");
+		//writer.cell("DiscreteStatesExpanded");
 		writer.newRow();
 	}
 
@@ -281,30 +285,35 @@ public final class XtaMain {
 
 	private void printResult(final SafetyResult<?, ?> result, long ppT) {
 		final LazyXtaStatistics stats = (LazyXtaStatistics) result.getStats().get();
-		stats.setPreProcTimeInMs(ppT);
+		//stats.setPreProcTimeInMs(ppT);
 		if (benchmarkMode) {
-			writer.cell("");
+			//writer.cell("");
 			writer.cell(model);
-			writer.cell(preProc);
+			//writer.cell(preProc);
 			writer.cell(algorithm);
-			writer.cell("true");
-			writer.cell(ppT);
-			writer.cell(stats.getAlgorithmTimeInMs());
-			writer.cell(stats.getFullTimeInMs());
-			writer.cell(stats.getArgDepth());
-			writer.cell(stats.getArgNodes());
-			writer.cell(stats.getArgNodesFeasible());
-			writer.cell(stats.getArgNodesExpanded());
-			writer.cell(stats.getDiscreteStatesExpanded());
+			//writer.cell("true");
+			//writer.cell(ppT);
+			if  (stats.isTimeout()) writer.cell("[TO]");
+			else writer.cell(stats.getAlgorithmTimeInMs());
+			//writer.cell(stats.getFullTimeInMs());
+			//writer.cell(stats.getArgDepth());
+			//writer.cell(stats.getArgNodes());
+			//writer.cell(stats.getArgNodesFeasible());
+			//writer.cell(stats.getArgNodesExpanded());
+			//writer.cell(stats.getDiscreteStatesExpanded());
 		} else {
 			System.out.println(stats.toString());
 		}
+		
+		success=!stats.isTimeout();
 	}
 
 	private void printError(final Throwable ex) {
 		final String message = ex.getMessage() == null ? "" : ": " + ex.getMessage();
 		if (benchmarkMode) {
-			writer.cell("[EX] " + ex.getClass().getSimpleName() + message);
+			writer.cell(model);
+			writer.cell(algorithm);
+			writer.cell("[EX] "/* + ex.getClass().getSimpleName() + message*/);
 		} else {
 			System.out.println("Exception occured: " + ex.getClass().getSimpleName());
 			System.out.println("Message: " + ex.getMessage());
