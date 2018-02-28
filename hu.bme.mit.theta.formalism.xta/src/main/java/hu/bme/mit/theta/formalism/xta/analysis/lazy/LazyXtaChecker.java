@@ -171,35 +171,35 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 			
 			while (!waitlist.isEmpty()) {
 				final ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction> v = waitlist.remove();
-				System.out.println("Node "+v.getId()+": "+v.getState());//TODO
+				//System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				//System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
 				assert v.isLeaf();
 				
 				if (v.getState().isBottom()) continue;
 
 				if (algorithm.shouldRefine(v)) {
-					System.out.println("Shouldrefine");//TODO
+					//System.out.println("Shouldrefine");//TODO
 					statistics.startRefinement();
 					final Collection<ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction>> uncoveredNodes = algorithm
 							.refine(v, statistics);
 					statistics.stopRefinement();
-					System.out.println("Uncovered: "+uncoveredNodes);//TODO
+					//System.out.println("Uncovered: "+uncoveredNodes);//TODO
 					waitlist.addAll(uncoveredNodes);
 				} else if (v.isTarget()) {
-					System.out.println("Target");//TODO
+					//System.out.println("Target");//TODO
 					statistics.stopAlgorithm();
 					return Optional.of(v);
 				} else {
-					System.out.println("Else");//TODO
+					//System.out.println("Else");//TODO
 					close(v);
 					if (!v.isCovered()) {
-						System.out.println("Not covered");//TODO
+						//System.out.println("Not covered");//TODO
 						expand(v);
-					} else {//TODO
+					} /*else {//TODO
 						System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
-					}//TODO
+					}*///TODO
 				}
-				System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
+				//System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
 				//System.out.println("waitlist: "+waitlist);//TODO
 			}
 			statistics.stopAlgorithm();

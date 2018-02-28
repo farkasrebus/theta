@@ -15,9 +15,9 @@ public class XtaModelCheckerTests {
 	
 	@Parameters
 	  public static XtaExample[] data() {
-	    //return XtaExample.values();
-		XtaExample[] result={XtaExample.CRITICAL};
-		return result;
+	    return XtaExample.values();
+		/*XtaExample[] result={XtaExample.FDDI};
+		return result;*/
 	  }
 	
 	@Parameter
@@ -115,10 +115,10 @@ public class XtaModelCheckerTests {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		for (int i=1;i<=1;i++) {
-			String[] args={"-a","BW","-m",input.getFileLocation(i),"-s","BFS"};
+		//for (int i=1;i<=1;i++) {
+			String[] args={"-a","BW","-m",input.getFileLocation(2),"-s","BFS"};
 			XtaMain.main(args);
-		}
+		//}
 		
 	}
 

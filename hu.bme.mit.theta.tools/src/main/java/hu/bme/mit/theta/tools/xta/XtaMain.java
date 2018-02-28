@@ -43,7 +43,7 @@ public final class XtaMain {
 	Search search;
 
 	@Parameter(names = { "-bm", "--benchmark" }, description = "Benchmark mode (only print metrics)")
-	Boolean benchmarkMode = false;
+	Boolean benchmarkMode = true;
 	@Parameter(names = { "-v", "--visualize" }, description = "Write proof or counterexample to file in dot format")
 	String dotfile = null;
 
@@ -198,6 +198,13 @@ public final class XtaMain {
 			XtaExample ex=XtaExample.getExampleBySource(model);
 			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta,ex);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
+			printResult(result, 0);
+			/*for (List<Loc> l:ex.getErrorLocs(xta)) {
+				for (Loc loc:l) {
+					System.out.print(loc.getName()+",");
+				}
+				System.out.println();
+			}*/
 		} catch (final Throwable ex) {
 			ex.printStackTrace();
 			printError(ex);

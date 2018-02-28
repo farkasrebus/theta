@@ -153,7 +153,7 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<ExprState, Xta
 		solver.pop();
 		solver.push();
 		solver.add(transformPreds(preds));
-		solver.add(args);
+		solver.add(transformPreds(args));
 		solver.check();
 		
 		if (solver.getStatus()==SolverStatus.UNSAT) {
