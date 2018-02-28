@@ -171,7 +171,7 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 			
 			while (!waitlist.isEmpty()) {
 				final ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction> v = waitlist.remove();
-				//System.out.println("Node "+v.getId()+": "+v.getState());//TODO
+				System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				//System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
 				assert v.isLeaf();
 				
@@ -201,14 +201,14 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 				}
 				//System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
 				//System.out.println("waitlist: "+waitlist);//TODO
-				if (statistics.isTimeout()) {
+				/*if (statistics.isTimeout()) {
 					statistics.stopAlgorithm();
-					return Optional.empty();
+					return Optional.empty();*/
 				/*/} else {
 					System.out.println(cntr++ +" "+statistics.getRemainingTime());
 					/*if (statistics.getRemainingTime()<100) 
 						System.out.println("Time to debug");*/
-				}
+				//}
 			}
 			statistics.stopAlgorithm();
 			//System.out.println("Algorithm ends");//TODO

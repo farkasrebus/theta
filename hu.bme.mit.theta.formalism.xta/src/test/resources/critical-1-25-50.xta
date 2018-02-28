@@ -1,0 +1,23 @@
+const int N = 1;
+
+const int A = 25;
+const int B = 50;
+
+typedef int[1, N] id_t;
+int id;
+
+chan cellenter[N + 1], cellexit[N + 1];
+
+process Counter() {
+	state
+		initCount,
+		initial;
+	
+	init initial;
+	
+	trans
+		initCount -> initCount { guard id == N; assign id = 1; },
+		initCount -> initCount { guard id < N, id>=0; assign id = id + 1; },
+		initial -> initCount { guard id == 0; assign id = 1; };
+}
+system Counter;

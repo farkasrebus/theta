@@ -286,6 +286,11 @@ public final class XtaProcess {
 		public List<Update> getUpdates() {
 			return updates;
 		}
+		
+		@Override 
+		public String toString() {
+			return source.getName()+" -> "+target.getName();
+		}
 	}
 
 }
