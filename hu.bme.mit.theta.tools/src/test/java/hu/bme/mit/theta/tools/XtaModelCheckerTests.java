@@ -15,9 +15,9 @@ public class XtaModelCheckerTests {
 	
 	@Parameters
 	  public static XtaExample[] data() {
-	    //return XtaExample.values();
-		XtaExample[] result={XtaExample.FDDI};
-		return result;
+	    return XtaExample.values();
+		//XtaExample[] result={XtaExample.CRITICAL};
+		//return result;
 	  }
 	
 	@Parameter
@@ -53,61 +53,9 @@ public class XtaModelCheckerTests {
 				}
 			}
 		}
-		
-		/*for (int i=3;i<=input.getMaxThreads();i++) {
-			for (int j=0; j<5;j++) {
-				System.gc();
-				System.gc();
-				System.gc();
-				Thread.sleep(5000);
-				//System.out.println(input.getFileLocation(i));
-				String[] args={"-a","SEQITP","-m",input.getFileLocation(i),"-s","BFS"};
-				//System.out.println("Model: "+input.toString()+i);
-				XtaMain.main(args);
-			}
-		}
-		
-		for (int i=2;i<=input.getMaxThreads();i++) {
-			for (int j=0; j<5;j++) {
-				System.gc();
-				System.gc();
-				System.gc();
-				Thread.sleep(5000);
-				//System.out.println(input.getFileLocation(i));
-				String[] args={"-a","BINITP","-m",input.getFileLocation(i),"-s","BFS"};
-				//System.out.println("Model: "+input.toString()+i);
-				XtaMain.main(args);
-			}
-		}
-		
-		for (int i=2;i<=input.getMaxThreads();i++) {
-			for (int j=0; j<5;j++) {
-				System.gc();
-				System.gc();
-				System.gc();
-				Thread.sleep(5000);
-				//System.out.println(input.getFileLocation(i));
-				String[] args={"-a","WEAKSEQITP","-m",input.getFileLocation(i),"-s","BFS"};
-				//System.out.println("Model: "+input.toString()+i);
-				XtaMain.main(args);
-			}
-		}
-		
-		for (int i=2;i<=input.getMaxThreads();i++) {
-			for (int j=0; j<5;j++) {
-				System.gc();
-				System.gc();
-				System.gc();
-				Thread.sleep(5000);
-				//System.out.println(input.getFileLocation(i));
-				String[] args={"-a","WEAKBINITP","-m",input.getFileLocation(i),"-s","BFS"};
-				//System.out.println("Model: "+input.toString()+i);
-				XtaMain.main(args);
-			}
-		}*/
 	}
 	
-	@Ignore("Works fine")
+	//@Ignore("Works fine")
 	@Test
 	public void analyze_run() {
 		/*try {
@@ -117,12 +65,10 @@ public class XtaModelCheckerTests {
 			e.printStackTrace();
 		}*/
 
-		for (int i=2;i<=4;i++) {
-			System.out.println("Errorlocs for param="+i+":");
-			String[] args={"-a","BW","-m",input.getFileLocation(i),"-s","BFS"};
+		//for (int i=2;i<=4;i++) {
+			String[] args={"-a","BW","-m",input.getFileLocation(2),"-s","BFS"};
 			XtaMain.main(args);
-			System.out.println("-----------------------------");
-		}
+		//}
 		
 	}
 

@@ -43,14 +43,12 @@ public final class XtaMain {
 	Search search;
 
 	@Parameter(names = { "-bm", "--benchmark" }, description = "Benchmark mode (only print metrics)")
-	Boolean benchmarkMode = false;
+	Boolean benchmarkMode = true;
 	@Parameter(names = { "-v", "--visualize" }, description = "Write proof or counterexample to file in dot format")
 	String dotfile = null;
 
 	@Parameter(names = { "--header" }, description = "Print only a header (for benchmarks)", help = true)
 	boolean headerOnly = false;
-	
-	//PreProcType preProc=PreProcType.UNFOLD;
 
 	public static enum Algorithm {
 
@@ -198,49 +196,13 @@ public final class XtaMain {
 		try {
 			XtaSystem xta = loadModel();
 			XtaExample ex=XtaExample.getExampleBySource(model);
-			/*long preProcTime=0;
-			Set<Algorithm> newAlgs=ImmutableSet.of(Algorithm.BW,Algorithm.BACT);
-			Set<XtaExample> newEx=ImmutableSet.of(XtaExample.BACKEX,XtaExample.SPLIT);
-			
-			if  (!newAlgs.contains(algorithm) && newEx.contains(ex)) {
-				Stopwatch ppw=Stopwatch.createStarted();
-				xta=XtaSystemUnfolder.unfoldDiagonalConstraints(xta);
-				ppw.stop();
-				preProcTime=ppw.elapsed(TimeUnit.MILLISECONDS);
-				this.preProc=PreProcType.DIAG;
-			}*/
-			//Új alg - Régi input*/
-			/*if (newAlgs.contains(algorithm) && !newEx.contains(ex)) {//TODO: wp-re ez nem kell
-				Stopwatch ppw=Stopwatch.createUnstarted();
-				if (ex.equals(XtaExample.CSMA)) {
-					this.preProc=PreProcType.SMART;
-					ppw.start();
-					xta=XtaSystemUnfolder.unfoldDataSmart(xta, XtaExample.CSMA);
-					ppw.stop();
-				} else {
-				this.preProc=PreProcType.DATA;
-					ppw.start();
-					final UnfoldedXtaSystem unfolded=XtaSystemUnfolder.getPureFlatSystem(xta,ex);
-					ppw.stop();
-					xta=XtaSystem.of(ImmutableList.of(unfolded.result));
-				}
-				preProcTime=ppw.elapsed(TimeUnit.MILLISECONDS);
-			}*/
 			System.gc();
 			System.gc();
 			System.gc();
 			Thread.sleep(5000);
 			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta,ex);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
-			//printResult(result, preProcTime);
-			printResult(result, 0);
-			/*if (dotfile != null) {
-				writeVisualStatus(result, dotfile);
-			}*/
-			/* TODO
-			XtaExample ex=XtaExample.getExampleBySource(model);
-			System.out.println(ex.getErrorLocs(xta).size());
-			*/
+			printResult(result);
 
 		} catch (final Throwable ex) {
 			ex.printStackTrace();
@@ -283,7 +245,7 @@ public final class XtaMain {
 		return checker;
 	}
 
-	private void printResult(final SafetyResult<?, ?> result, long ppT) {
+	private void printResult(final SafetyResult<?, ?> result) {
 		final LazyXtaStatistics stats = (LazyXtaStatistics) result.getStats().get();
 		//stats.setPreProcTimeInMs(ppT);
 		if (benchmarkMode) {

@@ -243,8 +243,8 @@ public enum XtaExample {
 	}
 	
 	public String getFileLocation(int threads) {
-		if (!scalable) return "src/test/resources/xta/"+this.toString().toLowerCase()+this.params+".xta";
-		return "src/test/resources/xta/"+this.toString().toLowerCase()+"-"+threads+this.params+".xta";
+		if (!scalable) return "src/test/resources/benchmark/"+this.toString().toLowerCase()+this.params+".xta";
+		return "src/test/resources/benchmark/"+this.toString().toLowerCase()+"-"+threads+this.params+".xta";
 	}
 
 	public static XtaExample getExampleBySource(String model) {
