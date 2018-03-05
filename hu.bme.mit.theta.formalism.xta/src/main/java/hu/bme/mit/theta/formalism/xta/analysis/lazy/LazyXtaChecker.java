@@ -171,7 +171,7 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 			
 			while (!waitlist.isEmpty()) {
 				final ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction> v = waitlist.remove();
-				System.out.println("Node "+v.getId()+": "+v.getState());//TODO
+				//System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				//System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
 				assert v.isLeaf();
 				
@@ -195,9 +195,9 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 					if (!v.isCovered()) {
 						//System.out.println("Not covered");//TODO
 						expand(v);
-					} else {//TODO
-						//System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
-					}//TODO
+					} /*else {//TODO
+						System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
+					}*///TODO
 				}
 				//System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
 				//System.out.println("waitlist: "+waitlist);//TODO

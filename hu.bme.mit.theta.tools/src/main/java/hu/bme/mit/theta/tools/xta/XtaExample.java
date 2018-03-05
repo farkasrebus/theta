@@ -92,14 +92,16 @@ public enum XtaExample {
 			stationLocs.remove(station0);
 			stationLocs.remove(station1);
 			Set<List<Loc>> statConfs=getConfiguirations(stationLocs);
-			for (List<Loc> conf:statConfs) {
-				for (Loc l:busLocs) {
+			for (Loc l:busLocs) {
+				for (List<Loc> c:statConfs) {
+					List<Loc> conf=new ArrayList<>(c);
 					conf.add(l);
 					conf.add(error0);
 					conf.add(transm1);
 					result.add(conf);
 				}
 			}
+			//System.out.println(result);
 			
 			return result;
 		}
@@ -138,10 +140,11 @@ public enum XtaExample {
 				for (Loc e1: s1locs) {
 					for (Loc rl:ringLocs) {
 						for (List<Loc> sc:statConfs) {
-							sc.add(e0);
-							sc.add(e1);
-							sc.add(rl);
-							result.add(sc);
+							List<Loc> l=new ArrayList<>(sc);
+							l.add(e0);
+							l.add(e1);
+							l.add(rl);
+							result.add(l);
 						}
 					}
 				}
