@@ -15,8 +15,8 @@ public class XtaModelCheckerTests {
 	
 	@Parameters
 	  public static XtaExample[] data() {
-	   // return XtaExample.values();
-		XtaExample[] result={XtaExample.CRITICAL};
+	   //return XtaExample.values();
+		XtaExample[] result={XtaExample.CSMA};
 		return result;
 	  }
 	
@@ -66,10 +66,10 @@ public class XtaModelCheckerTests {
 		}*/
 
 		for (int i=input.getMinThreads();i<=input.getMaxThreads();i++) {
-			for (int j=0; j<5;j++) {
+			//for (int j=0; j<5;j++) {
 				String[] args={"-a","BW","-m",input.getFileLocation(i),"-s","BFS"};
 				XtaMain.main(args);
-			}
+			//}
 		}
 		
 	}
