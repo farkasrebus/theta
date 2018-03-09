@@ -146,4 +146,16 @@ public final class XtaState<S extends State> implements ExprState {
 		return Utils.lispStringBuilder(prefix).add(locString).body().add(state).toString();
 	}
 
+	public String getStateLabel() {
+		String locations="(";
+		for (Loc l:locs) {
+			String[] split=l.getName().split("_");
+			String locname=split[split.length-1];
+			locations+=locname+",";
+		}
+		locations+=")";
+		String s=state.toString();
+		return "<"+locations+";"+s+">";
+	}
+
 }

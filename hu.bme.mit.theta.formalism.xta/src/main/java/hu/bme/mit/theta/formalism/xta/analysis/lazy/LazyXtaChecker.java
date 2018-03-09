@@ -21,8 +21,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
+import hu.bme.mit.theta.analysis.Action;
 import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.LTS;
 import hu.bme.mit.theta.analysis.State;
@@ -41,8 +43,10 @@ import hu.bme.mit.theta.analysis.prod2.Prod2Prec;
 import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.analysis.reachedset.Partition;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
+import hu.bme.mit.theta.analysis.utils.ArgVisualizer;
 import hu.bme.mit.theta.analysis.waitlist.Waitlist;
 import hu.bme.mit.theta.analysis.zone.act.ActZoneState;
+import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.formalism.xta.XtaProcess;
@@ -203,6 +207,10 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 				//System.out.println("waitlist: "+waitlist);//TODO
 			}
 			statistics.stopAlgorithm();
+			Function<XtaState<Prod2State<VS,CS>>,String> fs=s -> s.getStateLabel();
+			Function<XtaAction,String> as=a->a.getLabel();
+			ArgVisualizer<XtaState<Prod2State<VS,CS>>,XtaAction> viz = ArgVisualizer.create(fs, as);
+			System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));
 			//System.out.println("Algorithm ends");//TODO
 			return Optional.empty();
 		}

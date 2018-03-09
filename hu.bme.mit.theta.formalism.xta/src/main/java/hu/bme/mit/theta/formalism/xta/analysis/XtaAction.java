@@ -82,7 +82,9 @@ public abstract class XtaAction extends StmtAction {
 	public abstract List<Loc> getSourceLocs();
 
 	public abstract List<Loc> getTargetLocs();
-
+	
+	public abstract String getLabel();
+	
 	public boolean isBasic() {
 		return false;
 	}
@@ -192,6 +194,15 @@ public abstract class XtaAction extends StmtAction {
 					.addAll(edge.getUpdates()).toString();
 		}
 
+		@Override
+		public String getLabel() {
+			String[] srcsplit=edge.getSource().getName().split("_");
+			String srcname=srcsplit[srcsplit.length-1];
+			String[] trgsplit=edge.getTarget().getName().split("_");
+			String trgname=trgsplit[trgsplit.length-1];
+			return "("+srcname+","+trgname+")"+edge.getGuards()+edge.getUpdates();
+		}
+
 	}
 
 	public static final class SyncedXtaAction extends XtaAction {
@@ -295,6 +306,20 @@ public abstract class XtaAction extends StmtAction {
 					.add(recvEdge.getSync().get()).body().addAll(emitEdge.getGuards()).addAll(recvEdge.getGuards())
 					.addAll(emitEdge.getUpdates()).addAll(recvEdge.getUpdates()).toString();
 		}
+		
+		@Override
+		public String getLabel() {
+			String[] emitsrcsplit=emitEdge.getSource().getName().split("_");
+			String emitsrcname=emitsrcsplit[emitsrcsplit.length-1];
+			String[] emittrgsplit=emitEdge.getTarget().getName().split("_");
+			String emittrgname=emittrgsplit[emittrgsplit.length-1];
+			String[] recvsrcsplit=recvEdge.getSource().getName().split("_");
+			String recvsrcname=recvsrcsplit[recvsrcsplit.length-1];
+			String[] recvtrgsplit=recvEdge.getTarget().getName().split("_");
+			String recvtrgname=recvtrgsplit[recvtrgsplit.length-1];
+			return "("+emitsrcname+","+emittrgname+")"+emitEdge.getGuards()+emitEdge.getUpdates()+
+					"||"+"("+recvsrcname+","+recvtrgname+")"+recvEdge.getGuards()+recvEdge.getUpdates();
+		}
 
 	}
 
@@ -373,6 +398,15 @@ public abstract class XtaAction extends StmtAction {
 		public String toString() {
 			return Utils.lispStringBuilder(getClass().getSimpleName()).body().addAll(edge.getGuards())
 					.addAll(edge.getUpdates()).toString();
+		}
+		
+		@Override
+		public String getLabel() {
+			String[] srcsplit=edge.getSource().getName().split("_");
+			String srcname=srcsplit[srcsplit.length-1];
+			String[] trgsplit=edge.getTarget().getName().split("_");
+			String trgname=trgsplit[trgsplit.length-1];
+			return "("+srcname+","+trgname+")"+edge.getGuards()+edge.getUpdates();
 		}
 		
 	}
@@ -478,6 +512,27 @@ public abstract class XtaAction extends StmtAction {
 			return Utils.lispStringBuilder(getClass().getSimpleName()).add(emitEdge.getSync().get())
 					.add(recvEdge.getSync().get()).body().addAll(emitEdge.getGuards()).addAll(recvEdge.getGuards())
 					.addAll(emitEdge.getUpdates()).addAll(recvEdge.getUpdates()).toString();
+		}
+		
+		/*@Override
+		public String getLabel() {
+			return "("+emitEdge.getSource()+","+emitEdge.getTarget()+")"+emitEdge.getGuards()+emitEdge.getUpdates()+
+					"||"+"("+recvEdge.getSource()+","+recvEdge.getTarget()+")"+recvEdge.getGuards()+recvEdge.getUpdates();
+			
+		}*/
+		
+		@Override
+		public String getLabel() {
+			String[] emitsrcsplit=emitEdge.getSource().getName().split("_");
+			String emitsrcname=emitsrcsplit[emitsrcsplit.length-1];
+			String[] emittrgsplit=emitEdge.getTarget().getName().split("_");
+			String emittrgname=emittrgsplit[emittrgsplit.length-1];
+			String[] recvsrcsplit=recvEdge.getSource().getName().split("_");
+			String recvsrcname=recvsrcsplit[recvsrcsplit.length-1];
+			String[] recvtrgsplit=recvEdge.getTarget().getName().split("_");
+			String recvtrgname=recvtrgsplit[recvtrgsplit.length-1];
+			return "("+emitsrcname+","+emittrgname+")"+emitEdge.getGuards()+emitEdge.getUpdates()+
+					"||"+"("+recvsrcname+","+recvtrgname+")"+recvEdge.getGuards()+recvEdge.getUpdates();
 		}
 		
 	}
