@@ -207,10 +207,10 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 				//System.out.println("waitlist: "+waitlist);//TODO
 			}
 			statistics.stopAlgorithm();
-			Function<XtaState<Prod2State<VS,CS>>,String> fs=s -> s.getStateLabel();
+			/*Function<XtaState<Prod2State<VS,CS>>,String> fs=s -> s.getStateLabel();
 			Function<XtaAction,String> as=a->a.getLabel();
 			ArgVisualizer<XtaState<Prod2State<VS,CS>>,XtaAction> viz = ArgVisualizer.create(fs, as);
-			System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));
+			System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));*/
 			//System.out.println("Algorithm ends");//TODO
 			return Optional.empty();
 		}
