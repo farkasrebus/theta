@@ -15,18 +15,19 @@ import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.common.table.TableWriter;
 import hu.bme.mit.theta.common.table.impl.BasicTableWriter;
-import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
-import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import hu.bme.mit.theta.formalism.xta.analysis.lazy.ActStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.lazy.BackwardStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.lazy.BinItpStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.lazy.ItpStrategy.ItpOperator;
-import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaChecker;
-import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaChecker.AlgorithmStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.lazy.LazyXtaStatistics;
-import hu.bme.mit.theta.formalism.xta.analysis.lazy.LuStrategy;
-import hu.bme.mit.theta.formalism.xta.analysis.lazy.SeqItpStrategy;
-import hu.bme.mit.theta.formalism.xta.dsl.XtaDslManager;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
+import hu.bme.mit.theta.xta.XtaSystem;
+import hu.bme.mit.theta.xta.analysis.lazy.ActStrategy;
+import hu.bme.mit.theta.xta.analysis.lazy.BackwardStrategy;
+import hu.bme.mit.theta.xta.analysis.lazy.BinItpStrategy;
+import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaChecker;
+import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaStrategy;
+import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaStatistics;
+import hu.bme.mit.theta.xta.analysis.lazy.LuStrategy;
+import hu.bme.mit.theta.xta.analysis.lazy.SeqItpStrategy;
+import hu.bme.mit.theta.xta.dsl.XtaDslManager;
+import hu.bme.mit.theta.xta.tool.XtaCheckerBuilder;
+import hu.bme.mit.theta.xta.tool.XtaCheckerBuilder.Algorithm;
 
 public final class XtaMain {
 	private static final String JAR_NAME = "theta-xta.jar";
@@ -40,7 +41,7 @@ public final class XtaMain {
 	String model;
 
 	@Parameter(names = { "-s", "--search" }, description = "Search strategy", required = true)
-	Search search;
+	SearchStrategy searchStrategy;
 
 	@Parameter(names = { "-bm", "--benchmark" }, description = "Benchmark mode (only print metrics)")
 	Boolean benchmarkMode = true;
@@ -51,69 +52,55 @@ public final class XtaMain {
 	boolean headerOnly = false;
 	
 	//PreProcType preProc=PreProcType.UNFOLD;
-
+	/*
 	public static enum Algorithm {
 
 		SEQITP {
 			@Override
-			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
-				return SeqItpStrategy.create(system, ItpOperator.DEFAULT);
+			public LazyXtaStrategy<?> create(final XtaSystem system) {
+				return SeqItpStrategy.create(system);
 			}
 		},
 
 		BINITP {
 			@Override
-			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
-				return BinItpStrategy.create(system, ItpOperator.DEFAULT);
-			}
-		},
-
-		WEAKSEQITP {
-			@Override
-			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
-				return SeqItpStrategy.create(system, ItpOperator.WEAK);
-			}
-		},
-
-		WEAKBINITP {
-			@Override
-			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
-				return BinItpStrategy.create(system, ItpOperator.WEAK);
+			public LazyXtaStrategy<?> create(final XtaSystem system) {
+				return BinItpStrategy.create(system);
 			}
 		},
 
 		LU {
 			@Override
-			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
+			public LazyXtaStrategy<?> create(final XtaSystem system) {
 				return LuStrategy.create(system);
 			}
 		},
 
 		ACT {
 			@Override
-			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
+			public LazyXtaStrategy<?> create(final XtaSystem system) {
 				return ActStrategy.create(system);
 			}
 		},
 		
 		BW {
 			@Override
-			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
+			public LazyXtaStrategy<?> create(final XtaSystem system) {
 				return BackwardStrategy.create(system,false);
 			}
 		},
 		
 		BACT {
 			@Override
-			public AlgorithmStrategy<?,?> create(final XtaSystem system) {
+			public LazyXtaStrategy<?> create(final XtaSystem system) {
 				return BackwardStrategy.create(system,true);
 			}
 		};
 
-		public abstract LazyXtaChecker.AlgorithmStrategy<?,?> create(final XtaSystem system);
+		public abstract LazyXtaStrategy<?> create(final XtaSystem system);
 	}
-
-	private static enum Search {
+*/
+	/*private static enum Search {
 
 		DFS {
 			@Override
@@ -137,7 +124,7 @@ public final class XtaMain {
 		};
 
 		public abstract SearchStrategy create();
-	}
+	}*/
 
 	public XtaMain(final String[] args) {
 		this.args = args;
@@ -196,7 +183,7 @@ public final class XtaMain {
 		try {
 			XtaSystem xta = loadModel();
 			XtaExample ex=XtaExample.getExampleBySource(model);
-			final SafetyChecker<?, ?, UnitPrec> checker = buildChecker(xta,ex);
+			final SafetyChecker<?, ?, UnitPrec> checker = XtaCheckerBuilder.build(algorithm, searchStrategy, xta); //buildChecker(xta,ex);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
 			printResult(result, 0);
 			/*for (List<Loc> l:ex.getErrorLocs(xta)) {
@@ -236,32 +223,19 @@ public final class XtaMain {
 		return XtaDslManager.createSystem(inputStream);
 	}
 
-	private SafetyChecker<?, ?, UnitPrec> buildChecker(final XtaSystem xta,XtaExample ex) {
-		final LazyXtaChecker.AlgorithmStrategy<?,?> algorithmStrategy = algorithm.create(xta);
+	/*private SafetyChecker<?, ?, UnitPrec> buildChecker(final XtaSystem xta,XtaExample ex) {
+		final LazyXtaStrategy<?> algorithmStrategy = algorithm.create(xta);
 		final SearchStrategy searchStrategy = search.create();
 
 		final SafetyChecker<?, ?, UnitPrec> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy,
 				ex.getErrorLocs(xta));
 		return checker;
-	}
+	}*/
 
 	private void printResult(final SafetyResult<?, ?> result, long ppT) {
 		final LazyXtaStatistics stats = (LazyXtaStatistics) result.getStats().get();
-		stats.setPreProcTimeInMs(ppT);
 		if (benchmarkMode) {
-			writer.cell("");
-			writer.cell(model);
-			//writer.cell(preProc);
-			writer.cell(algorithm);
-			writer.cell("true");
-			writer.cell(ppT);
-			writer.cell(stats.getAlgorithmTimeInMs());
-			writer.cell(stats.getFullTimeInMs());
-			writer.cell(stats.getArgDepth());
-			writer.cell(stats.getArgNodes());
-			writer.cell(stats.getArgNodesFeasible());
-			writer.cell(stats.getArgNodesExpanded());
-			writer.cell(stats.getDiscreteStatesExpanded());
+			stats.writeData(writer);
 		} else {
 			System.out.println(stats.toString());
 		}

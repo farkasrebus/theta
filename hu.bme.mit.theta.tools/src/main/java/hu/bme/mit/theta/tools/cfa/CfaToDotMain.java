@@ -10,9 +10,9 @@ import com.beust.jcommander.ParameterException;
 
 import hu.bme.mit.theta.common.visualization.Graph;
 import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
-import hu.bme.mit.theta.formalism.cfa.CFA;
-import hu.bme.mit.theta.formalism.cfa.dsl.CfaDslManager;
-import hu.bme.mit.theta.formalism.cfa.utils.CfaVisualizer;
+import hu.bme.mit.theta.cfa.CFA;
+import hu.bme.mit.theta.cfa.dsl.CfaDslManager;
+import hu.bme.mit.theta.cfa.utils.CfaVisualizer;
 
 public final class CfaToDotMain {
 	private static final String JAR_NAME = "cfa2dot.jar";

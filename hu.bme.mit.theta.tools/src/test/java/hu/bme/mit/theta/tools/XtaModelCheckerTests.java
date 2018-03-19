@@ -9,6 +9,7 @@ import org.junit.runners.Parameterized;
 
 import hu.bme.mit.theta.tools.xta.XtaExample;
 import hu.bme.mit.theta.tools.xta.XtaMain;
+import hu.bme.mit.theta.xta.tool.XtaCheckerBuilder.Algorithm;
 
 @RunWith(Parameterized.class)
 public class XtaModelCheckerTests {
@@ -43,9 +44,9 @@ public class XtaModelCheckerTests {
 	@Ignore("Not benchmarking now")
 	@Test
 	public void benchmark() throws InterruptedException {
-		XtaMain.Algorithm[] algs=XtaMain.Algorithm.values();
+		Algorithm[] algs=Algorithm.values();
 		for (int i=2;i<=input.getMaxThreads();i++) {
-			for (XtaMain.Algorithm alg:algs) {
+			for (Algorithm alg:algs) {
 				for (int j=0; j<15;j++) {
 					String[] args={"-a",alg.toString(),"-m",input.getFileLocation(i),"-s","BFS"};
 					XtaMain.main(args);

@@ -63,19 +63,19 @@ import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.type.inttype.IntLitExpr;
 import hu.bme.mit.theta.core.type.inttype.IntType;
 import hu.bme.mit.theta.core.type.rattype.RatType;
-import hu.bme.mit.theta.formalism.xta.Guard;
-import hu.bme.mit.theta.formalism.xta.Guard.ClockGuard;
-import hu.bme.mit.theta.formalism.xta.Guard.DataGuard;
-import hu.bme.mit.theta.formalism.xta.Label;
-import hu.bme.mit.theta.formalism.xta.Sync;
-import hu.bme.mit.theta.formalism.xta.Sync.Kind;
-import hu.bme.mit.theta.formalism.xta.Update;
-import hu.bme.mit.theta.formalism.xta.XtaProcess;
-import hu.bme.mit.theta.formalism.xta.XtaProcess.Edge;
-import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
-import hu.bme.mit.theta.formalism.xta.XtaProcess.LocKind;
-import hu.bme.mit.theta.formalism.xta.XtaSystem;
-import hu.bme.mit.theta.formalism.xta.utils.ChanType;
+import hu.bme.mit.theta.xta.Guard;
+import hu.bme.mit.theta.xta.Guard.ClockGuard;
+import hu.bme.mit.theta.xta.Guard.DataGuard;
+import hu.bme.mit.theta.xta.Label;
+import hu.bme.mit.theta.xta.Sync;
+import hu.bme.mit.theta.xta.Sync.Kind;
+import hu.bme.mit.theta.xta.Update;
+import hu.bme.mit.theta.xta.XtaProcess;
+import hu.bme.mit.theta.xta.XtaProcess.Edge;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
+import hu.bme.mit.theta.xta.XtaProcess.LocKind;
+import hu.bme.mit.theta.xta.XtaSystem;
+import hu.bme.mit.theta.xta.utils.ChanType;
 
 public class XtaPreProcessor {
 	

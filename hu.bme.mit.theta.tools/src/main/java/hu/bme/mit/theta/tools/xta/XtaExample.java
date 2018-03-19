@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import hu.bme.mit.theta.formalism.xta.XtaProcess;
-import hu.bme.mit.theta.formalism.xta.XtaProcess.Loc;
-import hu.bme.mit.theta.formalism.xta.XtaSystem;
+import hu.bme.mit.theta.xta.XtaProcess;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
+import hu.bme.mit.theta.xta.XtaSystem;
 
 public enum XtaExample {
 	CRITICAL ("-25-50",4) {
