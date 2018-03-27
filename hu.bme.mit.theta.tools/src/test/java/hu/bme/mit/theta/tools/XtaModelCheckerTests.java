@@ -17,7 +17,7 @@ public class XtaModelCheckerTests {
 	@Parameters
 	  public static XtaExample[] data() {
 	    //return XtaExample.values();
-		XtaExample[] result={XtaExample.CRITICAL};
+		XtaExample[] result={XtaExample.FISCHER};
 		return result;
 	  }
 	
@@ -107,7 +107,7 @@ public class XtaModelCheckerTests {
 		}*/
 	}
 	
-	@Ignore("Doesn't terminate")
+	//@Ignore("Doesn't terminate")
 	@Test
 	public void analyze_run() {
 		/*try {

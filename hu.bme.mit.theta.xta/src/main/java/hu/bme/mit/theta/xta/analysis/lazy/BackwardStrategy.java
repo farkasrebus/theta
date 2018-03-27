@@ -120,7 +120,11 @@ public class BackwardStrategy implements LazyXtaStrategy<Prod2State<ExprState,Ba
 		BackwardsZoneState zoneToCover = nodeToCover.getState().getState().getState2();
 		ExprState coveringPred=coveringNode.getState().getState().getState1();
 		BackwardsZoneState coveringZone=coveringNode.getState().getState().getState2();
-		return zoneToCover.isLeq(coveringZone) && isPredLeq(predToCover,coveringPred);
+		boolean zoneleq=zoneToCover.isLeq(coveringZone);
+		//if (zoneleq) System.out.println("Zoneleq");
+		boolean predleq=isPredLeq(predToCover,coveringPred);
+		//if (predleq) System.out.println("Predleq");
+		return zoneleq && predleq;
 	}
 	
 	@Override
@@ -155,7 +159,8 @@ public class BackwardStrategy implements LazyXtaStrategy<Prod2State<ExprState,Ba
 
 	@Override
 	public Partition<ArgNode<XtaState<Prod2State<ExprState, BackwardsZoneState>>, XtaAction>, ?> createReachedSet() {
-		Partition<ArgNode<XtaState<Prod2State<ExprState, BackwardsZoneState>>, XtaAction>, ?> result= Partition.of(n -> Tuple2.of(n.getState().getLocs(), n.getState().getState().getState1()));
+		Partition<ArgNode<XtaState<Prod2State<ExprState, BackwardsZoneState>>, XtaAction>, ?> result= 
+				Partition.of(n -> n.getState().getLocs());
 		return result;
 	}
 

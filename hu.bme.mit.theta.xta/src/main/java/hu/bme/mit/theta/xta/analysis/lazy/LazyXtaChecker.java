@@ -27,6 +27,7 @@ import hu.bme.mit.theta.analysis.LTS;
 import hu.bme.mit.theta.analysis.State;
 import hu.bme.mit.theta.analysis.algorithm.ARG;
 import hu.bme.mit.theta.analysis.algorithm.ArgNode;
+import hu.bme.mit.theta.analysis.algorithm.ArgTrace;
 import hu.bme.mit.theta.analysis.algorithm.SafetyChecker;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
 import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
@@ -44,10 +45,11 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 	private final LTS<XtaState<?>, XtaAction> lts;
 	private final LazyXtaStrategy<S> algorithmStrategy;
 	private final SearchStrategy searchStrategy;
+	private final XtaSystem system;
 
 	private LazyXtaChecker(final XtaSystem system, final LazyXtaStrategy<S> algorithmStrategy,
 			final SearchStrategy searchStrategy, final Set<List<Loc>> trgStates) {
-		checkNotNull(system);
+		this.system=checkNotNull(system);
 		checkNotNull(trgStates);
 		
 		if (algorithmStrategy.isForward()) {
@@ -64,7 +66,7 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 	public static <S extends State> LazyXtaChecker<S> create(final XtaSystem system,
 			final LazyXtaStrategy<S> algorithmStrategy, final SearchStrategy searchStrategy,
 			final Set<List<Loc>> trgStates) {
-		return new LazyXtaChecker<>(system, algorithmStrategy, searchStrategy,trgStates);
+		return new LazyXtaChecker<>(system, algorithmStrategy, searchStrategy, trgStates);
 	}
 
 	@Override
@@ -90,14 +92,21 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 
 			init();
 			waiting.addAll(arg.getInitNodes());
+			System.out.println("Init nodes: "+waiting);//TODO
 			while (!waiting.isEmpty()) {
 				final ArgNode<XtaState<S>, XtaAction> v = waiting.remove();
+				System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				assert v.isFeasible();
-
+				System.out.println("Node feasible");//TODO
+				if (v.isTarget()) return SafetyResult.unsafe(ArgTrace.to(v).toTrace(), arg);
 				close(v);
+				System.out.println("Node closed");//TODO
 				if (!v.isCovered()) {
+					System.out.println("Node not covered");//TODO
 					expand(v);
-				}
+				} else {//TODO
+					System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
+				}//TODO
 			}
 
 			stats.stopAlgorithm();
@@ -120,7 +129,6 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 
 				stats.checkCoverage();
 				if (algorithmStrategy.mightCover(coveree, coverer)) {
-
 					stats.attemptCoverage();
 
 					coveree.setCoveringNode(coverer);
@@ -155,7 +163,7 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 						waiting.addAll(uncoveredNodes);
 					} else {
 						final ArgNode<XtaState<S>, XtaAction> succNode = arg.createSuccNode(node, action, succState,
-								false);
+								algorithmStrategy.containsInitState(node.getState(),system.getClockVars()));
 						waiting.add(succNode);
 					}
 				}
