@@ -74,6 +74,7 @@ import hu.bme.mit.theta.xta.XtaProcess;
 import hu.bme.mit.theta.xta.XtaProcess.Edge;
 import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaProcess.LocKind;
+import hu.bme.mit.theta.xta.tool.XtaExample;
 import hu.bme.mit.theta.xta.XtaSystem;
 import hu.bme.mit.theta.xta.utils.ChanType;
 

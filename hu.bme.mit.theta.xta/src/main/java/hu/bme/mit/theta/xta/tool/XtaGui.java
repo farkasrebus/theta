@@ -16,6 +16,7 @@
 package hu.bme.mit.theta.xta.tool;
 
 import java.io.File;
+import java.util.Collections;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -146,7 +147,7 @@ public class XtaGui extends BaseGui {
 			try {
 				final XtaSystem xta = XtaDslManager.createSystem(taModel.getText());
 				final SafetyChecker<?, ?, UnitPrec> checker = XtaCheckerBuilder.build(cbAlgorithm.getValue(),
-						cbSearchStrategy.getValue(), xta);
+						cbSearchStrategy.getValue(), xta, Collections.emptySet());
 				safetyResult = checker.check(UnitPrec.getInstance());
 				final LazyXtaStatistics stats = (LazyXtaStatistics) safetyResult.getStats().get();
 				Platform.runLater(() -> taOutput.setText(stats.toString()));

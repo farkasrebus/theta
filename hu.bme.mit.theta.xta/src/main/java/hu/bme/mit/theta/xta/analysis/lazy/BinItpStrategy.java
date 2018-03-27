@@ -16,6 +16,8 @@
 package hu.bme.mit.theta.xta.analysis.lazy;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import hu.bme.mit.theta.analysis.algorithm.ArgEdge;
 import hu.bme.mit.theta.analysis.algorithm.ArgNode;
@@ -24,6 +26,7 @@ import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.type.rattype.RatType;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaSystem;
 import hu.bme.mit.theta.xta.analysis.XtaAction;
 import hu.bme.mit.theta.xta.analysis.XtaState;
@@ -81,6 +84,12 @@ public final class BinItpStrategy extends ItpStrategy {
 	public boolean containsInitState(XtaState<Prod2State<ExplState, ItpZoneState>> state,
 			Collection<VarDecl<RatType>> clocks) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setTargetStates(Set<List<Loc>> target) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

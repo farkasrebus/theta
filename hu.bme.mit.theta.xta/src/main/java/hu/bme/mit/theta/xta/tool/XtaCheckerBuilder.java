@@ -15,8 +15,14 @@
  */
 package hu.bme.mit.theta.xta.tool;
 
+import java.util.List;
+import java.util.Set;
+
 import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaSystem;
+import hu.bme.mit.theta.xta.analysis.lazy.ActStrategy;
+import hu.bme.mit.theta.xta.analysis.lazy.BackwardStrategy;
 import hu.bme.mit.theta.xta.analysis.lazy.BinItpStrategy;
 import hu.bme.mit.theta.xta.analysis.lazy.ExplBinItpStrategy;
 import hu.bme.mit.theta.xta.analysis.lazy.ExplLuStrategy;
@@ -69,6 +75,25 @@ public final class XtaCheckerBuilder {
 			public LazyXtaStrategy<?> create(final XtaSystem system) {
 				return ExplLuStrategy.create(system);
 			}
+		},
+		
+		ACT {
+			@Override
+			public LazyXtaStrategy<?> create(XtaSystem system) {
+				return ActStrategy.create(system);
+			}
+		},
+		BACKWARD {
+			@Override
+			public LazyXtaStrategy<?> create(XtaSystem system) {
+				return BackwardStrategy.create(system, false);
+			}
+		},
+		BWACT {
+			@Override
+			public LazyXtaStrategy<?> create(XtaSystem system) {
+				return BackwardStrategy.create(system, true);
+			}
 		};
 
 		public abstract LazyXtaStrategy<?> create(final XtaSystem system);
@@ -78,10 +103,9 @@ public final class XtaCheckerBuilder {
 	}
 
 	public static LazyXtaChecker<?> build(final Algorithm algorithm, final SearchStrategy searchStrategy,
-			final XtaSystem xta) {
+			final XtaSystem xta, final Set<List<Loc>> trgStates) {
 		final LazyXtaStrategy<?> algorithmStrategy = algorithm.create(xta);
-
-		final LazyXtaChecker<?> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy);
+		final LazyXtaChecker<?> checker = LazyXtaChecker.create(xta, algorithmStrategy, searchStrategy,trgStates);
 		return checker;
 	}
 }

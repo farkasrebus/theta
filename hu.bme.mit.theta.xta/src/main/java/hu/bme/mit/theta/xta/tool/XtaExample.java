@@ -1,4 +1,4 @@
-package hu.bme.mit.theta.tools.xta;
+package hu.bme.mit.theta.xta.tool;
 
 import java.util.ArrayList;
 import java.util.HashMap;

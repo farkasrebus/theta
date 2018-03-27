@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.algorithm.ArgEdge;
@@ -286,6 +287,12 @@ public final class ExplLuStrategy implements LazyXtaStrategy<Prod3State<ExplStat
 	public boolean containsInitState(XtaState<Prod3State<ExplState, ExplState, LuZoneState>> state,
 			Collection<VarDecl<RatType>> clocks) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setTargetStates(Set<List<Loc>> target) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

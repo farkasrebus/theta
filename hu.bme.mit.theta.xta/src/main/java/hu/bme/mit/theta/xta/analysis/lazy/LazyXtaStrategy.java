@@ -16,17 +16,17 @@
 package hu.bme.mit.theta.xta.analysis.lazy;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.State;
 import hu.bme.mit.theta.analysis.algorithm.ArgNode;
-import hu.bme.mit.theta.analysis.expr.ExprState;
-import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.analysis.reachedset.Partition;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
-import hu.bme.mit.theta.analysis.zone.backwards.BackwardsZoneState;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.type.rattype.RatType;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.analysis.XtaAction;
 import hu.bme.mit.theta.xta.analysis.XtaState;
 
@@ -47,5 +47,7 @@ public interface LazyXtaStrategy<S extends State> {
 	public boolean isForward();
 	
 	public boolean containsInitState(XtaState<S> state, Collection<VarDecl<RatType>> clocks);
+	
+	public void setTargetStates(final Set<List<Loc>> target);
 
 }

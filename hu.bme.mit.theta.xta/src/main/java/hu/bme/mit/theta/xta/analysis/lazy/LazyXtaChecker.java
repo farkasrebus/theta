@@ -15,12 +15,15 @@
  */
 package hu.bme.mit.theta.xta.analysis.lazy;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.collect.Lists;
 
+import hu.bme.mit.theta.analysis.LTS;
 import hu.bme.mit.theta.analysis.State;
 import hu.bme.mit.theta.analysis.algorithm.ARG;
 import hu.bme.mit.theta.analysis.algorithm.ArgNode;
@@ -30,27 +33,38 @@ import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.reachedset.Partition;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.analysis.waitlist.Waitlist;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaSystem;
+import hu.bme.mit.theta.xta.analysis.BackwardXtaLts;
 import hu.bme.mit.theta.xta.analysis.XtaAction;
 import hu.bme.mit.theta.xta.analysis.XtaLts;
 import hu.bme.mit.theta.xta.analysis.XtaState;
 
 public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaState<S>, XtaAction, UnitPrec> {
-	private final XtaLts lts;
+	private final LTS<XtaState<?>, XtaAction> lts;
 	private final LazyXtaStrategy<S> algorithmStrategy;
 	private final SearchStrategy searchStrategy;
 
 	private LazyXtaChecker(final XtaSystem system, final LazyXtaStrategy<S> algorithmStrategy,
-			final SearchStrategy searchStrategy) {
+			final SearchStrategy searchStrategy, final Set<List<Loc>> trgStates) {
 		checkNotNull(system);
-		lts = XtaLts.create(system);
+		checkNotNull(trgStates);
+		
+		if (algorithmStrategy.isForward()) {
+			lts = XtaLts.create(system);
+		} else {
+			lts = BackwardXtaLts.create(system);
+			algorithmStrategy.setTargetStates(trgStates);
+		}
+		
 		this.algorithmStrategy = checkNotNull(algorithmStrategy);
 		this.searchStrategy = checkNotNull(searchStrategy);
 	}
 
 	public static <S extends State> LazyXtaChecker<S> create(final XtaSystem system,
-			final LazyXtaStrategy<S> algorithmStrategy, final SearchStrategy searchStrategy) {
-		return new LazyXtaChecker<>(system, algorithmStrategy, searchStrategy);
+			final LazyXtaStrategy<S> algorithmStrategy, final SearchStrategy searchStrategy,
+			final Set<List<Loc>> trgStates) {
+		return new LazyXtaChecker<>(system, algorithmStrategy, searchStrategy,trgStates);
 	}
 
 	@Override

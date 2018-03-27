@@ -27,6 +27,7 @@ import hu.bme.mit.theta.xta.analysis.lazy.LuStrategy;
 import hu.bme.mit.theta.xta.analysis.lazy.SeqItpStrategy;
 import hu.bme.mit.theta.xta.dsl.XtaDslManager;
 import hu.bme.mit.theta.xta.tool.XtaCheckerBuilder;
+import hu.bme.mit.theta.xta.tool.XtaExample;
 import hu.bme.mit.theta.xta.tool.XtaCheckerBuilder.Algorithm;
 
 public final class XtaMain {
@@ -183,7 +184,7 @@ public final class XtaMain {
 		try {
 			XtaSystem xta = loadModel();
 			XtaExample ex=XtaExample.getExampleBySource(model);
-			final SafetyChecker<?, ?, UnitPrec> checker = XtaCheckerBuilder.build(algorithm, searchStrategy, xta); //buildChecker(xta,ex);
+			final SafetyChecker<?, ?, UnitPrec> checker = XtaCheckerBuilder.build(algorithm, searchStrategy, xta, ex.getErrorLocs(xta)); //buildChecker(xta,ex);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
 			printResult(result, 0);
 			/*for (List<Loc> l:ex.getErrorLocs(xta)) {

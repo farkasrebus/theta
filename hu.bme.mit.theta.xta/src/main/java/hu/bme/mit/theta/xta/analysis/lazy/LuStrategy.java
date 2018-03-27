@@ -21,6 +21,8 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import hu.bme.mit.theta.analysis.Analysis;
 import hu.bme.mit.theta.analysis.algorithm.ArgEdge;
@@ -37,6 +39,7 @@ import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.common.Tuple2;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.type.rattype.RatType;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaSystem;
 import hu.bme.mit.theta.xta.analysis.XtaAction;
 import hu.bme.mit.theta.xta.analysis.XtaAnalysis;
@@ -193,6 +196,12 @@ public final class LuStrategy implements LazyXtaStrategy<Prod2State<ExplState, L
 	public boolean containsInitState(XtaState<Prod2State<ExplState, LuZoneState>> state,
 			Collection<VarDecl<RatType>> clocks) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setTargetStates(Set<List<Loc>> target) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

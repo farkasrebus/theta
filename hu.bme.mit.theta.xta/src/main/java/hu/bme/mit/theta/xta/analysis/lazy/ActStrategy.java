@@ -19,16 +19,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 import hu.bme.mit.theta.analysis.Analysis;
+import hu.bme.mit.theta.analysis.Prec;
 import hu.bme.mit.theta.analysis.algorithm.ArgEdge;
 import hu.bme.mit.theta.analysis.algorithm.ArgNode;
 import hu.bme.mit.theta.analysis.expl.ExplState;
 import hu.bme.mit.theta.analysis.impl.PrecMappingAnalysis;
+import hu.bme.mit.theta.analysis.prod2.Prod2Analysis;
+import hu.bme.mit.theta.analysis.prod2.Prod2Prec;
 import hu.bme.mit.theta.analysis.prod2.Prod2State;
 import hu.bme.mit.theta.analysis.reachedset.Partition;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
@@ -36,6 +40,7 @@ import hu.bme.mit.theta.analysis.zone.ZonePrec;
 import hu.bme.mit.theta.analysis.zone.ZoneState;
 import hu.bme.mit.theta.analysis.zone.act.ActZoneAnalysis;
 import hu.bme.mit.theta.analysis.zone.act.ActZoneState;
+import hu.bme.mit.theta.common.Tuple2;
 import hu.bme.mit.theta.core.decl.Decl;
 import hu.bme.mit.theta.core.decl.VarDecl;
 import hu.bme.mit.theta.core.type.booltype.BoolLitExpr;
@@ -43,8 +48,10 @@ import hu.bme.mit.theta.core.type.booltype.BoolType;
 import hu.bme.mit.theta.core.type.inttype.IntLitExpr;
 import hu.bme.mit.theta.core.type.inttype.IntType;
 import hu.bme.mit.theta.core.type.rattype.RatType;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaSystem;
 import hu.bme.mit.theta.xta.analysis.XtaAction;
+import hu.bme.mit.theta.xta.analysis.XtaAnalysis;
 import hu.bme.mit.theta.xta.analysis.XtaState;
 import hu.bme.mit.theta.xta.analysis.expl.XtaExplAnalysis;
 import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaStatistics.Builder;
@@ -55,12 +62,16 @@ public final class ActStrategy implements LazyXtaStrategy<Prod2State<ExplState,A
 
 	private final Analysis<ActZoneState,XtaAction,UnitPrec> timeAnalysis;
 	private final Analysis<ExplState, XtaAction, UnitPrec> dataAnalysis;
+	private final Analysis<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction, UnitPrec> analysis;
 
 	private ActStrategy(final XtaSystem system) {
 		checkNotNull(system);
-		final ZonePrec prec = ZonePrec.of(system.getClockVars());
-		timeAnalysis = PrecMappingAnalysis.create(ActZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> prec);
+		final ZonePrec zprec = ZonePrec.of(system.getClockVars());
+		timeAnalysis = PrecMappingAnalysis.create(ActZoneAnalysis.create(XtaZoneAnalysis.getInstance()), u -> zprec);
 		dataAnalysis =XtaExplAnalysis.create(system);
+		final Prod2Prec<UnitPrec, UnitPrec> prec = Prod2Prec.of(UnitPrec.getInstance(), UnitPrec.getInstance());
+		PrecMappingAnalysis<Prod2State<ExplState, ActZoneState>, XtaAction, Prec, Prod2Prec<UnitPrec, UnitPrec>> prodanalysis=PrecMappingAnalysis.create(Prod2Analysis.create(dataAnalysis, timeAnalysis), u -> prec);
+		analysis=XtaAnalysis.create(system, prodanalysis);
 	}
 
 	public static ActStrategy create(final XtaSystem system) {
@@ -77,23 +88,13 @@ public final class ActStrategy implements LazyXtaStrategy<Prod2State<ExplState,A
 		return dataAnalysis;
 	}*/
 
-	/*@Override
-	public boolean covers(final ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction> nodeToCover,
-			final ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction> coveringNode) {
-		return nodeToCover.getState().getState().getState2().isLeq(coveringNode.getState().getState().getState2());
-	}*/
-
 	@Override
 	public boolean mightCover(final ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction> nodeToCover,
 			final ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction> coveringNode) {
-		return nodeToCover.getState().getState().getState2().getZone().isLeq(coveringNode.getState().getState().getState2().getZone(),
-				coveringNode.getState().getState().getState2().getActiveVars());
+		//return nodeToCover.getState().getState().getState2().getZone().isLeq(coveringNode.getState().getState().getState2().getZone(),
+				//coveringNode.getState().getState().getState2().getActiveVars());
+		return nodeToCover.getState().getState().getState2().isLeq(coveringNode.getState().getState().getState2());
 	}
-
-	/*@Override
-	public boolean shouldRefine(final ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction> node) {
-		return node.getState().getState().getState2().getZone().isBottom();
-	}*/
 
 	@Override
 	public Collection<ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction>> forceCover(
@@ -188,22 +189,27 @@ public final class ActStrategy implements LazyXtaStrategy<Prod2State<ExplState,A
 
 	@Override
 	public Analysis<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction, UnitPrec> getAnalysis() {
-		// TODO Auto-generated method stub
-		return null;
+		return analysis;
 	}
 
 	@Override
 	public Partition<ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction>, ?> createReachedSet() {
-		// TODO Auto-generated method stub
-		return null;
+		final Partition<ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction>, ?> partition = Partition
+				.of(n -> Tuple2.of(n.getState().getLocs(), n.getState().getState().getState1()));
+		return partition;
 	}
 
 	@Override
 	public Collection<ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction>> block(
 			ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction> node, XtaAction action,
 			XtaState<Prod2State<ExplState, ActZoneState>> succState, Builder stats) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public void setTargetStates(Set<List<Loc>> target) {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 }

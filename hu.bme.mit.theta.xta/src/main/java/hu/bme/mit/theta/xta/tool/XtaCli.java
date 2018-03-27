@@ -89,7 +89,8 @@ public final class XtaCli {
 
 		try {
 			final XtaSystem xta = loadModel();
-			final SafetyChecker<?, ?, UnitPrec> checker = XtaCheckerBuilder.build(algorithm, searchStrategy, xta);
+			final XtaExample ex=XtaExample.getExampleBySource(model);
+			final SafetyChecker<?, ?, UnitPrec> checker = XtaCheckerBuilder.build(algorithm, searchStrategy, xta,ex.getErrorLocs(xta));
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
 			printResult(result);
 			if (dotfile != null) {

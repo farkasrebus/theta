@@ -70,7 +70,6 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<ExprState, Xta
 		checkNotNull(state);
 		checkNotNull(action);
 		checkNotNull(prec);
-		
 		if (action.isBasicBackward()) {
 			return getSuccStatesForBasicAction(state, action.asBasicBackward());
 		} else if (action.isSyncedBackward()) {

@@ -7,8 +7,8 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import org.junit.runners.Parameterized;
 
-import hu.bme.mit.theta.tools.xta.XtaExample;
 import hu.bme.mit.theta.tools.xta.XtaMain;
+import hu.bme.mit.theta.xta.tool.XtaExample;
 import hu.bme.mit.theta.xta.tool.XtaCheckerBuilder.Algorithm;
 
 @RunWith(Parameterized.class)
@@ -16,9 +16,9 @@ public class XtaModelCheckerTests {
 	
 	@Parameters
 	  public static XtaExample[] data() {
-	    //return XtaExample.values();
-		XtaExample[] result={XtaExample.CSMA};
-		return result;
+	    return XtaExample.values();
+		//XtaExample[] result={XtaExample.CSMA};
+		//return result;
 	  }
 	
 	@Parameter
@@ -117,7 +117,7 @@ public class XtaModelCheckerTests {
 			e.printStackTrace();
 		}*/
 		//for (int i=1;i<=1;i++) {
-			String[] args={"-a","BW","-m",input.getFileLocation(2),"-s","BFS"};
+			String[] args={"-a","BACKWARD","-m",input.getFileLocation(2),"-s","BFS"};
 			XtaMain.main(args);
 		//}
 		

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import org.junit.Before;
@@ -86,7 +87,7 @@ public final class LazyXtaCheckerTest {
 	public void testBinItpStrategy() {
 		// Arrange
 		final LazyXtaChecker<?> checker = LazyXtaChecker.create(system, BinItpStrategy.create(system),
-				SearchStrategy.BFS);
+				SearchStrategy.BFS,Collections.emptySet());
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());
@@ -100,7 +101,7 @@ public final class LazyXtaCheckerTest {
 	public void testSeqItpStrategy() {
 		// Arrange
 		final LazyXtaChecker<?> checker = LazyXtaChecker.create(system, SeqItpStrategy.create(system),
-				SearchStrategy.BFS);
+				SearchStrategy.BFS,Collections.emptySet());
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());
@@ -113,7 +114,7 @@ public final class LazyXtaCheckerTest {
 	@Test
 	public void testLuStrategy() {
 		// Arrange
-		final LazyXtaChecker<?> checker = LazyXtaChecker.create(system, LuStrategy.create(system), SearchStrategy.BFS);
+		final LazyXtaChecker<?> checker = LazyXtaChecker.create(system, LuStrategy.create(system), SearchStrategy.BFS,Collections.emptySet());
 
 		// Act
 		final SafetyResult<?, XtaAction> status = checker.check(UnitPrec.getInstance());
