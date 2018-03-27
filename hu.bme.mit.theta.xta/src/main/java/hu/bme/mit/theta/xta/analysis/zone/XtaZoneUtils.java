@@ -132,16 +132,17 @@ public final class XtaZoneUtils {
 		final Edge receivingEdge = action.getRecvEdge();
 		final List<Loc> targetLocs = action.getTargetLocs();
 
-		if (shouldApplyDelay(action.getTargetLocs())) {
-			applyInverseDelay(preStateBuilder);
-		}
 		applyInvariants(preStateBuilder, targetLocs);
 		applyInverseUpdates(preStateBuilder, receivingEdge);
 		applyInverseUpdates(preStateBuilder, emittingEdge);
 		applyGuards(preStateBuilder, receivingEdge);
 		applyGuards(preStateBuilder, emittingEdge);
 		applyInvariants(preStateBuilder, sourceLocs);
-
+		
+		if (shouldApplyDelay(action.getSourceLocs())) {
+			applyInverseDelay(preStateBuilder);
+		}
+		
 		final ZoneState succState = preStateBuilder.build();
 		return succState;
 	}
@@ -154,14 +155,15 @@ public final class XtaZoneUtils {
 		final Edge edge = action.getEdge();
 		final List<Loc> targetLocs = action.getTargetLocs();
 
-		if (shouldApplyDelay(action.getTargetLocs())) {
-			applyInverseDelay(preStateBuilder);
-		}
 		applyInvariants(preStateBuilder, targetLocs);
 		applyInverseUpdates(preStateBuilder, edge);
 		applyGuards(preStateBuilder, edge);
 		applyInvariants(preStateBuilder, sourceLocs);
-
+		
+		if (shouldApplyDelay(action.getSourceLocs())) {
+			applyInverseDelay(preStateBuilder);
+		}
+		
 		final ZoneState preState = preStateBuilder.build();
 		return preState;
 	}
@@ -174,13 +176,15 @@ public final class XtaZoneUtils {
 		final Edge edge = action.getEdge();
 		final List<Loc> targetLocs = action.getTargetLocs();
 
-		if (shouldApplyDelay(action.getTargetLocs())) {
-			applyInverseDelay(preStateBuilder);
-		}
 		applyInvariants(preStateBuilder, targetLocs);
 		applyInverseUpdates(preStateBuilder, edge);
 		applyGuards(preStateBuilder, edge);
 		applyInvariants(preStateBuilder, sourceLocs);
+		
+		if (shouldApplyDelay(action.getSourceLocs())) {
+			applyInverseDelay(preStateBuilder);
+		}
+		//applyInvariants(preStateBuilder, sourceLocs);
 
 		final ZoneState preState = preStateBuilder.build();
 		return preState;
@@ -195,15 +199,19 @@ public final class XtaZoneUtils {
 		final Edge receivingEdge = action.getRecvEdge();
 		final List<Loc> targetLocs = action.getTargetLocs();
 
-		if (shouldApplyDelay(action.getTargetLocs())) {
+		/*if (shouldApplyDelay(action.getTargetLocs())) {
 			applyInverseDelay(preStateBuilder);
-		}
+		}*/
 		applyInvariants(preStateBuilder, targetLocs);
 		applyInverseUpdates(preStateBuilder, receivingEdge);
 		applyInverseUpdates(preStateBuilder, emittingEdge);
 		applyGuards(preStateBuilder, receivingEdge);
 		applyGuards(preStateBuilder, emittingEdge);
 		applyInvariants(preStateBuilder, sourceLocs);
+		
+		if (shouldApplyDelay(action.getSourceLocs())) {
+			applyInverseDelay(preStateBuilder);
+		}
 
 		final ZoneState succState = preStateBuilder.build();
 		return succState;

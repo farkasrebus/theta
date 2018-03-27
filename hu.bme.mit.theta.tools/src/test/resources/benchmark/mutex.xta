@@ -2,19 +2,19 @@ clock S1_z;
 clock S2_z;
 clock Ctrl_z;
 clock Ctrl_y0;
-int[0,2] S1_IntStat := 0;
-int[0,2] S2_IntStat := 0;
-int[0,4] Ctrl_IntStat := 0;
-int[0,1] Ctrl_grant1 := 0;
-int[0,1] polled_S1_grant := 0;
-int[0,1] Ctrl_grant2 := 0;
-int[0,1] polled_S2_grant := 0;
-int[0,1] S1_Safe := 0;
-int[0,1] polled_Ctrl_Safe1 := 0;
-int[0,1] S2_Safe := 0;
-int[0,1] polled_Ctrl_Safe2 := 0;
+int S1_IntStat;         
+int S2_IntStat;         
+int Ctrl_IntStat;       
+int Ctrl_grant1;        
+int polled_S1_grant;    
+int Ctrl_grant2;        
+int polled_S2_grant;    
+int S1_Safe;            
+int polled_Ctrl_Safe1;  
+int S2_Safe;            
+int polled_Ctrl_Safe2;  
 
-process S1 {
+process S1 (){
 
     state start_S1{S1_z <= 0}, I_am_safe{S1_z <= 1000}, I_am_unsafe{S1_z <= 1000};
     init start_S1;
@@ -31,7 +31,7 @@ process S1 {
     I_am_unsafe -> I_am_unsafe { guard S1_IntStat == 1 && S1_Safe == 0; assign S1_IntStat := 0, S1_z := 0; };
 }
 
-process S2 {
+process S2() {
 
     state start_S2{S2_z <= 0}, I_am_safe{S2_z <= 1001}, I_am_unsafe{S2_z <= 1001};
     init start_S2;
@@ -48,7 +48,7 @@ process S2 {
     I_am_unsafe -> I_am_unsafe { guard S2_IntStat == 1 && S2_Safe == 0; assign S2_IntStat := 0, S2_z := 0; };
 }
 
-process Ctrl {
+process Ctrl() {
 
     state start_Ctrl{Ctrl_z <= 0}, wait_for_s2{Ctrl_z <= 1000}, g1{Ctrl_z <= 1000}, wait_for_s1{Ctrl_z <= 1000}, g2{Ctrl_z <= 1000};
     init start_Ctrl;

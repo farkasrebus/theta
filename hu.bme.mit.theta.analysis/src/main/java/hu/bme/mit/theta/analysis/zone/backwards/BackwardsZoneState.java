@@ -51,6 +51,8 @@ public class BackwardsZoneState implements ExprState{
 
 	public boolean isLeq(BackwardsZoneState that) {
 		//return this.activeVars.equals(that.activeVars) && this.zone.isLeq(that.zone);
+		//return this.activeVars.containsAll(that.activeVars) && this.zone.isLeq(that.zone);
+
 		return this.activeVars.containsAll(that.activeVars) && this.zone.isLeq(that.zone);
 	}
 	
