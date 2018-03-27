@@ -107,7 +107,7 @@ public class XtaModelCheckerTests {
 		}*/
 	}
 	
-	//@Ignore("Works fine")
+	@Ignore("Doesn't terminate")
 	@Test
 	public void analyze_run() {
 		/*try {
