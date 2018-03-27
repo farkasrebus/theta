@@ -210,8 +210,67 @@ public enum XtaExample {
 			}
 			result.addAll(variations);
 			return result;
-		}//,
-		//EXSITH()
+		}
+	},
+	EXSITH("",1) {
+
+		@Override
+		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
+			HashSet<List<Loc>> result = new HashSet<>();
+			XtaProcess p=xta.getProcesses().get(0);
+			for (Loc l: p.getLocs()) {
+				if (l.getName().contains("qBad")) {
+					List<Loc> loclist=new ArrayList<>();
+					loclist.add(l);
+					result.add(loclist);
+				}
+			}
+			return result;
+		}
+		
+	},
+	MALER("",1) {
+
+		@Override
+		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
+			HashSet<List<Loc>> result = new HashSet<>();
+			List<Loc> endloc=new ArrayList<>();
+			for (XtaProcess p:xta.getProcesses()) {
+				for (Loc l:p.getLocs()) {
+					if (l.getName().contains("End")) endloc.add(l);
+				}
+			}
+			result.add(endloc);
+			return result;
+		}
+		
+	},
+	MUTEX("",1) {
+		@Override
+		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
+			HashSet<List<Loc>> result = new HashSet<>();
+			List<Loc> unsafe=new ArrayList<>();
+			XtaProcess ctrl=null;
+			
+			for (XtaProcess p:xta.getProcesses()) {
+				if (p.getName().contains("Ctrl")) {
+					ctrl=p;
+				} else {
+					for (Loc l:p.getLocs()) {
+						if (l.getName().contains("unsafe")) {
+							unsafe.add(l);
+						}
+					}
+				}
+			}
+			
+			for (Loc l: ctrl.getLocs()) {
+				List<Loc> loclist=new ArrayList<>(unsafe);
+				loclist.add(l);
+				result.add(loclist);
+			}
+			return result;
+		}
 	};
 	
 	private final String params;
@@ -229,12 +288,14 @@ public enum XtaExample {
 	
 	public String getFileLocation(int threads) {
 		return "src/test/resources/benchmark/"+this.toString().toLowerCase()+"-"+threads+this.params+".xta";
+		//return "src/test/resources/benchmark/"+this.toString().toLowerCase()+".xta";
 	}
 
 	public static XtaExample getExampleBySource(String model) {
 		String[] split1=model.split("/");
 		String[] split2=split1[split1.length-1].split("-");
 		String name=split2[0];
+		//String name=split1[split1.length-1].substring(0, split1[split1.length-1].length()-4);
 		return XtaExample.valueOf(name.toUpperCase());
 	}
 

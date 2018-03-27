@@ -170,12 +170,14 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 		}
 
 		private Optional<ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction>> searchForUnsafeNode() {
+			Function<XtaState<Prod2State<VS,CS>>,String> fs=s -> s.getStateLabel();
+			Function<XtaAction,String> as=a->a.getLabel();
 
 			statistics.startAlgorithm();
 			
 			while (!waitlist.isEmpty()) {
 				final ArgNode<XtaState<Prod2State<VS, CS>>, XtaAction> v = waitlist.remove();
-				//System.out.println("Node "+v.getId()+": "+v.getState());//TODO
+				System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				//System.out.println("Node: "+v.getState().getLocs().get(0).getName());//TODO
 				assert v.isLeaf();
 				
@@ -205,12 +207,12 @@ public final class LazyXtaChecker<VS extends State,CS extends State>
 				}
 				//System.out.println("Handled, waitlist size: "+waitlist.size());//TODO
 				//System.out.println("waitlist: "+waitlist);//TODO
+				ArgVisualizer<XtaState<Prod2State<VS,CS>>,XtaAction> viz = ArgVisualizer.create(fs, as);
+				System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));
 			}
 			statistics.stopAlgorithm();
-			/*Function<XtaState<Prod2State<VS,CS>>,String> fs=s -> s.getStateLabel();
-			Function<XtaAction,String> as=a->a.getLabel();
-			ArgVisualizer<XtaState<Prod2State<VS,CS>>,XtaAction> viz = ArgVisualizer.create(fs, as);
-			System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));*/
+			
+			
 			//System.out.println("Algorithm ends");//TODO
 			return Optional.empty();
 		}

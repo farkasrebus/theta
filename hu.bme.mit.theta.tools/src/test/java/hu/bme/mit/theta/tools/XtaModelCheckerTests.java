@@ -16,7 +16,7 @@ public class XtaModelCheckerTests {
 	@Parameters
 	  public static XtaExample[] data() {
 	    //return XtaExample.values();
-		XtaExample[] result={XtaExample.CSMA};
+		XtaExample[] result={XtaExample.CRITICAL};
 		return result;
 	  }
 	
