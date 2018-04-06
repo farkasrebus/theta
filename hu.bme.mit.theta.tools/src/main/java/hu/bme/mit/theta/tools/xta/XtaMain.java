@@ -109,9 +109,15 @@ public final class XtaMain {
 		try {
 			XtaSystem xta = loadModel();
 			XtaExample ex=XtaExample.getExampleBySource(model);
+			for (int i=0; i<5; i++) {
+			System.gc();
+			System.gc();
+			System.gc();
+			Thread.sleep(5000);
 			final SafetyChecker<?, ?, UnitPrec> checker = XtaCheckerBuilder.build(algorithm, searchStrategy, xta, ex.getErrorLocs(xta)); //buildChecker(xta,ex);
 			final SafetyResult<?, ?> result = checker.check(UnitPrec.getInstance());
 			printResult(result, 0);
+			}
 			/*for (List<Loc> l:ex.getErrorLocs(xta)) {
 				for (Loc loc:l) {
 					System.out.print(loc.getName()+",");

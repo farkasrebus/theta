@@ -16,9 +16,9 @@ public class XtaModelCheckerTests {
 	
 	@Parameters
 	  public static XtaExample[] data() {
-	    //return XtaExample.values();
-		XtaExample[] result={XtaExample.FISCHER};
-		return result;
+	    return XtaExample.values();
+		//XtaExample[] result={XtaExample.CSMA};
+		//return result;
 	  }
 	
 	@Parameter
@@ -116,10 +116,11 @@ public class XtaModelCheckerTests {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		//for (int i=1;i<=1;i++) {
-			String[] args={"-a","BACKWARD","-m",input.getFileLocation(2),"-s","BFS"};
+		System.out.println(input);
+		for (int i=2;i<=input.getMaxThreads();i++) {
+			String[] args={"-a","BACKWARD","-m",input.getFileLocation(i),"-s","BFS"};
 			XtaMain.main(args);
-		//}
+		}
 		
 	}
 

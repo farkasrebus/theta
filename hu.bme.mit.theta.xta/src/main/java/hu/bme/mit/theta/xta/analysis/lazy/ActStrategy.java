@@ -90,7 +90,7 @@ public final class ActStrategy implements LazyXtaStrategy<Prod2State<ExplState,A
 
 	@Override
 	public boolean mightCover(final ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction> nodeToCover,
-			final ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction> coveringNode) {
+			final ArgNode<XtaState<Prod2State<ExplState, ActZoneState>>, XtaAction> coveringNode, final LazyXtaStatistics.Builder stats) {
 		//return nodeToCover.getState().getState().getState2().getZone().isLeq(coveringNode.getState().getState().getState2().getZone(),
 				//coveringNode.getState().getState().getState2().getActiveVars());
 		return nodeToCover.getState().getState().getState2().isLeq(coveringNode.getState().getState().getState2());
@@ -130,7 +130,7 @@ public final class ActStrategy implements LazyXtaStrategy<Prod2State<ExplState,A
 		final Set<VarDecl<RatType>> oldActiveVars = node.getState().getState().getState2().getActiveVars();
 
 		if (forcePropagate || !oldActiveVars.containsAll(activeVars)) {
-			statistics.refineZone();
+			//statistics.refineZone();
 
 			strengthen(node, activeVars);
 			maintainCoverage(node, uncoveredNodes);

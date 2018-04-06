@@ -14,7 +14,7 @@ import hu.bme.mit.theta.xta.XtaSystem;
 
 public enum XtaExample {
 	CRITICAL ("-25-50",4) {
-		@Override
+		/*@Override
 		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
 			int threads=xta.getProcesses().size();
 			HashSet<List<Loc>> result = new HashSet<>();
@@ -58,11 +58,43 @@ public enum XtaExample {
 				}
 			}
 			return result;
+		}*/
+		@Override
+		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
+			int threads=xta.getProcesses().size();
+			HashSet<List<Loc>> result = new HashSet<>();
+			if (threads<3) 
+				return result;
+			List<Loc> conf=new ArrayList<>();
 			
+			for (XtaProcess p: xta.getProcesses()) {
+				String pname=p.getName();
+				if (pname.contains("Counter")) {
+					for (Loc l: p.getLocs()) {
+						if (l.getName().contains("initCount"))
+							conf.add(l);
+					}
+				} else if (pname.contains("ProdCell")) {
+					for (Loc l: p.getLocs()) {
+						if (l.getName().contains("error"))
+							conf.add(l);
+					}
+				} else if (pname.contains("Arbiter")) {
+					for (Loc l: p.getLocs()) {
+						if (l.getName().contains("S0"))
+							conf.add(l);
+					}
+				}
+			}
+			
+			//System.out.println("Error locs: "+conf);
+			
+			result.add(conf);
+			return result;
 		}
 	},
 	CSMA("",9) {
-		@Override
+		/*@Override
 		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
 			int threads=xta.getProcesses().size();
 			HashSet<List<Loc>> result = new HashSet<>();
@@ -104,9 +136,34 @@ public enum XtaExample {
 			//System.out.println(result);
 			
 			return result;
+		}*/
+		@Override
+		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
+			int threads=xta.getProcesses().size();
+			HashSet<List<Loc>> result = new HashSet<>();
+			if (threads<3) 
+				return result;
+			List<Loc> conf=new ArrayList<>();
+			
+			for (XtaProcess p: xta.getProcesses()) {
+				if (p.getName().contains("Bus")) {
+					for (Loc l: p.getLocs()) {
+						if (l.getName().contains("collision"))
+							conf.add(l);
+					}
+				} else {
+					for (Loc l: p.getLocs()) {
+						if (l.getName().contains("error"))
+							conf.add(l);
+					}
+				}
+			}
+			//System.out.println("Error locs: "+conf);
+			result.add(conf);
+			return result;
 		}
 	},
-	FDDI("",4) {
+	/*FDDI("",4) {
 		@Override
 		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
 			int threads=xta.getProcesses().size();
@@ -151,9 +208,9 @@ public enum XtaExample {
 			}
 			return result;
 		}
-	},
+	},*/
 	FISCHER("-32-64",8) {
-		@Override
+		/*@Override
 		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
 			int threads=xta.getProcesses().size();
 			HashSet<List<Loc>> result = new HashSet<>();
@@ -177,10 +234,28 @@ public enum XtaExample {
 			}
 			result.addAll(variations);
 			return result;
+		}*/
+		@Override
+		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
+			int threads=xta.getProcesses().size();
+			HashSet<List<Loc>> result = new HashSet<>();
+			if (threads<2) 
+				return result;
+			List<Loc> conf=new ArrayList<>();
+			
+			for (XtaProcess p: xta.getProcesses()) {
+				for (Loc l: p.getLocs()) {
+					if (l.getName().contains("cs"))
+						conf.add(l);
+				}
+			}
+			//System.out.println("Error locs: "+conf);
+			result.add(conf);
+			return result;
 		}
 	},
 	LYNCH("-16",4) {
-		@Override
+		/*@Override
 		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
 			int threads=xta.getProcesses().size();
 			HashSet<List<Loc>> result = new HashSet<>();
@@ -210,9 +285,27 @@ public enum XtaExample {
 			}
 			result.addAll(variations);
 			return result;
+		}*/
+		@Override
+		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
+			int threads=xta.getProcesses().size();
+			HashSet<List<Loc>> result = new HashSet<>();
+			if (threads<2) 
+				return result;
+			List<Loc> conf=new ArrayList<>();
+			
+			for (XtaProcess p: xta.getProcesses()) {
+				for (Loc l: p.getLocs()) {
+					if (l.getName().contains("CS7"))
+						conf.add(l);
+				}
+			}
+			//System.out.println("Error locs: "+conf);
+			result.add(conf);
+			return result;
 		}
 	},
-	EXSITH("",1) {
+	/*EXSITH("",1) {
 
 		@Override
 		public Set<List<Loc>> getErrorLocs(XtaSystem xta) {
@@ -228,6 +321,11 @@ public enum XtaExample {
 			return result;
 		}
 		
+		@Override
+		public String getFileLocation(int threads) {
+			return "src/test/resources/benchmark/"+this.toString().toLowerCase()+".xta";
+		}
+
 	},
 	MALER("",1) {
 
@@ -243,7 +341,10 @@ public enum XtaExample {
 			result.add(endloc);
 			return result;
 		}
-		
+		@Override
+		public String getFileLocation(int threads) {
+			return "src/test/resources/benchmark/"+this.toString().toLowerCase()+".xta";
+		}
 	},
 	MUTEX("",1) {
 		@Override
@@ -271,7 +372,11 @@ public enum XtaExample {
 			}
 			return result;
 		}
-	};
+		@Override
+		public String getFileLocation(int threads) {
+			return "src/test/resources/benchmark/"+this.toString().toLowerCase()+".xta";
+		}
+	}*/;
 	
 	private final String params;
 	

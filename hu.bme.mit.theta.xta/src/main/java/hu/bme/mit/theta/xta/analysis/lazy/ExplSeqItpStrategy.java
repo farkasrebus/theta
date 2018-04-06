@@ -30,6 +30,7 @@ import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaSystem;
 import hu.bme.mit.theta.xta.analysis.XtaAction;
 import hu.bme.mit.theta.xta.analysis.XtaState;
+import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaStatistics.Builder;
 import hu.bme.mit.theta.xta.analysis.zone.itp.ItpZoneState;
 
 public final class ExplSeqItpStrategy extends ExplItpStrategy {

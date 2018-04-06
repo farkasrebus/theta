@@ -80,7 +80,7 @@ public final class LuStrategy implements LazyXtaStrategy<Prod2State<ExplState, L
 
 	@Override
 	public boolean mightCover(final ArgNode<XtaState<Prod2State<ExplState, LuZoneState>>, XtaAction> coveree,
-			final ArgNode<XtaState<Prod2State<ExplState, LuZoneState>>, XtaAction> coverer) {
+			final ArgNode<XtaState<Prod2State<ExplState, LuZoneState>>, XtaAction> coverer, final LazyXtaStatistics.Builder stats) {
 		return coveree.getState().getState().getState2().getZone().isLeq(
 				coverer.getState().getState().getState2().getZone(),
 				coverer.getState().getState().getState2().getBoundFunc());

@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.activation.UnsupportedDataTypeException;
+//import javax.activation.UnsupportedDataTypeException;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -92,11 +92,11 @@ public class XtaPreProcessor {
 		}
 	}
 	
-	public static XtaSystem unfoldDiagonalConstraints(XtaSystem system) throws UnsupportedDataTypeException {
+	/*public static XtaSystem unfoldDiagonalConstraints(XtaSystem system) throws UnsupportedDataTypeException {
 		List<XtaProcess> processes=new ArrayList<>();
 		for (XtaProcess proc:system.getProcesses()) processes.add(unfoldDiagonalConstraints(proc));
 		return XtaSystem.of(processes);
-	}
+	}*/
 	
 	public static class DiagCollectorClockConstrVisitor implements ClockConstrVisitor<Edge,Boolean> {
 		Map<DiffConstr,List<Edge>> containingEdges;
@@ -191,7 +191,7 @@ public class XtaPreProcessor {
 		
 	}
 	
-	public static XtaProcess unfoldDiagonalConstraints(XtaProcess sys) throws UnsupportedDataTypeException {
+	/*public static XtaProcess unfoldDiagonalConstraints(XtaProcess sys) throws UnsupportedDataTypeException {
 		XtaProcess result=sys;
 		//TODO: feltesszük hogy óra csak 0-ra resetelõdik, és mást nem csinál!!!!!
 		//TODO: nem tudom mitörténik, ha egy constraint különbözõ boundokkal szerepel
@@ -354,7 +354,7 @@ public class XtaPreProcessor {
 			}
 		}
 		return result;
-	}
+	}*/
 
 	public static UnfoldedXtaSystem getFlatSystem(XtaSystem sys, String name) {
 		BiMap<Loc,Map<XtaProcess, Loc>> locMap=HashBiMap.create();
@@ -592,7 +592,7 @@ public class XtaPreProcessor {
 		return result;
 	}
 	
-	public static XtaSystem unfoldDataSmart(XtaSystem sys, XtaExample input){
+	/*public static XtaSystem unfoldDataSmart(XtaSystem sys, XtaExample input){
 		if (input.equals(XtaExample.CSMA)) {
 			XtaProcess bus=sys.getProcesses().get(0);
 			for (XtaProcess proc:sys.getProcesses()) {
@@ -605,7 +605,7 @@ public class XtaPreProcessor {
 			return XtaSystem.of(procs);
 		}
 		return null;
-	}
+	}*/
 
 	/*private static XtaProcess unfoldLocalData(XtaProcess proc) {
 		MutableValuation initVal=new MutableValuation();

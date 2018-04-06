@@ -36,7 +36,7 @@ public interface LazyXtaStrategy<S extends State> {
 
 	public Partition<ArgNode<XtaState<S>, XtaAction>, ?> createReachedSet();
 
-	public boolean mightCover(ArgNode<XtaState<S>, XtaAction> coveree, ArgNode<XtaState<S>, XtaAction> coverer);
+	public boolean mightCover(ArgNode<XtaState<S>, XtaAction> coveree, ArgNode<XtaState<S>, XtaAction> coverer, final LazyXtaStatistics.Builder stats);
 
 	public Collection<ArgNode<XtaState<S>, XtaAction>> forceCover(final ArgNode<XtaState<S>, XtaAction> coveree,
 			ArgNode<XtaState<S>, XtaAction> coverer, final LazyXtaStatistics.Builder stats);

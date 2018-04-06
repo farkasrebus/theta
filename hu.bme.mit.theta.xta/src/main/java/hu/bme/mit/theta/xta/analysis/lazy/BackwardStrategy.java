@@ -115,14 +115,18 @@ public class BackwardStrategy implements LazyXtaStrategy<Prod2State<ExprState,Ba
 
 	@Override
 	public boolean mightCover(ArgNode<XtaState<Prod2State<ExprState, BackwardsZoneState>>, XtaAction> nodeToCover,
-			ArgNode<XtaState<Prod2State<ExprState, BackwardsZoneState>>, XtaAction> coveringNode) {
+			ArgNode<XtaState<Prod2State<ExprState, BackwardsZoneState>>, XtaAction> coveringNode, final LazyXtaStatistics.Builder stats) {
 		ExprState predToCover = nodeToCover.getState().getState().getState1();
 		BackwardsZoneState zoneToCover = nodeToCover.getState().getState().getState2();
 		ExprState coveringPred=coveringNode.getState().getState().getState1();
 		BackwardsZoneState coveringZone=coveringNode.getState().getState().getState2();
+		stats.startZoneOperation();
 		boolean zoneleq=zoneToCover.isLeq(coveringZone);
+		stats.stopZoneOperation();
 		//if (zoneleq) System.out.println("Zoneleq");
+		stats.startPredOperation();
 		boolean predleq=isPredLeq(predToCover,coveringPred);
+		stats.stopPredOperation();
 		//if (predleq) System.out.println("Predleq");
 		return zoneleq && predleq;
 	}

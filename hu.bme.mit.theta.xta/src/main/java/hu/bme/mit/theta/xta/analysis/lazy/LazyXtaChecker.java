@@ -92,21 +92,21 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 
 			init();
 			waiting.addAll(arg.getInitNodes());
-			System.out.println("Init nodes: "+waiting);//TODO
+			//System.out.println("Init nodes: "+waiting);//TODO
 			while (!waiting.isEmpty()) {
 				final ArgNode<XtaState<S>, XtaAction> v = waiting.remove();
-				System.out.println("Node "+v.getId()+": "+v.getState());//TODO
+				//System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				assert v.isFeasible();
-				System.out.println("Node feasible");//TODO
+				//System.out.println("Node feasible");//TODO
 				if (v.isTarget()) return SafetyResult.unsafe(ArgTrace.to(v).toTrace(), arg);
 				close(v);
-				System.out.println("Node closed");//TODO
+				//System.out.println("Node closed");//TODO
 				if (!v.isCovered()) {
-					System.out.println("Node not covered");//TODO
+					//System.out.println("Node not covered");//TODO
 					expand(v);
-				} else {//TODO
+				} /*else {//TODO
 					System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
-				}//TODO
+				}//TODO*/
 			}
 
 			stats.stopAlgorithm();
@@ -122,14 +122,14 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 		}
 
 		private void close(final ArgNode<XtaState<S>, XtaAction> coveree) {
-			stats.startClosing();
+			//stats.startClosing();
 
 			final Iterable<ArgNode<XtaState<S>, XtaAction>> candidates = Lists.reverse(passed.get(coveree));
 			for (final ArgNode<XtaState<S>, XtaAction> coverer : candidates) {
 
-				stats.checkCoverage();
-				if (algorithmStrategy.mightCover(coveree, coverer)) {
-					stats.attemptCoverage();
+				//stats.checkCoverage();
+				if (algorithmStrategy.mightCover(coveree, coverer,stats)) {
+					//stats.attemptCoverage();
 
 					coveree.setCoveringNode(coverer);
 					final Collection<ArgNode<XtaState<S>, XtaAction>> uncoveredNodes = algorithmStrategy
@@ -138,18 +138,18 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 					waiting.addAll(uncoveredNodes);
 
 					if (coveree.isCovered()) {
-						stats.successfulCoverage();
-						stats.stopClosing();
+						//stats.successfulCoverage();
+						//stats.stopClosing();
 						return;
 					}
 				}
 			}
 
-			stats.stopClosing();
+			//stats.stopClosing();
 		}
 
 		private void expand(final ArgNode<XtaState<S>, XtaAction> node) {
-			stats.startExpanding();
+			//stats.startExpanding();
 			final XtaState<S> state = node.getState();
 
 			for (final XtaAction action : lts.getEnabledActionsFor(state)) {
@@ -170,7 +170,7 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 			}
 
 			passed.add(node);
-			stats.stopExpanding();
+			//stats.stopExpanding();
 		}
 	}
 

@@ -30,6 +30,7 @@ import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaSystem;
 import hu.bme.mit.theta.xta.analysis.XtaAction;
 import hu.bme.mit.theta.xta.analysis.XtaState;
+import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaStatistics.Builder;
 import hu.bme.mit.theta.xta.analysis.zone.itp.ItpZoneState;
 
 public final class BinItpStrategy extends ItpStrategy {
@@ -90,6 +91,13 @@ public final class BinItpStrategy extends ItpStrategy {
 	public void setTargetStates(Set<List<Loc>> target) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean mightCover(ArgNode<XtaState<Prod2State<ExplState, ItpZoneState>>, XtaAction> coveree,
+			ArgNode<XtaState<Prod2State<ExplState, ItpZoneState>>, XtaAction> coverer, Builder stats) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

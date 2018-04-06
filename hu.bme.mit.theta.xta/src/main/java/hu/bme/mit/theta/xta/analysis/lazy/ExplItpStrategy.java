@@ -129,7 +129,7 @@ public abstract class ExplItpStrategy implements LazyXtaStrategy<Prod3State<Expl
 	@Override
 	public final boolean mightCover(
 			final ArgNode<XtaState<Prod3State<ExplState, ExplState, ItpZoneState>>, XtaAction> coveree,
-			final ArgNode<XtaState<Prod3State<ExplState, ExplState, ItpZoneState>>, XtaAction> coverer) {
+			final ArgNode<XtaState<Prod3State<ExplState, ExplState, ItpZoneState>>, XtaAction> coverer, final LazyXtaStatistics.Builder stats) {
 		final ExplState covereeExpl = coveree.getState().getState().getState1();
 		final ExplState covererExpl = coverer.getState().getState().getState2();
 		final ZoneState covereeZone = coveree.getState().getState().getState3().getConcrState();
