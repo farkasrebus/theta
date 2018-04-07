@@ -427,15 +427,5 @@ public enum XtaExample {
 		}
 		return result;
     }
-
-	/*public static long getPreprocTime(String model) {
-		String[] split1=model.split("/");
-		//System.out.println(split1);
-		String[] split2=split1[split1.length-1].split("-");
-		//System.out.println(split2);
-		String name=split2[0];
-		int size=Integer.parseInt(split2[1].substring(0, 1));
-		return XtaExample.valueOf(name.toUpperCase()).preproc[size-1];
-	}*/
 	
 }
