@@ -5,21 +5,29 @@ import java.util.List;
 import java.util.Set;
 
 import hu.bme.mit.theta.xta.XtaProcess.Loc;
+import hu.bme.mit.theta.xta.tool.models.XtaReachabilityProblem.XtaSystemType;
 import hu.bme.mit.theta.xta.XtaSystem;
 
-public class BodcpModel implements XtaReachabilityProblem {
-	XtaSystem sys;
+public abstract class SimpleXtaReachabilityProblem implements XtaReachabilityProblem {
 	String fileLocation;
+	String name;
+	XtaSystem sys;
+	XtaSystemType type;
+	Set<List<Loc>> errorLocs;
 	
-	public BodcpModel() throws IOException {
-		fileLocation="src/test/resources/benchmark/bodcp.xta";
+	protected void init(String name, String file, XtaSystemType type) throws IOException {
+		fileLocation=file;
+		this.name=name;
+		this.type=type;
 		sys=XtaReachabilityProblem.loadModel(fileLocation);
-		//TODO: ErrorLocot összerakni 
+		createErrorLocs();
 	}
+	
+	protected abstract void createErrorLocs();
 
 	@Override
 	public XtaSystemType getType() {
-		return XtaSystemType.PROTOCOL_OTHER;
+		return type;
 	}
 
 	@Override
@@ -34,12 +42,12 @@ public class BodcpModel implements XtaReachabilityProblem {
 
 	@Override
 	public Set<List<Loc>> getErrorLocs() {
-		throw new UnsupportedOperationException("TODO");
+		return errorLocs;
 	}
 
 	@Override
 	public String getName() {
-		return "BODCP";
+		return name;
 	}
 
 }
