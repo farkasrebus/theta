@@ -74,17 +74,17 @@ urgent chan ready[Procs];
 chan finished[Tasks];//run[Procs+1], stop[Procs], done[Procs];
 
 
-meta struct {
-  meta t_id task;
-  meta r_id resource;
-  meta bool preempt;
+ struct {
+ 	t_id task;
+	r_id resource;
+	 bool preempt;
 } param;
 
 void setParams(t_id t, r_id r, bool preempt) {
   param.task = t; param.resource = r; param.preempt = preempt;
 }
 
-meta t_id ready_task;
+ t_id ready_task;
 
 void insert_at(int[0,Tasks] pos, t_id tid, r_id rid) {
   int i;
@@ -173,18 +173,18 @@ int[0,1] isRunning() {
 
 
 state
-    WaitingDepedency {x' == 0},
-    Done {x' == 0},
+    WaitingDepedency {x == 0},
+    Done {x == 0},
     S0,
     S1,
-    Initial {x' == 0 &&
+    Initial {x == 0 &&
 time[id] <= initialOffset()},
     Error,
-    PeriodDone {x' == 0 &&
+    PeriodDone {x == 0 &&
 time[id] <= maxPeriod()},
-    Ready {x' == isRunning() &&
+    Ready {x == isRunning() &&
 x <= WCET()},
-    WaitingOffset {x' == 0 &&
+    WaitingOffset {x == 0 &&
 time[id] <= offset()};
 commit
     S0,

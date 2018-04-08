@@ -1,36 +1,36 @@
 clock ControlUnit_y0;
 clock SPS1_z;
 clock SPS2_z;
-int[0,6] ControlUnit_IntStat := 0;
-int[0,4] AKT1_IntStat := 0;
-int[0,4] AKT2_IntStat := 0;
-int[0,2] EC1_number := 0;
-int[0,2] polled_ControlUnit_numEC1 := 0;
-int[0,2] EC2_number := 0;
-int[0,2] polled_ControlUnit_numEC2 := 0;
-int[0,2] CL2_number := 0;
-int[0,2] polled_ControlUnit_numCL2 := 0;
-int[0,2] CL1_number := 0;
-int[0,2] polled_ControlUnit_numCL1 := 0;
-int[0,1] ControlUnit_drive1 := 0;
-int[0,1] ErrorDetection_error := 0;
-int[0,1] polled_AKT1_error := 0;
-int[0,2] polled_AKT1_waitingTrains := 0;
-int[0,1] ControlUnit_drive2 := 0;
-int[0,1] polled_AKT2_permission := 0;
-int[0,1] polled_AKT2_error := 0;
-int[0,2] polled_AKT2_waitingTrains := 0;
-int[0,1] update_ControlUnit_drive2 := 0;
-int[0,1] update_ControlUnit_drive1 := 0;
-int[0,2] AKT2_signal := 0;
-int[0,2] update_AKT2_signal := 0;
-int[0,2] AKT1_signal := 0;
-int[0,2] update_AKT1_signal := 0;
+int ControlUnit_IntStat;
+int AKT1_IntStat;
+int AKT2_IntStat;
+int EC1_number;
+int polled_ControlUnit_numEC1;
+int EC2_number;
+int polled_ControlUnit_numEC2;
+int CL2_number;
+int polled_ControlUnit_numCL2;
+int CL1_number;
+int polled_ControlUnit_numCL1;
+int ControlUnit_drive1;
+int ErrorDetection_error;
+int polled_AKT1_error;
+int polled_AKT1_waitingTrains;
+int ControlUnit_drive2;
+int polled_AKT2_permission;
+int polled_AKT2_error;
+int polled_AKT2_waitingTrains;
+int update_ControlUnit_drive2;
+int update_ControlUnit_drive1;
+int AKT2_signal;
+int update_AKT2_signal;
+int AKT1_signal;
+int update_AKT1_signal;
 chan channel_SPS1_ControlUnit;
 chan channel_SPS1_AKT1;
 chan channel_SPS2_AKT2;
 
-process ControlUnit {
+process ControlUnit(){
 
     state Track1_Ready, Track1_Finished, Track2_Finished, Track1_Drive, Track2_Drive, Track2_Ready;
     init Track1_Ready;
@@ -105,7 +105,7 @@ process ControlUnit {
     Track2_Ready -> Track2_Ready { guard ControlUnit_IntStat == 6; sync channel_SPS1_ControlUnit!;assign ControlUnit_IntStat := 0, ControlUnit_y0 := 0; };
 }
 
-process AKT1 {
+process AKT1() {
 
     state Idle, Demanding, Driving, Error;
     init Idle;
@@ -159,7 +159,7 @@ process AKT1 {
     Error -> Error { guard AKT1_IntStat == 4; sync channel_SPS1_AKT1!;assign AKT1_IntStat := 0; };
 }
 
-process AKT2 {
+process AKT2() {
 
     state Idle, Demanding, Driving, Error;
     init Idle;
@@ -213,7 +213,7 @@ process AKT2 {
     Error -> Error { guard AKT2_IntStat == 4; sync channel_SPS2_AKT2!;assign AKT2_IntStat := 0; };
 }
 
-process PLC_SPS1 {
+process PLC_SPS1() {
 
     state starting{SPS1_z <= 0}, polling{SPS1_z <= 10}, testing{SPS1_z <= 10}, updating{SPS1_z <= 10}, executing_ControlUnit{SPS1_z <= 10}, resetting_ControlUnit{SPS1_z <= 0}, executing_AKT1{SPS1_z <= 10}, resetting_AKT1{SPS1_z <= 0};
     commit executing_ControlUnit, resetting_ControlUnit, executing_AKT1, resetting_AKT1;
@@ -229,7 +229,7 @@ process PLC_SPS1 {
     resetting_AKT1 -> polling { sync channel_SPS1_AKT1?; };
 }
 
-process PLC_SPS2 {
+process PLC_SPS2() {
 
     state starting{SPS2_z <= 0}, polling{SPS2_z <= 10}, testing{SPS2_z <= 10}, updating{SPS2_z <= 10}, executing_AKT2{SPS2_z <= 10}, resetting_AKT2{SPS2_z <= 0};
     commit executing_AKT2, resetting_AKT2;
@@ -243,7 +243,7 @@ process PLC_SPS2 {
     resetting_AKT2 -> polling { sync channel_SPS2_AKT2?; };
 }
 
-process drive_EC1_number {
+process drive_EC1_number() {
 
     state loop;
     init loop;
@@ -256,7 +256,7 @@ process drive_EC1_number {
     loop -> loop { guard EC1_number == 1; assign EC1_number := 2; };
 }
 
-process drive_EC2_number {
+process drive_EC2_number() {
 
     state loop;
     init loop;
@@ -269,7 +269,7 @@ process drive_EC2_number {
     loop -> loop { guard EC2_number == 1; assign EC2_number := 2; };
 }
 
-process drive_CL2_number {
+process drive_CL2_number() {
 
     state loop;
     init loop;
@@ -282,7 +282,7 @@ process drive_CL2_number {
     loop -> loop { guard CL2_number == 1; assign CL2_number := 2; };
 }
 
-process drive_CL1_number {
+process drive_CL1_number() {
 
     state loop;
     init loop;
@@ -295,7 +295,7 @@ process drive_CL1_number {
     loop -> loop { guard CL1_number == 1; assign CL1_number := 2; };
 }
 
-process drive_ErrorDetection_error {
+process drive_ErrorDetection_error() {
 
     state loop;
     init loop;

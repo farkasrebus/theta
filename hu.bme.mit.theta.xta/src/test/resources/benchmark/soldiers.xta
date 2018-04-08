@@ -8,13 +8,13 @@ int first,
      second,
      back,
      InSafety;
-process aSoldier(const id; const delay){
+process aSoldier(const int id, const int delay){
 
 state Peril, Safety, OnBridge, OnWayBack;
 init Peril;
 trans Peril -> Safety {guard first == 0; assign first := id,
 InSafety := InSafety+1; },
-Peril -> OnBridge {guard second == 0,
+Peril -> OnBridge {guard second == 0 &&
 first > id; assign second := id,
 x:=0; },
 OnBridge -> Safety {guard x == delay; assign InSafety := InSafety+1,
@@ -24,11 +24,11 @@ second := 0; },
 Safety -> OnWayBack {guard back == 1; assign back := 0, x:=0,
 InSafety := InSafety-1; };
 }
-process aObserver(const delay){
+process aObserver(const int delay){
 
 state Wait, Escape;
 init Wait;
-trans Wait -> Escape {guard y == delay,
+trans Wait -> Escape {guard y == delay &&
 InSafety == 4; };
 }
 S1 := aSoldier(1,25);

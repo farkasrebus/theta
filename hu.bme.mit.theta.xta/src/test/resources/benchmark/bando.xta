@@ -28,7 +28,7 @@ int B_diff;
  
 chan one, zero;
 
-process Sender_A {
+process Sender_A() {
   state  call_check, call_observe, check_eof, end_jam, ex_jam {A_c <= 781}, ex_silence1 {A_c <= 2343}, ex_silence2 {A_c <= 781}, ex_start, goto_idle, hold {A_c <= 28116}, idle {A_c <= 781}, jam {A_c <= 25000}, nPf, newPn {A_c <= 40}, other_started {A_c <= 3124}, sample {A_c <= 781}, start {A_c <= 0}, stop, transmit {A_c <= 781}, until_silence {A_c <= 781};
   commit call_check,call_observe,check_eof,ex_start,goto_idle,nPf;
   init   start;
@@ -169,7 +169,7 @@ process Sender_A {
          };
 }
 
-process Sender_B {
+process Sender_B() {
   state  call_check, call_observe, check_eof, end_jam, ex_jam {B_c <= 781}, ex_silence1 {B_c <= 2343}, ex_silence2 {B_c <= 781}, ex_start, goto_idle, hold {B_c <= 28116}, idle {B_c <= 781}, jam {B_c <= 25000}, nPf, newPn {B_c <= 40}, other_started {B_c <= 3124}, sample {B_c <= 781}, start, stop, transmit {B_c <= 781}, until_silence {B_c <= 781};
   commit call_check,call_observe,check_eof,ex_start,goto_idle,nPf;
   init   start;
@@ -310,7 +310,7 @@ process Sender_B {
          };
 }
 
-process Detector_A {
+process Detector_A() {
   state  calc_res, ex1_S1, ex1_S2, ex_Pf, ex_Pn, ex_S1, ex_S2, wait_call;
   commit calc_res,ex1_S1,ex1_S2,ex_Pf,ex_Pn,ex_S1,ex_S2;
   init   wait_call;
@@ -376,7 +376,7 @@ process Detector_A {
          };
 }
 
-process Detector_B {
+process Detector_B() {
   state  calc_res, ex1_S1, ex1_S2, ex_Pf, ex_Pn, ex_S1, ex_S2, wait_call;
   commit calc_res,ex1_S1,ex1_S2,ex_Pf,ex_Pn,ex_S1,ex_S2;
   init   wait_call;
@@ -442,7 +442,7 @@ process Detector_B {
          };
 }
 
-process Bus {
+process Bus() {
   state  active, initialize;
   commit initialize;
   init   initialize;
@@ -463,7 +463,7 @@ process Bus {
          };
 }
 
-process Observer_A {
+process Observer_A() {
   state  compare;
   init   compare;
   trans  compare -> compare {
@@ -482,7 +482,7 @@ process Observer_A {
          };
 }
 
-process Observer_B {
+process Observer_B() {
   state  compare;
   init   compare;
   trans  compare -> compare {
@@ -501,7 +501,7 @@ process Observer_B {
          };
 }
 
-process Frame_Generator_B {
+process Frame_Generator_B() {
   state  first, last, msg, set_msg, start;
   commit set_msg;
   init   start;
@@ -553,7 +553,7 @@ process Frame_Generator_B {
          };
 }
 
-process Frame_Generator_A {
+process Frame_Generator_A() {
   state  first, last, msg, set_msg, start;
   commit set_msg;
   init   start;

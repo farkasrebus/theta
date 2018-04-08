@@ -1,6 +1,7 @@
 package hu.bme.mit.theta.xta.tool.models;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 public class BocdpModel extends SimpleXtaReachabilityProblem {
 	
@@ -10,7 +11,7 @@ public class BocdpModel extends SimpleXtaReachabilityProblem {
 
 	@Override
 	protected void createErrorLocs() {
-		//TODO
+		errorLocs=new HashSet<>();
 	}
 
 

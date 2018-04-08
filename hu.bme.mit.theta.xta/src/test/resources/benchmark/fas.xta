@@ -159,7 +159,8 @@ trans
 }
 
 process medium(const channelID currentCh) {
-meta messageID currentMsg;
+//meta ???
+messageID currentMsg;
 state
     transmit,
     idle;
@@ -191,7 +192,8 @@ trans
 }
 
 process TR1(const int controllerID) {
-meta channelID channel = 0;
+//meta 
+channelID channel = 0;
 clock counter;
 state
     S0 {counter <= ACKdelay},
@@ -208,7 +210,8 @@ channel := TR1Channel;  };
 }
 
 process controller(const int controllerID) {
-meta windowID window;
+//meta 
+windowID window;
 state
     ERROR,
     S0,

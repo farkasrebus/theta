@@ -1,6 +1,7 @@
 package hu.bme.mit.theta.xta.tool.models;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 public class BawccModelEnhanced extends SimpleXtaReachabilityProblem {
 	
@@ -10,8 +11,7 @@ public class BawccModelEnhanced extends SimpleXtaReachabilityProblem {
 
 	@Override
 	protected void createErrorLocs() {
-		// TODO Auto-generated method stub
-
+		errorLocs=new HashSet<>();
 	}
 
 }

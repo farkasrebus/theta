@@ -1,4 +1,4 @@
-package hu.bme.mit.theta.tools;
+package hu.bme.mit.theta.xta.models;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,17 +17,31 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
-import hu.bme.mit.theta.xta.XtaProcess.Loc;
-import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaChecker;
-import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaStatistics;
 import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
 import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
 import hu.bme.mit.theta.common.table.TableWriter;
 import hu.bme.mit.theta.common.table.impl.BasicTableWriter;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaSystem;
+import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaChecker;
+import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaStatistics;
 import hu.bme.mit.theta.xta.tool.XtaCheckerBuilder;
 import hu.bme.mit.theta.xta.tool.XtaCheckerBuilder.Algorithm;
+import hu.bme.mit.theta.xta.tool.models.AndOrModel;
+import hu.bme.mit.theta.xta.tool.models.BangOlufsenModel;
+import hu.bme.mit.theta.xta.tool.models.BocdpModel;
+import hu.bme.mit.theta.xta.tool.models.BocdpModelFixed;
+import hu.bme.mit.theta.xta.tool.models.EngineModel;
+import hu.bme.mit.theta.xta.tool.models.ExSithModel;
+import hu.bme.mit.theta.xta.tool.models.LatchModel;
+import hu.bme.mit.theta.xta.tool.models.MalerModel;
+import hu.bme.mit.theta.xta.tool.models.MutExModel;
+import hu.bme.mit.theta.xta.tool.models.RootConnectionProtocolModel;
+import hu.bme.mit.theta.xta.tool.models.SRLatchModel;
+import hu.bme.mit.theta.xta.tool.models.SchedulabilityFrameworkModel;
+import hu.bme.mit.theta.xta.tool.models.SimopModel;
+import hu.bme.mit.theta.xta.tool.models.SingleTrackedLineSegmentModel;
 import hu.bme.mit.theta.xta.tool.models.XtaReachabilityProblem;
 
 @RunWith(Parameterized.class)
@@ -35,6 +49,27 @@ public class XtaModelCheckerBenchmark {
 	
 	@Parameters
 	  public static XtaReachabilityProblem[] data() {
+		try {
+			XtaReachabilityProblem[] result={
+					new AndOrModel(),
+					new BangOlufsenModel(),
+					new BocdpModel(),
+					new BocdpModelFixed(),
+					new EngineModel(),
+					new ExSithModel(),
+					new LatchModel(),
+					new MalerModel(),
+					new MutExModel(),
+					new RootConnectionProtocolModel(),
+					//new SchedulabilityFrameworkModel(),
+					new SimopModel(),
+					new SingleTrackedLineSegmentModel(),
+					new SRLatchModel()
+					};
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		XtaReachabilityProblem[] result={};
 		return result;
 	}
@@ -52,6 +87,8 @@ public class XtaModelCheckerBenchmark {
 		for (Algorithm algorithm:algs) {
 			for (int j=0;j<10;j++) {
 				writer.cell(model.getName());
+				writer.cell(model.getType());
+				writer.cell(algorithm.name());
 				System.gc();
 				System.gc();
 				System.gc();

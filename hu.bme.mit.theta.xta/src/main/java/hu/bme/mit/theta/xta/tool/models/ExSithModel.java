@@ -1,6 +1,12 @@
 package hu.bme.mit.theta.xta.tool.models;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+import hu.bme.mit.theta.xta.XtaProcess;
+import hu.bme.mit.theta.xta.XtaProcess.Loc;
 
 public class ExSithModel extends SimpleXtaReachabilityProblem {
 	
@@ -10,7 +16,16 @@ public class ExSithModel extends SimpleXtaReachabilityProblem {
 
 	@Override
 	protected void createErrorLocs() {
-		// TODO Auto-generated method stub
+		errorLocs=new HashSet<>();
+		List<Loc> errorConf = new ArrayList<Loc>();
+		errorLocs.add(errorConf);
+		XtaProcess a=sys.getProcesses().get(0);
+		for (Loc l:a.getLocs()) {
+			if (l.getName().contains("qBad")) {
+				errorConf.add(l);
+				break;
+			}
+		}
 
 	}
 
