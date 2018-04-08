@@ -28,26 +28,26 @@ import hu.bme.mit.theta.common.table.impl.BasicTableWriter;
 import hu.bme.mit.theta.xta.XtaSystem;
 import hu.bme.mit.theta.xta.tool.XtaCheckerBuilder;
 import hu.bme.mit.theta.xta.tool.XtaCheckerBuilder.Algorithm;
-import hu.bme.mit.theta.xta.tool.models.XtaExample;
+import hu.bme.mit.theta.xta.tool.models.XtaReachabilityProblem;
 
 @RunWith(Parameterized.class)
 public class XtaModelCheckerBenchmark {
 	
 	@Parameters
-	  public static XtaExample[] data() {
-		XtaExample[] result={};
+	  public static XtaReachabilityProblem[] data() {
+		XtaReachabilityProblem[] result={};
 		return result;
 	}
 	
 	@Parameter
-	public XtaExample model;
+	public XtaReachabilityProblem model;
 	
 	@Test
 	public void benchmark_forward_noscale() throws InterruptedException {
 		final TableWriter writer = new BasicTableWriter(System.out, ",", "\"", "\"");
 		Algorithm[] algs= {Algorithm.LU,Algorithm.BINITP,Algorithm.SEQITP};
 		XtaSystem sys=model.getSystem();
-		Set<List<Loc>> locs=model.getErrorLocs().values().iterator().next();//TODO
+		Set<List<Loc>> locs=model.getErrorLocs();//TODO
 		
 		for (Algorithm algorithm:algs) {
 			for (int j=0;j<10;j++) {

@@ -1,15 +1,21 @@
 package hu.bme.mit.theta.xta.tool.models;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaSystem;
 
-public class BodcpModel implements XtaExample {
+public class BodcpModel implements XtaReachabilityProblem {
 	XtaSystem sys;
+	String fileLocation;
 	
+	public BodcpModel() throws IOException {
+		fileLocation="src/test/resources/benchmark/bodcp.xta";
+		sys=XtaReachabilityProblem.loadModel(fileLocation);
+		//TODO: ErrorLocot összerakni 
+	}
 
 	@Override
 	public XtaSystemType getType() {
@@ -18,7 +24,7 @@ public class BodcpModel implements XtaExample {
 
 	@Override
 	public String getFileLocation() {
-		return "src/test/resources/benchmark/bodcp.xta";
+		return fileLocation;
 	}
 
 	@Override
@@ -27,7 +33,7 @@ public class BodcpModel implements XtaExample {
 	}
 
 	@Override
-	public Map<String, Set<List<Loc>>> getErrorLocs() {
+	public Set<List<Loc>> getErrorLocs() {
 		throw new UnsupportedOperationException("TODO");
 	}
 
