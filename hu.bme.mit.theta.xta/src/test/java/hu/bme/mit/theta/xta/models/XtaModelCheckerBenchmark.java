@@ -51,20 +51,19 @@ public class XtaModelCheckerBenchmark {
 	  public static XtaReachabilityProblem[] data() {
 		try {
 			XtaReachabilityProblem[] result={
-					new AndOrModel(),
-					new BangOlufsenModel(),
-					new BocdpModel(),
-					new BocdpModelFixed(),
-					new EngineModel(),
-					new ExSithModel(),
-					new LatchModel(),
-					new MalerModel(),
-					new MutExModel(),
+					//new AndOrModel(),
+					//new BangOlufsenModel(),
+					//new BocdpModel(),
+					//new BocdpModelFixed(),
+					//new EngineModel(),
+					//new ExSithModel(),
+					//new LatchModel(),
+					//new MalerModel(),
+					//new MutExModel(),
 					new RootConnectionProtocolModel(),
-					//new SchedulabilityFrameworkModel(),
-					new SimopModel(),
-					new SingleTrackedLineSegmentModel(),
-					new SRLatchModel()
+					//new SimopModel(),
+					//new SingleTrackedLineSegmentModel(),
+					//new SRLatchModel()
 					};
 			return result;
 		} catch (Exception e) {
