@@ -14,11 +14,15 @@ import hu.bme.mit.theta.xta.tool.models.BangOlufsenModel;
 import hu.bme.mit.theta.xta.tool.models.BawccModel;
 import hu.bme.mit.theta.xta.tool.models.BocdpModel;
 import hu.bme.mit.theta.xta.tool.models.BocdpModelFixed;
+import hu.bme.mit.theta.xta.tool.models.CSMACDModel;
+import hu.bme.mit.theta.xta.tool.models.CriticalModel;
 import hu.bme.mit.theta.xta.tool.models.EngineModel;
 import hu.bme.mit.theta.xta.tool.models.ExSithModel;
 import hu.bme.mit.theta.xta.tool.models.FireAlarmSystemModel;
+import hu.bme.mit.theta.xta.tool.models.FischerModel;
 import hu.bme.mit.theta.xta.tool.models.FlipFlopModel;
 import hu.bme.mit.theta.xta.tool.models.LatchModel;
+import hu.bme.mit.theta.xta.tool.models.LynchShavitModel;
 import hu.bme.mit.theta.xta.tool.models.MalerModel;
 import hu.bme.mit.theta.xta.tool.models.MutExModel;
 import hu.bme.mit.theta.xta.tool.models.RootConnectionProtocolModel;
@@ -27,6 +31,8 @@ import hu.bme.mit.theta.xta.tool.models.SchedulabilityFrameworkModel;
 import hu.bme.mit.theta.xta.tool.models.SimopModel;
 import hu.bme.mit.theta.xta.tool.models.SingleTrackedLineSegmentModel;
 import hu.bme.mit.theta.xta.tool.models.SoldiersModel;
+import hu.bme.mit.theta.xta.tool.models.TokenRingFDDIModel;
+import hu.bme.mit.theta.xta.tool.models.TrainModel;
 
 public class XtaProblemTests {
 	
@@ -273,7 +279,7 @@ public class XtaProblemTests {
 		}*/
 	}
 	
-
+	@Ignore("SRLatch is handled correctly")
 	@Test
 	public void srlatch_test() throws IOException {
 		SRLatchModel model=new SRLatchModel();
@@ -289,4 +295,144 @@ public class XtaProblemTests {
 		}
 	}
 	
+	@Ignore("Critical is handled correctly")
+	@Test
+	public void critical_test() throws IOException {
+		
+		CriticalModel model=new CriticalModel(2);
+		int min=model.getMinParamValue();
+		int max=model.getMaxParamValue();
+		
+		for (int i=min; i<=max;i++) {
+			model=new CriticalModel(i);
+			for (XtaProcess p: model.getSystem().getProcesses()) {
+				System.out.println(p.getName());
+			}
+			
+			for (List<Loc> conf:model.getErrorLocs()) {
+				for (Loc l:conf) {
+					System.out.print(", "+l.getName());
+				}
+				System.out.println();
+			}
+		}
+		
+	}
+	
+	@Ignore("CSMA is handled correctly")
+	@Test
+	public void csma_test() throws IOException {
+		
+		CSMACDModel model=new CSMACDModel(2);
+		int min=model.getMinParamValue();
+		int max=model.getMaxParamValue();
+		
+		for (int i=min; i<=max;i++) {
+			model=new CSMACDModel(i);
+			for (XtaProcess p: model.getSystem().getProcesses()) {
+				System.out.println(p.getName());
+			}
+			
+			for (List<Loc> conf:model.getErrorLocs()) {
+				for (Loc l:conf) {
+					System.out.print(", "+l.getName());
+				}
+				System.out.println();
+			}
+		}
+	}
+	
+	@Ignore("Fischer is handled correctly")
+	@Test
+	public void fischer_test() throws IOException {
+		
+		FischerModel model=new FischerModel(2);
+		int min=model.getMinParamValue();
+		int max=model.getMaxParamValue();
+		
+		for (int i=min; i<=max;i++) {
+			model=new FischerModel(i);
+			for (XtaProcess p: model.getSystem().getProcesses()) {
+				System.out.println(p.getName());
+			}
+			
+			for (List<Loc> conf:model.getErrorLocs()) {
+				for (Loc l:conf) {
+					System.out.print(", "+l.getName());
+				}
+				System.out.println();
+			}
+		}
+	}
+	
+	@Ignore("Lynch is handled correctly")
+	@Test
+	public void lynch_test() throws IOException {
+		
+		LynchShavitModel model=new LynchShavitModel(2);
+		int min=model.getMinParamValue();
+		int max=model.getMaxParamValue();
+		
+		for (int i=min; i<=max;i++) {
+			model=new LynchShavitModel(i);
+			for (XtaProcess p: model.getSystem().getProcesses()) {
+				System.out.println(p.getName());
+			}
+			
+			for (List<Loc> conf:model.getErrorLocs()) {
+				for (Loc l:conf) {
+					System.out.print(", "+l.getName());
+				}
+				System.out.println();
+			}
+		}
+	}
+	
+	@Ignore("Runs loooooooooooooong")
+	@Test
+	public void token_test() throws IOException {
+		
+		TokenRingFDDIModel model=new TokenRingFDDIModel(1);
+		int min=model.getMinParamValue();
+		int max=model.getMaxParamValue();
+		
+		System.out.println("One successful");
+		
+		for (int i=min; i<=max;i++) {
+			model=new TokenRingFDDIModel(i);
+			for (XtaProcess p: model.getSystem().getProcesses()) {
+				System.out.println(p.getName());
+			}
+			
+			for (List<Loc> conf:model.getErrorLocs()) {
+				for (Loc l:conf) {
+					System.out.print(", "+l.getName());
+				}
+				System.out.println();
+			}
+		}
+	}
+	
+	@Ignore("Train is handled correctly")
+	@Test
+	public void train_test() throws IOException {
+		
+		TrainModel model=new TrainModel(2);
+		int min=model.getMinParamValue();
+		int max=model.getMaxParamValue();
+		
+		for (int i=min; i<=max;i++) {
+			model=new TrainModel(i);
+			for (XtaProcess p: model.getSystem().getProcesses()) {
+				System.out.println(p.getName());
+			}
+			
+			for (List<Loc> conf:model.getErrorLocs()) {
+				for (Loc l:conf) {
+					System.out.print(", "+l.getName());
+				}
+				System.out.println();
+			}
+		}
+	}
 }

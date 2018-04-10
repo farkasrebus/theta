@@ -56,7 +56,8 @@ process controller() {
 		controller0,
 		controller1 { z <= e },
 		controller2,
-		controller3 { z <= e };
+		controller3 { z <= e },
+    error;
 
 	init controller0;
 
@@ -69,7 +70,8 @@ process controller() {
     controller2 -> controller3 { guard cnt == 1; sync exit!; assign z = 0, cnt = 0; },
 		controller3 -> controller0 { guard z <= e; sync raise!; },
     controller3 -> controller2 { guard z <= e; sync approach!; assign cnt = cnt + 1; },
-		controller1 -> controller2 { guard z == e; sync lower!; };
+		controller1 -> controller2 { guard z == e; sync lower!; },
+    controller3 -> error { guard cnt > 0; };
 }
 
 system train, gate, controller;
