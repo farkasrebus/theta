@@ -39,8 +39,16 @@ public class XtaProblemTests {
 	@Ignore("AndOr is handled correctly")
 	@Test
 	public void andor_test() throws IOException {
-		AndOrModel model=new AndOrModel();
-		for (List<Loc> conf:model.getErrorLocs()) {
+		AndOrModel falsemodel=new AndOrModel(false);
+		for (List<Loc> conf:falsemodel.getErrorLocs()) {
+			for (Loc l:conf) {
+				System.out.print(", "+l.getName());
+			}
+			System.out.println();
+		}
+		System.out.println("-------------------------");
+		AndOrModel truemodel=new AndOrModel(true);
+		for (List<Loc> conf:truemodel.getErrorLocs()) {
 			for (Loc l:conf) {
 				System.out.print(", "+l.getName());
 			}
@@ -66,16 +74,17 @@ public class XtaProblemTests {
 	@Ignore("Bangolufsen is parsed correctly")
 	@Test
 	public void bangolufsen_test() throws IOException {
+		System.out.println("BANGOLUFSEN");
 		BangOlufsenModel model=new BangOlufsenModel();
-		for (XtaProcess p: model.getSystem().getProcesses()) {
+		/*for (XtaProcess p: model.getSystem().getProcesses()) {
 			System.out.println(p.getName());
-		}
-		/*for (List<Loc> conf:model.getErrorLocs()) {
+		}*/
+		for (List<Loc> conf:model.getErrorLocs()) {
 			for (Loc l:conf) {
 				System.out.print(", "+l.getName());
 			}
 			System.out.println();
-		}*/
+		}
 	}
 	
 	@Ignore("Bawcc constains functions that is not supported by Theta")
@@ -115,11 +124,19 @@ public class XtaProblemTests {
 		for (XtaProcess p: model.getSystem().getProcesses()) {
 			System.out.println(p.getName());
 		}
+		
+		for (List<Loc> conf:model.getErrorLocs()) {
+			for (Loc l:conf) {
+				System.out.print(", "+l.getName());
+			}
+			System.out.println();
+		}
 	}
 	
 	@Ignore("Exsith is handled correctly")
 	@Test
 	public void exsith_test() throws IOException {
+		System.out.println("EXSITH");
 		ExSithModel model=new ExSithModel();
 		/*for (XtaProcess p: model.getSystem().getProcesses()) {
 			System.out.println(p.getName());
@@ -154,6 +171,7 @@ public class XtaProblemTests {
 	@Ignore("Latch is handled correctly")
 	@Test
 	public void latch_test() throws IOException {
+		System.out.println("LATCH");
 		LatchModel model=new LatchModel();
 		/*for (XtaProcess p: model.getSystem().getProcesses()) {
 			System.out.println(p.getName());
@@ -170,6 +188,7 @@ public class XtaProblemTests {
 	@Ignore("Maler is handled correctly")
 	@Test
 	public void maler_test() throws IOException {
+		System.out.println("MALER");
 		MalerModel model=new MalerModel();
 		/*for (XtaProcess p: model.getSystem().getProcesses()) {
 			System.out.println(p.getName());
@@ -186,6 +205,7 @@ public class XtaProblemTests {
 	@Ignore("MutEx is handled correctly")
 	@Test
 	public void mutex_test() throws IOException {
+		System.out.println("MUTEX");
 		MutExModel model=new MutExModel();
 		/*for (XtaProcess p: model.getSystem().getProcesses()) {
 			System.out.println(p.getName());
@@ -234,33 +254,51 @@ public class XtaProblemTests {
 	@Ignore("Simop is parsed correctly")
 	@Test
 	public void simop_test() throws IOException {
-		SimopModel model=new SimopModel();
-		for (XtaProcess p: model.getSystem().getProcesses()) {
+		SimopModel model1=new SimopModel(true);
+		/*for (XtaProcess p: model.getSystem().getProcesses()) {
 			System.out.println(p.getName());
-		}
+		}*/
 		
-		/*for (List<Loc> conf:model.getErrorLocs()) {
+		for (List<Loc> conf:model1.getErrorLocs()) {
 			for (Loc l:conf) {
 				System.out.print(", "+l.getName());
 			}
 			System.out.println();
-		}*/
+		}
+		System.out.println("-----------------------");
+		SimopModel model2=new SimopModel(false);
+		
+		for (List<Loc> conf:model2.getErrorLocs()) {
+			for (Loc l:conf) {
+				System.out.print(", "+l.getName());
+			}
+			System.out.println();
+		}
 	}
 	
 	@Ignore("STLS is handled correctly")
 	@Test
 	public void stls_test() throws IOException {
-		SingleTrackedLineSegmentModel model=new SingleTrackedLineSegmentModel();
+		SingleTrackedLineSegmentModel model1=new SingleTrackedLineSegmentModel(true);
 		/*for (XtaProcess p: model.getSystem().getProcesses()) {
 			System.out.println(p.getName());
 		}*/
 		
-		for (List<Loc> conf:model.getErrorLocs()) {
+		for (List<Loc> conf:model1.getErrorLocs()) {
 			for (Loc l:conf) {
 				System.out.print(", "+l.getName());
 			}
 			System.out.println();
 		}
+		System.out.println("-----------------------");
+		/*SingleTrackedLineSegmentModel model2=new SingleTrackedLineSegmentModel(false);
+		
+		for (List<Loc> conf:model2.getErrorLocs()) {
+			for (Loc l:conf) {
+				System.out.print(", "+l.getName());
+			}
+			System.out.println();
+		}*/
 	}
 	
 	@Ignore("soldiers constains instantiation symbols that is not supported by Theta")
@@ -282,12 +320,21 @@ public class XtaProblemTests {
 	@Ignore("SRLatch is handled correctly")
 	@Test
 	public void srlatch_test() throws IOException {
-		SRLatchModel model=new SRLatchModel();
+		SRLatchModel model1=new SRLatchModel(true);
 		/*for (XtaProcess p: model.getSystem().getProcesses()) {
 			System.out.println(p.getName());
 		}*/
 		
-		for (List<Loc> conf:model.getErrorLocs()) {
+		for (List<Loc> conf:model1.getErrorLocs()) {
+			for (Loc l:conf) {
+				System.out.print(", "+l.getName());
+			}
+			System.out.println();
+		}
+		System.out.println("-----------------------");
+		SRLatchModel model2=new SRLatchModel(false);
+		
+		for (List<Loc> conf:model2.getErrorLocs()) {
 			for (Loc l:conf) {
 				System.out.print(", "+l.getName());
 			}
@@ -299,18 +346,23 @@ public class XtaProblemTests {
 	@Test
 	public void critical_test() throws IOException {
 		
-		CriticalModel model=new CriticalModel(2);
+		CriticalModel model=new CriticalModel(2,false);
 		int min=model.getMinParamValue();
 		int max=model.getMaxParamValue();
 		
 		for (int i=min; i<=max;i++) {
-			model=new CriticalModel(i);
-			for (XtaProcess p: model.getSystem().getProcesses()) {
-				System.out.println(p.getName());
-			}
+			model=new CriticalModel(i,true);
+			/*for (XtaProcess p: model.getSystem().getProcesses()) {
+				System.out.print(p.getName()+": ");
+				for (Loc l:p.getLocs()) {
+					System.out.print(l.getName()+",");
+				}
+				System.out.println();
+			}*/
 			
 			for (List<Loc> conf:model.getErrorLocs()) {
 				for (Loc l:conf) {
+					//if (l!=null)
 					System.out.print(", "+l.getName());
 				}
 				System.out.println();

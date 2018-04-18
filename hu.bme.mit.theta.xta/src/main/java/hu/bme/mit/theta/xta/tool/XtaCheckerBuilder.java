@@ -100,6 +100,7 @@ public final class XtaCheckerBuilder {
 	}
 
 	private XtaCheckerBuilder() {
+		
 	}
 
 	public static LazyXtaChecker<?> build(final Algorithm algorithm, final SearchStrategy searchStrategy,
