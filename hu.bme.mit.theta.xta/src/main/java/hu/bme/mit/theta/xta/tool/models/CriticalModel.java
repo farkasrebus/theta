@@ -32,6 +32,7 @@ public class CriticalModel extends ScalableXtaReachabilityProblem {
 			toMix.add(p);
 		}
 		Loc error=null;
+		
 		for (Loc l: cell.getLocs()) {
 			if (l.getName().contains("error"))
 				error=l;
