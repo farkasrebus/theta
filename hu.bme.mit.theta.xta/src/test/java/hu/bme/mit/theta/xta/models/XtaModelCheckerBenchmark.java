@@ -59,25 +59,33 @@ public class XtaModelCheckerBenchmark {
 		System.out.println("Test started");
 		try {
 			XtaReachabilityProblem[] result={
-					//new AndOrModel(),
-					//new BangOlufsenModel(),
-					//new BocdpModel(),
-					//new BocdpModelFixed(),
-					//new EngineModel(),
-					//new ExSithModel(),
-					//new LatchModel(),
-					//new MalerModel(),
-					//new MutExModel(),
-					//new RootConnectionProtocolModel(),
-					//new SimopModel(),
-					//new SingleTrackedLineSegmentModel(),
-					//new SRLatchModel()
-					//new CriticalModel(1),
-					//new CriticalModel(2),
-					//new CriticalModel(3),
-					new CriticalModel(4),
+					new AndOrModel(false),
+					//new AndOrModel(true),
+					//new BangOlufsenModel(),//No easy way of eliminating stuff TODO: Külön kell kezelni, mert brutális mennyiségû :S
+					//new BocdpModel(), //All configurations would have to be target :S
+					//new BocdpModelFixed(),//All configurations would have to be target :S
+					new EngineModel(),//No easy way of eliminating stuff
+					new ExSithModel(),//Only nice property
+					new LatchModel(),//Only nice property
+					new MalerModel(),//Only nice property
+					new MutExModel(),//No easy way of eliminating stuff
+					//new RootConnectionProtocolModel(), //Liveness :(
+					new SimopModel(true),
+					//new SimopModel(false),
+					//new SingleTrackedLineSegmentModel(true),
+					//new SingleTrackedLineSegmentModel(false),
+					new SRLatchModel(true),
+					//new SRLatchModel(false)*/
+					/*new CriticalModel(1, false),
+					new CriticalModel(1, true),
+					new CriticalModel(2, false),
+					new CriticalModel(2, true),
+					new CriticalModel(3, false),
+					new CriticalModel(3, true),
+					new CriticalModel(4, false),
+					new CriticalModel(4, true),
 					//TODO: Még 2-3 criticalt, de már csak LUra :)
-					/*new CSMACDModel(2),
+					new CSMACDModel(2),
 					new CSMACDModel(3),
 					new CSMACDModel(4),
 					new CSMACDModel(5),
@@ -85,22 +93,22 @@ public class XtaModelCheckerBenchmark {
 					new CSMACDModel(7),
 					new CSMACDModel(8),
 					new CSMACDModel(9),
-					new CSMACDModel(10)//,
+					new CSMACDModel(10),
 					//TODO: LU még lehet bírna egyet?
-					//new FischerModel(2),
-					//new FischerModel(3),
-					/*new FischerModel(4),
+					/*new FischerModel(2),
+					new FischerModel(3),
+					new FischerModel(4),
 					new FischerModel(5),
 					new FischerModel(6),
 					new FischerModel(7),
-					new FischerModel(8),*/
+					new FischerModel(8),
 					//TODO LU és SEQITP is bírja még
-					/*new LynchShavitModel(2),
+					new LynchShavitModel(2),
 					new LynchShavitModel(3),
 					new LynchShavitModel(4),
-					new TokenRingFDDIModel(1),
+					/*new TokenRingFDDIModel(1),
 					new TokenRingFDDIModel(2),
-					new TokenRingFDDIModel(3),
+					new TokenRingFDDIModel(3),*/
 					new TrainModel(2),
 					new TrainModel(3),
 					new TrainModel(4),
@@ -108,7 +116,7 @@ public class XtaModelCheckerBenchmark {
 					new TrainModel(6),
 					new TrainModel(7),
 					new TrainModel(8),
-					new TrainModel(9)*/
+					new TrainModel(9)
 					};
 			return result;
 		} catch (Exception e) {
@@ -124,7 +132,7 @@ public class XtaModelCheckerBenchmark {
 	@Test
 	public void benchmark_forward_noscale() throws InterruptedException {
 		final TableWriter writer = new BasicTableWriter(System.out, ",", "\"", "\"");
-		Algorithm[] algs= {/*Algorithm.LU,/*Algorithm.BINITP,*/Algorithm.SEQITP};
+		Algorithm[] algs= {/*Algorithm.LU,/*Algorithm.BINITP,Algorithm.SEQITP*/ Algorithm.EXPLLU};
 		XtaSystem sys=model.getSystem();
 		Set<List<Loc>> locs=model.getErrorLocs();//TODO
 		

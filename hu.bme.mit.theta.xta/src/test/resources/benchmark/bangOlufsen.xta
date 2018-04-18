@@ -321,6 +321,7 @@ process Observer_B() {
 		compare -> compare { guard B_S2 == 0 && B_observe == 1 && B_Pn == 1; assign B_observe = 0, B_diff = 1; },
 		compare -> compare { guard B_S1 == B_Pf && B_Pn == B_S2 && B_observe == 1; assign B_observe = 0; };
 }
+
 process SUPER_OBSERVER() {
 	state
 		No_Error,
