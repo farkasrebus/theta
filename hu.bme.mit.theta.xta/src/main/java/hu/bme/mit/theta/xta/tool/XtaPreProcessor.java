@@ -1,4 +1,4 @@
-package hu.bme.mit.theta.tools.xta;
+package hu.bme.mit.theta.xta.tool;
 
 import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Geq;
 import static hu.bme.mit.theta.core.clock.constr.ClockConstrs.Gt;
@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.activation.UnsupportedDataTypeException;
+
 //import javax.activation.UnsupportedDataTypeException;
 
 import com.google.common.collect.BiMap;
@@ -26,6 +28,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import hu.bme.mit.theta.common.Tuple2;
+import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.core.clock.constr.AndConstr;
 import hu.bme.mit.theta.core.clock.constr.AtomicConstr;
 import hu.bme.mit.theta.core.clock.constr.CanonizeDiffConstrVisitor;
@@ -74,8 +77,8 @@ import hu.bme.mit.theta.xta.XtaProcess;
 import hu.bme.mit.theta.xta.XtaProcess.Edge;
 import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaProcess.LocKind;
-import hu.bme.mit.theta.xta.tool.XtaExample;
 import hu.bme.mit.theta.xta.XtaSystem;
+import hu.bme.mit.theta.xta.XtaVisualizer;
 import hu.bme.mit.theta.xta.utils.ChanType;
 
 public class XtaPreProcessor {
@@ -191,7 +194,15 @@ public class XtaPreProcessor {
 		
 	}
 	
-	/*public static XtaProcess unfoldDiagonalConstraints(XtaProcess sys) throws UnsupportedDataTypeException {
+	public static XtaSystem unfoldDiagonalConstraints(XtaSystem sys) throws UnsupportedDataTypeException {
+		List<XtaProcess> unfoldedProcesses=new ArrayList<>();
+		for (XtaProcess p: sys.getProcesses()) {
+			unfoldedProcesses.add(unfoldDiagonalConstraints(p));
+		}
+		return XtaSystem.of(unfoldedProcesses);
+	}
+	
+	public static XtaProcess unfoldDiagonalConstraints(XtaProcess sys) throws UnsupportedDataTypeException {
 		XtaProcess result=sys;
 		//TODO: feltesszük hogy óra csak 0-ra resetelõdik, és mást nem csinál!!!!!
 		//TODO: nem tudom mitörténik, ha egy constraint különbözõ boundokkal szerepel
@@ -199,11 +210,19 @@ public class XtaPreProcessor {
 		Map<DiffConstr,List<Edge>> diagConstrs=new HashMap<>();
 		DiagCollectorClockConstrVisitor dvisitor=new DiagCollectorClockConstrVisitor(diagConstrs);
 		OppositeClockConstrVisitor ovisitor=new OppositeClockConstrVisitor();
-		for (Edge e:sys.getEdges()) {
+		
+		Set<Edge> sysedges=new HashSet<>();
+		for (Loc l:sys.getLocs()) {
+			sysedges.addAll(l.getOutEdges());
+		}
+		for (Edge e:sysedges) {
 			List<ClockGuard> toRemove=new ArrayList<>();
 			for (Guard g: e.getGuards()) {
 				if (g.isClockGuard()) {
+					
 					if (g.asClockGuard().getClockConstr().accept(dvisitor, e)) {
+						System.out.println("diag "+g);
+						diagConstrs.put((DiffConstr) g.asClockGuard().getClockConstr(),new ArrayList<>());
 						toRemove.add(g.asClockGuard());
 					}
 				}
@@ -223,6 +242,10 @@ public class XtaPreProcessor {
 			}
 		}
 		for (DiffConstr constr:diagConstrs.keySet()) {
+			
+			System.out.println("Before unfolding "+constr);
+			System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(result)));
+			
 			XtaProcess oldsys=result;
 			result=XtaProcess.create(sys.getName());
 			for (VarDecl<RatType> c:sys.getClockVars()) result.addClockVar(c);
@@ -259,7 +282,11 @@ public class XtaPreProcessor {
 			 //System.out.println(result.getInitLoc());
 			 
 			//élek
-			for (Edge e: oldsys.getEdges()) {
+			 Set<Edge> oldsysedges=new HashSet<>();
+			for (Loc l:oldsys.getLocs()) {
+				oldsysedges.addAll(l.getOutEdges());
+			}
+			for (Edge e: oldsysedges) {
 				Loc origSrc=e.getSource();
 				Loc trueSrc=trueLocs.get(origSrc);
 				Loc falseSrc=falseLocs.get(origSrc);
@@ -285,7 +312,9 @@ public class XtaPreProcessor {
 						ResetOp r=(ResetOp) u.asClockUpdate().getClockOp();
 						VarDecl<RatType> clock=r.getVar();
 						int value=r.getValue();
+						@SuppressWarnings("unchecked")
 						VarDecl<Type> clockAsType= (VarDecl<Type>) (VarDecl<?>)clock;
+						@SuppressWarnings("unchecked")
 						Expr<Type> valAsType= (Expr<Type>) (Expr<?>) Int(value);
 						updates.add(Assign(clockAsType,valAsType));
 					}
@@ -354,7 +383,7 @@ public class XtaPreProcessor {
 			}
 		}
 		return result;
-	}*/
+	}
 
 	public static UnfoldedXtaSystem getFlatSystem(XtaSystem sys, String name) {
 		BiMap<Loc,Map<XtaProcess, Loc>> locMap=HashBiMap.create();

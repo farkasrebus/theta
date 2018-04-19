@@ -14,7 +14,7 @@ import hu.bme.mit.theta.xta.dsl.XtaDslManager;
 
 public interface XtaReachabilityProblem {
 	
-	public enum XtaSystemType{SMALL,PROTOCOL_MUTEX,PROTOCOL_COLLISION,PROTOCOL_OTHER,CIRCUIT,ALGORITHM,SYSTEM}
+	public enum XtaSystemType{SMALL,DIAGONAL,PROTOCOL_MUTEX,PROTOCOL_COLLISION,PROTOCOL_OTHER,CIRCUIT,ALGORITHM,SYSTEM}
 	
 	public XtaSystemType getType();
 	public String getFileLocation();
