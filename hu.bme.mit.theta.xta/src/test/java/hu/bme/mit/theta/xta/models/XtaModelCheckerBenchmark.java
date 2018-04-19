@@ -33,6 +33,7 @@ import hu.bme.mit.theta.xta.tool.models.AndOrModel;
 import hu.bme.mit.theta.xta.tool.models.BangOlufsenModel;
 import hu.bme.mit.theta.xta.tool.models.BocdpModel;
 import hu.bme.mit.theta.xta.tool.models.BocdpModelFixed;
+import hu.bme.mit.theta.xta.tool.models.BouyerCounterExampleModel;
 import hu.bme.mit.theta.xta.tool.models.CSMACDModel;
 import hu.bme.mit.theta.xta.tool.models.CriticalModel;
 import hu.bme.mit.theta.xta.tool.models.EngineModel;
@@ -47,6 +48,7 @@ import hu.bme.mit.theta.xta.tool.models.SRLatchModel;
 import hu.bme.mit.theta.xta.tool.models.SchedulabilityFrameworkModel;
 import hu.bme.mit.theta.xta.tool.models.SimopModel;
 import hu.bme.mit.theta.xta.tool.models.SingleTrackedLineSegmentModel;
+import hu.bme.mit.theta.xta.tool.models.SplitExampleModel;
 import hu.bme.mit.theta.xta.tool.models.TokenRingFDDIModel;
 import hu.bme.mit.theta.xta.tool.models.TrainModel;
 import hu.bme.mit.theta.xta.tool.models.XtaReachabilityProblem;
@@ -59,12 +61,12 @@ public class XtaModelCheckerBenchmark {
 		System.out.println("Test started");
 		try {
 			XtaReachabilityProblem[] result={
-					new AndOrModel(false),
+					//new AndOrModel(false),
 					//new AndOrModel(true),
 					//new BangOlufsenModel(),//No easy way of eliminating stuff TODO: Külön kell kezelni, mert brutális mennyiségû :S
 					//new BocdpModel(), //All configurations would have to be target :S
 					//new BocdpModelFixed(),//All configurations would have to be target :S
-					new EngineModel(),//No easy way of eliminating stuff
+					/*new EngineModel(),//No easy way of eliminating stuff
 					new ExSithModel(),//Only nice property
 					new LatchModel(),//Only nice property
 					new MalerModel(),//Only nice property
@@ -74,7 +76,7 @@ public class XtaModelCheckerBenchmark {
 					//new SimopModel(false),
 					//new SingleTrackedLineSegmentModel(true),
 					//new SingleTrackedLineSegmentModel(false),
-					new SRLatchModel(true),
+					new SRLatchModel(true),*/
 					//new SRLatchModel(false)*/
 					/*new CriticalModel(1, false),
 					new CriticalModel(1, true),
@@ -109,14 +111,18 @@ public class XtaModelCheckerBenchmark {
 					/*new TokenRingFDDIModel(1),
 					new TokenRingFDDIModel(2),
 					new TokenRingFDDIModel(3),*/
-					new TrainModel(2),
+					/*new TrainModel(2),
 					new TrainModel(3),
 					new TrainModel(4),
 					new TrainModel(5),
 					new TrainModel(6),
 					new TrainModel(7),
 					new TrainModel(8),
-					new TrainModel(9)
+					new TrainModel(9)*/
+					new SplitExampleModel(false,true),
+					new SplitExampleModel(false,false),
+					new BouyerCounterExampleModel(false,true),
+					new BouyerCounterExampleModel(false,false),
 					};
 			return result;
 		} catch (Exception e) {
@@ -129,10 +135,11 @@ public class XtaModelCheckerBenchmark {
 	@Parameter
 	public XtaReachabilityProblem model;
 	
+	@Ignore("Not benchmarking now")
 	@Test
-	public void benchmark_forward_noscale() throws InterruptedException {
+	public void benchmark() throws InterruptedException {
 		final TableWriter writer = new BasicTableWriter(System.out, ",", "\"", "\"");
-		Algorithm[] algs= {/*Algorithm.LU,/*Algorithm.BINITP,Algorithm.SEQITP*/ Algorithm.EXPLLU};
+		Algorithm[] algs= {/*Algorithm.LU,/*Algorithm.BINITP,Algorithm.SEQITP*/ Algorithm.BACKWARD};
 		XtaSystem sys=model.getSystem();
 		Set<List<Loc>> locs=model.getErrorLocs();//TODO
 		
@@ -188,4 +195,10 @@ public class XtaModelCheckerBenchmark {
 		
 	}
 	
+	/*@Test
+	public void analyzeOutput() {
+		Algorithm alg=Algorithm.BACKWARD;
+		final LazyXtaChecker<?> checker = XtaCheckerBuilder.build(algorithm, SearchStrategy.BFS, sys, locs);
+		
+	}*/
 }

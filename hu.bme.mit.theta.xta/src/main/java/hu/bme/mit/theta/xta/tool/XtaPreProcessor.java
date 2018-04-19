@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.activation.UnsupportedDataTypeException;
+//import javax.activation.UnsupportedDataTypeException;
 
 //import javax.activation.UnsupportedDataTypeException;
 
@@ -194,7 +194,7 @@ public class XtaPreProcessor {
 		
 	}
 	
-	public static XtaSystem unfoldDiagonalConstraints(XtaSystem sys) throws UnsupportedDataTypeException {
+	public static XtaSystem unfoldDiagonalConstraints(XtaSystem sys) throws UnsupportedOperationException {
 		List<XtaProcess> unfoldedProcesses=new ArrayList<>();
 		for (XtaProcess p: sys.getProcesses()) {
 			unfoldedProcesses.add(unfoldDiagonalConstraints(p));
@@ -202,7 +202,7 @@ public class XtaPreProcessor {
 		return XtaSystem.of(unfoldedProcesses);
 	}
 	
-	public static XtaProcess unfoldDiagonalConstraints(XtaProcess sys) throws UnsupportedDataTypeException {
+	public static XtaProcess unfoldDiagonalConstraints(XtaProcess sys) throws UnsupportedOperationException {
 		XtaProcess result=sys;
 		//TODO: feltesszük hogy óra csak 0-ra resetelõdik, és mást nem csinál!!!!!
 		//TODO: nem tudom mitörténik, ha egy constraint különbözõ boundokkal szerepel
@@ -278,7 +278,7 @@ public class XtaPreProcessor {
 				if (0 <=bound) {
 					result.setInitLoc(trueLocs.get(origInit));
 				} else result.setInitLoc(falseLocs.get(origInit));
-			} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+			} else throw new UnsupportedOperationException("Not canonical diff constr");
 			 //System.out.println(result.getInitLoc());
 			 
 			//élek
@@ -330,7 +330,7 @@ public class XtaPreProcessor {
 							target=(bound>0);
 						} else if (constr instanceof DiffLeqConstr) {
 							target=(bound>=0);
-						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+						} else throw new UnsupportedOperationException("Not canonical diff constr");
 						Loc trgloc;
 						if (target)trgloc=trueTrg; else trgloc=falseTrg;
 						result.createEdge(trueSrc, trgloc, guards, e.getSync(), updates);
@@ -345,7 +345,7 @@ public class XtaPreProcessor {
 						} else if (constr instanceof DiffLeqConstr) {
 							posGuard=Geq(rightClock,-1*bound).toExpr();
 							negGuard=Lt(rightClock,-1*bound).toExpr();
-						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+						} else throw new UnsupportedOperationException("Not canonical diff constr");
 						guards.add(posGuard);
 						result.createEdge(trueSrc, trueTrg, guards, e.getSync(), updates);
 						if (notGuard) result.createEdge(falseSrc, trueTrg, guards, e.getSync(), updates);
@@ -365,7 +365,7 @@ public class XtaPreProcessor {
 						} else if (constr instanceof DiffLeqConstr) {
 							posGuard=Leq(leftClock,bound).toExpr();
 							negGuard=Gt(leftClock,bound).toExpr();
-						} else throw new UnsupportedDataTypeException("Not canonical diff constr");
+						} else throw new UnsupportedOperationException("Not canonical diff constr");
 						guards.add(posGuard);
 						result.createEdge(trueSrc, trueTrg, guards, e.getSync(), updates);
 						if (notGuard) result.createEdge(falseSrc, trueTrg, guards, e.getSync(), updates);

@@ -22,7 +22,11 @@ public abstract class DiagonalXtaReachabilityProblem implements XtaReachabilityP
 		XtaSystem s=XtaReachabilityProblem.loadModel(fileLocation);
 		unfolded=shouldUnfold;
 		if (shouldUnfold) {
-			sys=XtaPreProcessor.unfoldDiagonalConstraints(sys);
+			long start=System.currentTimeMillis();
+			sys=XtaPreProcessor.unfoldDiagonalConstraints(s);
+			long end=System.currentTimeMillis();
+			long diff=end-start;
+			System.out.println("Preproc time for "+name+": "+diff);
 		} else {
 			sys=s;
 		}
