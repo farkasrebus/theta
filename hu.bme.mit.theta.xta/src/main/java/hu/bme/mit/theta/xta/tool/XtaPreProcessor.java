@@ -221,7 +221,7 @@ public class XtaPreProcessor {
 				if (g.isClockGuard()) {
 					
 					if (g.asClockGuard().getClockConstr().accept(dvisitor, e)) {
-						System.out.println("diag "+g);
+						//System.out.println("diag "+g);
 						diagConstrs.put((DiffConstr) g.asClockGuard().getClockConstr(),new ArrayList<>());
 						toRemove.add(g.asClockGuard());
 					}
@@ -243,8 +243,8 @@ public class XtaPreProcessor {
 		}
 		for (DiffConstr constr:diagConstrs.keySet()) {
 			
-			System.out.println("Before unfolding "+constr);
-			System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(result)));
+			//System.out.println("Before unfolding "+constr);
+			//System.out.println(GraphvizWriter.getInstance().writeString(XtaVisualizer.visualize(result)));
 			
 			XtaProcess oldsys=result;
 			result=XtaProcess.create(sys.getName());
