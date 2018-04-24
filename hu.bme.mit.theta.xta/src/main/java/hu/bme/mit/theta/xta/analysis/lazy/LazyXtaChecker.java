@@ -163,8 +163,8 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 						waiting.addAll(uncoveredNodes);
 					} else {
 						final ArgNode<XtaState<S>, XtaAction> succNode = arg.createSuccNode(node, action, succState,
-						//		algorithmStrategy.containsInitState(node.getState(),system.getClockVars()));
-								false);
+								algorithmStrategy.containsInitState(node.getState(),system.getClockVars()));
+						//		false);
 						waiting.add(succNode);
 					}
 				}

@@ -68,11 +68,11 @@ public class XtaModelCheckerBenchmark {
 					//new BocdpModelFixed(),//All configurations would have to be target :S
 					/*new EngineModel(),//No easy way of eliminating stuff
 					new ExSithModel(),//Only nice property
-					new LatchModel(),//Only nice property
-					new MalerModel(),//Only nice property
-					new MutExModel(),//No easy way of eliminating stuff
+					new LatchModel(),*///Only nice property
+					//new MalerModel(),//Only nice property
+					//new MutExModel(),//No easy way of eliminating stuff
 					//new RootConnectionProtocolModel(), //Liveness :(
-					new SimopModel(true),
+					/*new SimopModel(true),
 					//new SimopModel(false),
 					//new SingleTrackedLineSegmentModel(true),
 					//new SingleTrackedLineSegmentModel(false),
@@ -111,18 +111,18 @@ public class XtaModelCheckerBenchmark {
 					/*new TokenRingFDDIModel(1),
 					new TokenRingFDDIModel(2),
 					new TokenRingFDDIModel(3),*/
-					/*new TrainModel(2),
+					new TrainModel(2),
 					new TrainModel(3),
 					new TrainModel(4),
 					new TrainModel(5),
 					new TrainModel(6),
 					new TrainModel(7),
-					new TrainModel(8),
-					new TrainModel(9)*/
-					new SplitExampleModel(false,true),
+					/*new TrainModel(8),
+					new TrainModel(9)
+					/*new SplitExampleModel(false,true),
 					new SplitExampleModel(false,false),
 					new BouyerCounterExampleModel(false,true),
-					new BouyerCounterExampleModel(false,false),
+					new BouyerCounterExampleModel(false,false),*/
 					};
 			return result;
 		} catch (Exception e) {
@@ -135,7 +135,7 @@ public class XtaModelCheckerBenchmark {
 	@Parameter
 	public XtaReachabilityProblem model;
 	
-	@Ignore("Not benchmarking now")
+	//@Ignore("Not benchmarking now")
 	@Test
 	public void benchmark() throws InterruptedException {
 		final TableWriter writer = new BasicTableWriter(System.out, ",", "\"", "\"");
