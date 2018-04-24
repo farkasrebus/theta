@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 
@@ -136,7 +137,8 @@ public final class XtaProcess {
 	private Collection<Guard> createGuards(final Collection<Expr<BoolType>> exprs) {
 		checkNotNull(exprs);
 
-		final ImmutableList.Builder<Guard> builder = ImmutableList.builder();
+		//final ImmutableList.Builder<Guard> builder = ImmutableList.builder();
+		Set<Guard> result = new HashSet<>();
 		for (final Expr<BoolType> expr : exprs) {
 			final Collection<VarDecl<?>> vars = ExprUtils.getVars(expr);
 
@@ -160,9 +162,11 @@ public final class XtaProcess {
 			} else {
 				throw new UnsupportedOperationException();
 			}
-			builder.add(guard);
+			//builder.add(guard);
+			result.add(guard);
 		}
-		return builder.build();
+		//return builder.build();
+		return result;
 	}
 
 	private List<Update> createUpdates(final List<Stmt> stmts) {
