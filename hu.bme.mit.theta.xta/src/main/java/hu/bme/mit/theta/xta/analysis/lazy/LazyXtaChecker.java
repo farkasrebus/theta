@@ -18,6 +18,7 @@ package hu.bme.mit.theta.xta.analysis.lazy;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,7 +34,9 @@ import hu.bme.mit.theta.analysis.algorithm.SafetyResult;
 import hu.bme.mit.theta.analysis.algorithm.SearchStrategy;
 import hu.bme.mit.theta.analysis.reachedset.Partition;
 import hu.bme.mit.theta.analysis.unit.UnitPrec;
+import hu.bme.mit.theta.analysis.utils.ArgVisualizer;
 import hu.bme.mit.theta.analysis.waitlist.Waitlist;
+import hu.bme.mit.theta.common.visualization.writer.GraphvizWriter;
 import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.XtaSystem;
 import hu.bme.mit.theta.xta.analysis.BackwardXtaLts;
@@ -88,6 +91,9 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 		}
 
 		public SafetyResult<XtaState<S>, XtaAction> run() {
+			Function <XtaState<?>,String> fs= s -> s.getStateLabel();
+			Function<XtaAction,String> fa=a ->a.getLabel();
+			ArgVisualizer<XtaState<?>, XtaAction> viz= ArgVisualizer.create(fs, fa);
 			stats.startAlgorithm();
 
 			init();
@@ -98,7 +104,10 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 				//System.out.println("Node "+v.getId()+": "+v.getState());//TODO
 				assert v.isFeasible();
 				//System.out.println("Node feasible");//TODO
-				if (v.isTarget()) return SafetyResult.unsafe(ArgTrace.to(v).toTrace(), arg);
+				if (v.isTarget()) {
+					System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));
+					return SafetyResult.unsafe(ArgTrace.to(v).toTrace(), arg);
+				}
 				close(v);
 				//System.out.println("Node closed");//TODO
 				if (!v.isCovered()) {
@@ -107,11 +116,14 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 				} /*else {//TODO
 					System.out.println("Covered by Node "+v.getCoveringNode().get().getId());//TODO
 				}//TODO*/
+				//System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));
 			}
 
 			stats.stopAlgorithm();
+			System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));
 			final LazyXtaStatistics statistics = stats.build();
 			final SafetyResult<XtaState<S>, XtaAction> result = SafetyResult.safe(arg, statistics);
+			
 			return result;
 		}
 
@@ -163,8 +175,8 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 						waiting.addAll(uncoveredNodes);
 					} else {
 						final ArgNode<XtaState<S>, XtaAction> succNode = arg.createSuccNode(node, action, succState,
-						//		algorithmStrategy.containsInitState(node.getState(),system.getClockVars()));
-								false);
+								algorithmStrategy.containsInitState(node.getState(),system.getClockVars()));
+						//		false);
 						waiting.add(succNode);
 					}
 				}
