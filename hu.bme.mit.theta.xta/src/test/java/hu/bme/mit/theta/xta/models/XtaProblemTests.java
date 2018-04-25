@@ -465,7 +465,7 @@ public class XtaProblemTests {
 		}
 	}
 	
-	@Ignore("Train is handled correctly")
+	//@Ignore("Train is handled correctly")
 	@Test
 	public void train_test() throws IOException {
 		
@@ -477,6 +477,9 @@ public class XtaProblemTests {
 			model=new TrainModel(i);
 			for (XtaProcess p: model.getSystem().getProcesses()) {
 				System.out.println(p.getName());
+				for (Loc l:p.getLocs()) {
+					System.out.println(l.getName());
+				}
 			}
 			
 			for (List<Loc> conf:model.getErrorLocs()) {
