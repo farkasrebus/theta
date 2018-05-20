@@ -104,9 +104,9 @@ public final class ExplLuStrategy implements LazyXtaStrategy<Prod3State<ExplStat
 			final LazyXtaStatistics.Builder stats) {
 		final Collection<ArgNode<XtaState<Prod3State<ExplState, ExplState, LuZoneState>>, XtaAction>> uncoveredNodes = new ArrayList<>();
 
-		stats.startCloseExplRefinement();
+		stats.startCloseDataRefinement();
 		blockExpl(coveree, Not(coverer.getState().getState().getState2().toExpr()), uncoveredNodes, stats);
-		stats.stopCloseExplRefinement();
+		stats.stopCloseDataRefinement();
 
 		stats.startCloseZoneRefinement();
 		final BoundFunc boundFunc = coverer.getState().getState().getState3().getBoundFunc();
@@ -123,10 +123,10 @@ public final class ExplLuStrategy implements LazyXtaStrategy<Prod3State<ExplStat
 			final LazyXtaStatistics.Builder stats) {
 		final Collection<ArgNode<XtaState<Prod3State<ExplState, ExplState, LuZoneState>>, XtaAction>> uncoveredNodes = new ArrayList<>();
 		if (succState.getState().isBottom1()) {
-			stats.startExpandExplRefinement();
+			stats.startExpandDataRefinement();
 			final Expr<BoolType> preImage = XtaDataUtils.pre(True(), action);
 			blockExpl(node, preImage, uncoveredNodes, stats);
-			stats.stopExpandExplRefinement();
+			stats.stopExpandDataRefinement();
 		} else if (succState.getState().isBottom3()) {
 			stats.startExpandZoneRefinement();
 			final BoundFunc preImage = XtaLuZoneUtils.pre(BoundFunc.top(), action);
@@ -154,7 +154,7 @@ public final class ExplLuStrategy implements LazyXtaStrategy<Prod3State<ExplStat
 			return;
 		}
 
-		stats.refineExpl();
+		stats.refineData();
 
 		final ExplState concreteExpl = node.getState().getState().getState1();
 		final Valuation valI = XtaDataUtils.interpolate(concreteExpl, expr);
@@ -284,15 +284,15 @@ public final class ExplLuStrategy implements LazyXtaStrategy<Prod3State<ExplStat
 	}
 
 	@Override
-	public boolean containsInitState(XtaState<Prod3State<ExplState, ExplState, LuZoneState>> state,
-			Collection<VarDecl<RatType>> clocks) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void setTargetStates(Set<List<Loc>> target) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean containsInitState(XtaState<Prod3State<ExplState, ExplState, LuZoneState>> state,
+			Collection<VarDecl<RatType>> clocks, hu.bme.mit.theta.xta.analysis.lazy.LazyXtaStatistics.Builder stats) {
+		throw new UnsupportedOperationException();
 	}
 
 }

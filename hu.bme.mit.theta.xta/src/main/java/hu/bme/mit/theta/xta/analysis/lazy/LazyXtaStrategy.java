@@ -29,6 +29,7 @@ import hu.bme.mit.theta.core.type.rattype.RatType;
 import hu.bme.mit.theta.xta.XtaProcess.Loc;
 import hu.bme.mit.theta.xta.analysis.XtaAction;
 import hu.bme.mit.theta.xta.analysis.XtaState;
+import hu.bme.mit.theta.xta.analysis.lazy.LazyXtaStatistics.Builder;
 
 public interface LazyXtaStrategy<S extends State> {
 
@@ -46,7 +47,7 @@ public interface LazyXtaStrategy<S extends State> {
 	
 	public boolean isForward();
 	
-	public boolean containsInitState(XtaState<S> state, Collection<VarDecl<RatType>> clocks);
+	public boolean containsInitState(XtaState<S> state, Collection<VarDecl<RatType>> clocks, Builder stats);
 	
 	public void setTargetStates(final Set<List<Loc>> target);
 

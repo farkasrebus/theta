@@ -172,7 +172,7 @@ public final class ActStrategy implements LazyXtaStrategy<Prod2State<ExplState,A
 	}
 
 	@Override
-	public boolean containsInitState(XtaState<Prod2State<ExplState, ActZoneState>> state, Collection<VarDecl<RatType>> clocks) {
+	public boolean containsInitState(XtaState<Prod2State<ExplState, ActZoneState>> state, Collection<VarDecl<RatType>> clocks, Builder stats) {
 		boolean zonecontains=state.getState().getState2().isLeq(ActZoneState.of(ZoneState.zero(clocks), state.getState().getState2().getActiveVars())) ;
 		if (!zonecontains) return false;
 		for (Decl<?> v: state.getState().getState1().getDecls()) {

@@ -144,9 +144,9 @@ public abstract class ExplItpStrategy implements LazyXtaStrategy<Prod3State<Expl
 			final LazyXtaStatistics.Builder stats) {
 		final Collection<ArgNode<XtaState<Prod3State<ExplState, ExplState, ItpZoneState>>, XtaAction>> uncoveredNodes = new ArrayList<>();
 
-		stats.startCloseExplRefinement();
+		stats.startCloseDataRefinement();
 		blockExpl(coveree, Not(coverer.getState().getState().getState2().toExpr()), uncoveredNodes, stats);
-		stats.stopCloseExplRefinement();
+		stats.stopCloseDataRefinement();
 
 		stats.startCloseZoneRefinement();
 		final Collection<ZoneState> complementZones = coverer.getState().getState().getState3().getAbstrState()
@@ -166,10 +166,10 @@ public abstract class ExplItpStrategy implements LazyXtaStrategy<Prod3State<Expl
 			final LazyXtaStatistics.Builder stats) {
 		final Collection<ArgNode<XtaState<Prod3State<ExplState, ExplState, ItpZoneState>>, XtaAction>> uncoveredNodes = new ArrayList<>();
 		if (succState.getState().isBottom1()) {
-			stats.startExpandExplRefinement();
+			stats.startExpandDataRefinement();
 			final Expr<BoolType> preImage = XtaDataUtils.pre(True(), action);
 			blockExpl(node, preImage, uncoveredNodes, stats);
-			stats.stopExpandExplRefinement();
+			stats.stopExpandDataRefinement();
 		} else if (succState.getState().isBottom3()) {
 			stats.startExpandZoneRefinement();
 			final ZoneState preImage = XtaZoneUtils.pre(ZoneState.top(), action, prec);
@@ -197,7 +197,7 @@ public abstract class ExplItpStrategy implements LazyXtaStrategy<Prod3State<Expl
 			return;
 		}
 
-		stats.refineExpl();
+		stats.refineData();
 
 		final ExplState concreteExpl = node.getState().getState().getState1();
 		final Valuation valI = XtaDataUtils.interpolate(concreteExpl, expr);

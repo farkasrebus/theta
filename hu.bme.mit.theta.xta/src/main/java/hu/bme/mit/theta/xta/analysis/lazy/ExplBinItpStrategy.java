@@ -85,7 +85,7 @@ public final class ExplBinItpStrategy extends ExplItpStrategy {
 
 	@Override
 	public boolean containsInitState(XtaState<Prod3State<ExplState, ExplState, ItpZoneState>> state,
-			Collection<VarDecl<RatType>> clocks) {
+			Collection<VarDecl<RatType>> clocks, Builder stats) {
 		throw new UnsupportedOperationException();
 	}
 

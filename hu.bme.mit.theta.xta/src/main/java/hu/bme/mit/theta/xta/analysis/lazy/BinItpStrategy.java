@@ -83,7 +83,7 @@ public final class BinItpStrategy extends ItpStrategy {
 
 	@Override
 	public boolean containsInitState(XtaState<Prod2State<ExplState, ItpZoneState>> state,
-			Collection<VarDecl<RatType>> clocks) {
+			Collection<VarDecl<RatType>> clocks, Builder stats) {
 		throw new UnsupportedOperationException();
 	}
 

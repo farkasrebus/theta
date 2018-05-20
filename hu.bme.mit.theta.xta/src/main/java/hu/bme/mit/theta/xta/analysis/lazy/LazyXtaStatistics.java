@@ -28,16 +28,16 @@ import hu.bme.mit.theta.common.table.TableWriter;
 public final class LazyXtaStatistics extends Statistics {
 
 	private final long algorithmTimeInMs;
-	/*private final long expandTimeInMs;
+	private final long expandTimeInMs;
 	private final long closeTimeInMs;
-	private final long expandExplRefinementTimeInMs;
+	private final long expandDataRefinementTimeInMs;
 	private final long expandZoneRefinementTimeInMs;
-	private final long closeExplRefinementTimeInMs;
+	private final long closeDataRefinementTimeInMs;
 	private final long closeZoneRefinementTimeInMs;
-	private final long coverageChecks;
+	/*private final long coverageChecks;
 	private final long coverageAttempts;
 	private final long coverageSuccesses;
-	private final long explRefinementSteps;
+	private final long dataRefinementSteps;
 	private final long zoneRefinementSteps;*/
 	private final long argDepth;
 	private final long argNodes;
@@ -45,32 +45,32 @@ public final class LazyXtaStatistics extends Statistics {
 
 	private LazyXtaStatistics(final Builder builder) {
 		algorithmTimeInMs = builder.algorithmTimer.elapsed(MILLISECONDS);
-		/*expandTimeInMs = builder.expandTimer.elapsed(MILLISECONDS);
+		expandTimeInMs = builder.expandTimer.elapsed(MILLISECONDS);
 		closeTimeInMs = builder.closeTimer.elapsed(MILLISECONDS);
-		expandExplRefinementTimeInMs = builder.expandExplRefinementTimer.elapsed(MILLISECONDS);
+		expandDataRefinementTimeInMs = builder.expandDataRefinementTimer.elapsed(MILLISECONDS);
 		expandZoneRefinementTimeInMs = builder.expandZoneRefinementTimer.elapsed(MILLISECONDS);
-		closeExplRefinementTimeInMs = builder.closeExplRefinementTimer.elapsed(MILLISECONDS);
+		closeDataRefinementTimeInMs = builder.closeDataRefinementTimer.elapsed(MILLISECONDS);
 		closeZoneRefinementTimeInMs = builder.closeZoneRefinementTimer.elapsed(MILLISECONDS);
-		coverageChecks = builder.coverageChecks;
+		/*coverageChecks = builder.coverageChecks;
 		coverageAttempts = builder.coverageAttempts;
 		coverageSuccesses = builder.coverageSuccesses;
-		explRefinementSteps = builder.explRefinementSteps;
+		dataRefinementSteps = builder.dataRefinementSteps;
 		zoneRefinementSteps = builder.zoneRefinementSteps;*/
 		argDepth = builder.arg.getDepth();
 		argNodes = builder.arg.size();
 		argNodesExpanded = builder.arg.getNodes().filter(n -> !n.isSubsumed()).count();
 
 		addStat("AlgorithmTimeInMs", this::getAlgorithmTimeInMs);
-		/*addStat("ExpandTimeInMs", this::getExpandTimeInMs);
+		addStat("ExpandTimeInMs", this::getExpandTimeInMs);
 		addStat("CloseTimeInMs", this::getCloseTimeInMs);
-		addStat("ExpandExplRefinementTimeInMs", this::getExpandExplRefinementTimeInMs);
+		addStat("ExpandDataRefinementTimeInMs", this::getExpandDataRefinementTimeInMs);
 		addStat("ExpandZoneRefinementTimeInMs", this::getExpandZoneRefinementTimeInMs);
-		addStat("CloseExplRefinementTimeInMs", this::getCloseExplRefinementTimeInMs);
+		addStat("CloseDataRefinementTimeInMs", this::getCloseDataRefinementTimeInMs);
 		addStat("CloseZoneRefinementTimeInMs", this::getCloseZoneRefinementTimeInMs);
-		addStat("CoverageChecks", this::getCoverageChecks);
+		/*addStat("CoverageChecks", this::getCoverageChecks);
 		addStat("CoverageAttempts", this::getCoverageAttempts);
 		addStat("CoverageSuccesses", this::getCoverageSuccesses);
-		addStat("ExplRefinementSteps", this::getExplRefinementSteps);
+		addStat("DataRefinementSteps", this::getDataRefinementSteps);
 		addStat("ZoneRefinementSteps", this::getZoneRefinementSteps);*/
 		addStat("ArgDepth", this::getArgDepth);
 		addStat("ArgNodes", this::getArgNodes);
@@ -85,7 +85,7 @@ public final class LazyXtaStatistics extends Statistics {
 		return algorithmTimeInMs;
 	}
 
-	/*public long getExpandTimeInMs() {
+	public long getExpandTimeInMs() {
 		return expandTimeInMs;
 	}
 
@@ -93,23 +93,23 @@ public final class LazyXtaStatistics extends Statistics {
 		return closeTimeInMs;
 	}
 
-	public long getExpandExplRefinementTimeInMs() {
-		return expandExplRefinementTimeInMs;
+	public long getExpandDataRefinementTimeInMs() {
+		return expandDataRefinementTimeInMs;
 	}
 
 	public long getExpandZoneRefinementTimeInMs() {
 		return expandZoneRefinementTimeInMs;
 	}
 
-	public long getCloseExplRefinementTimeInMs() {
-		return closeExplRefinementTimeInMs;
+	public long getCloseDataRefinementTimeInMs() {
+		return closeDataRefinementTimeInMs;
 	}
 
 	public long getCloseZoneRefinementTimeInMs() {
 		return closeZoneRefinementTimeInMs;
 	}
 
-	public long getCoverageChecks() {
+	/*public long getCoverageChecks() {
 		return coverageChecks;
 	}
 
@@ -119,10 +119,10 @@ public final class LazyXtaStatistics extends Statistics {
 
 	public long getCoverageSuccesses() {
 		return coverageSuccesses;
-	}
+	}*/
 
-	public long getExplRefinementSteps() {
-		return explRefinementSteps;
+	/*public long getDataRefinementSteps() {
+		return dataRefinementSteps;
 	}
 
 	public long getZoneRefinementSteps() {
@@ -145,14 +145,14 @@ public final class LazyXtaStatistics extends Statistics {
 		writer.cell("AlgorithmTimeInMs");
 		writer.cell("ExpandTimeInMs");
 		writer.cell("CloseTimeInMs");
-		writer.cell("ExpandExplRefinementTimeInMs");
+		writer.cell("ExpandDataRefinementTimeInMs");
 		writer.cell("ExpandZoneRefinementTimeInMs");
-		writer.cell("CloseExplRefinementTimeInMs");
+		writer.cell("CloseDataRefinementTimeInMs");
 		writer.cell("CloseZoneRefinementTimeInMs");
-		writer.cell("CoverageChecks");
+		/*writer.cell("CoverageChecks");
 		writer.cell("CoverageAttempts");
-		writer.cell("CoverageSuccesses");
-		writer.cell("ExplRefinementSteps");
+		writer.cell("CoverageSuccesses");*/
+		writer.cell("DataRefinementSteps");
 		writer.cell("ZoneRefinementSteps");
 		writer.cell("ArgDepth");
 		writer.cell("ArgNodes");
@@ -162,16 +162,16 @@ public final class LazyXtaStatistics extends Statistics {
 
 	public void writeData(final TableWriter writer) {
 		writer.cell(algorithmTimeInMs);
-		/*writer.cell(expandTimeInMs);
+		writer.cell(expandTimeInMs);
 		writer.cell(closeTimeInMs);
-		writer.cell(expandExplRefinementTimeInMs);
+		writer.cell(expandDataRefinementTimeInMs);
 		writer.cell(expandZoneRefinementTimeInMs);
-		writer.cell(closeExplRefinementTimeInMs);
+		writer.cell(closeDataRefinementTimeInMs);
 		writer.cell(closeZoneRefinementTimeInMs);
-		writer.cell(coverageChecks);
+		/*writer.cell(coverageChecks);
 		writer.cell(coverageAttempts);
 		writer.cell(coverageSuccesses);
-		writer.cell(explRefinementSteps);
+		writer.cell(dataRefinementSteps);
 		writer.cell(zoneRefinementSteps);*/
 		writer.cell(argDepth);
 		writer.cell(argNodes);
@@ -182,44 +182,40 @@ public final class LazyXtaStatistics extends Statistics {
 	public static final class Builder {
 
 		private enum State {
-			CREATED, RUNNING, ZONING, PREDING, EXPANDING, CLOSING, EXPAND_EXPL_REFINING, EXPAND_ZONE_REFINING, CLOSE_EXPL_REFINING, CLOSE_ZONE_REFINING, STOPPED, BUILT
+			CREATED, RUNNING, EXPANDING, CLOSING, EXPAND_DATA_REFINING, EXPAND_ZONE_REFINING, CLOSE_DATA_REFINING, CLOSE_ZONE_REFINING, STOPPED, BUILT
 		}
 
 		private State state;
 
 		private final ARG<?, ?> arg;
 		private final Stopwatch algorithmTimer;
-		private final Stopwatch zoneTimer;
-		private final Stopwatch predTimer;
-		//private final Stopwatch expandTimer;
-		//private final Stopwatch closeTimer;
-		//private final Stopwatch expandExplRefinementTimer;
-		//private final Stopwatch expandZoneRefinementTimer;
-		//private final Stopwatch closeExplRefinementTimer;
-		//private final Stopwatch closeZoneRefinementTimer;
+		private final Stopwatch expandTimer;
+		private final Stopwatch closeTimer;
+		private final Stopwatch expandDataRefinementTimer;
+		private final Stopwatch expandZoneRefinementTimer;
+		private final Stopwatch closeDataRefinementTimer;
+		private final Stopwatch closeZoneRefinementTimer;
 		//private long coverageChecks;
 		//private long coverageAttempts;
 		//private long coverageSuccesses;
-		//private long explRefinementSteps;
-		//private long zoneRefinementSteps;
+		private long dataRefinementSteps;
+		private long zoneRefinementSteps;
 
 		private Builder(final ARG<?, ?> arg) {
 			this.arg = checkNotNull(arg);
 			state = State.CREATED;
 			algorithmTimer = Stopwatch.createUnstarted();
-			zoneTimer = Stopwatch.createUnstarted();
-			predTimer = Stopwatch.createUnstarted();
-			/*expandTimer = Stopwatch.createUnstarted();
+			expandTimer = Stopwatch.createUnstarted();
 			closeTimer = Stopwatch.createUnstarted();
-			expandExplRefinementTimer = Stopwatch.createUnstarted();
+			expandDataRefinementTimer = Stopwatch.createUnstarted();
 			expandZoneRefinementTimer = Stopwatch.createUnstarted();
-			closeExplRefinementTimer = Stopwatch.createUnstarted();
+			closeDataRefinementTimer = Stopwatch.createUnstarted();
 			closeZoneRefinementTimer = Stopwatch.createUnstarted();
-			coverageChecks = 0;
+			/*coverageChecks = 0;
 			coverageAttempts = 0;
-			coverageSuccesses = 0;
-			explRefinementSteps = 0;
-			zoneRefinementSteps = 0;*/
+			coverageSuccesses = 0;*/
+			dataRefinementSteps = 0;
+			zoneRefinementSteps = 0;
 		}
 
 		public void startAlgorithm() {
@@ -233,32 +229,8 @@ public final class LazyXtaStatistics extends Statistics {
 			algorithmTimer.stop();
 			state = State.STOPPED;
 		}
-		
-		public void startZoneOperation() {
-			checkState(state == State.RUNNING);
-			zoneTimer.start();
-			state=State.ZONING;
-		}
-		
-		public void stopZoneOperation() {
-			checkState(state == State.ZONING);
-			zoneTimer.stop();
-			state=State.RUNNING;
-		}
-		
-		public void startPredOperation() {
-			checkState(state == State.RUNNING);
-			predTimer.start();
-			state=State.PREDING;
-		}
-		
-		public void stopPredOperation() {
-			checkState(state == State.PREDING);
-			predTimer.stop();
-			state=State.RUNNING;
-		}
 
-		/*public void startExpanding() {
+		public void startExpanding() {
 			checkState(state == State.RUNNING);
 			expandTimer.start();
 			state = State.EXPANDING;
@@ -268,33 +240,33 @@ public final class LazyXtaStatistics extends Statistics {
 			checkState(state == State.EXPANDING);
 			expandTimer.stop();
 			state = State.RUNNING;
-		}*/
-
-		public void startExpandExplRefinement() {
-			/*checkState(state == State.EXPANDING);
-			expandExplRefinementTimer.start();
-			state = State.EXPAND_EXPL_REFINING;*/
 		}
 
-		public void stopExpandExplRefinement() {
-			/*checkState(state == State.EXPAND_EXPL_REFINING);
-			expandExplRefinementTimer.stop();
-			state = State.EXPANDING;*/
+		public void startExpandDataRefinement() {
+			checkState(state == State.EXPANDING);
+			expandDataRefinementTimer.start();
+			state = State.EXPAND_DATA_REFINING;
+		}
+
+		public void stopExpandDataRefinement() {
+			checkState(state == State.EXPAND_DATA_REFINING);
+			expandDataRefinementTimer.stop();
+			state = State.EXPANDING;
 		}
 
 		public void startExpandZoneRefinement() {
-			/*checkState(state == State.EXPANDING);
+			checkState(state == State.EXPANDING);
 			expandZoneRefinementTimer.start();
-			state = State.EXPAND_ZONE_REFINING;*/
+			state = State.EXPAND_ZONE_REFINING;
 		}
 
 		public void stopExpandZoneRefinement() {
-			/*checkState(state == State.EXPAND_ZONE_REFINING);
+			checkState(state == State.EXPAND_ZONE_REFINING);
 			expandZoneRefinementTimer.stop();
-			state = State.EXPANDING;*/
+			state = State.EXPANDING;
 		}
 
-		/*public void startClosing() {
+		public void startClosing() {
 			checkState(state == State.RUNNING);
 			closeTimer.start();
 			state = State.CLOSING;
@@ -304,30 +276,30 @@ public final class LazyXtaStatistics extends Statistics {
 			checkState(state == State.CLOSING);
 			closeTimer.stop();
 			state = State.RUNNING;
-		}*/
-
-		public void startCloseExplRefinement() {
-			/*checkState(state == State.CLOSING);
-			closeExplRefinementTimer.start();
-			state = State.CLOSE_EXPL_REFINING;*/
 		}
 
-		public void stopCloseExplRefinement() {
-			/*checkState(state == State.CLOSE_EXPL_REFINING);
-			closeExplRefinementTimer.stop();
-			state = State.CLOSING;*/
+		public void startCloseDataRefinement() {
+			checkState(state == State.CLOSING);
+			closeDataRefinementTimer.start();
+			state = State.CLOSE_DATA_REFINING;
+		}
+
+		public void stopCloseDataRefinement() {
+			checkState(state == State.CLOSE_DATA_REFINING);
+			closeDataRefinementTimer.stop();
+			state = State.CLOSING;
 		}
 
 		public void startCloseZoneRefinement() {
-			/*checkState(state == State.CLOSING);
+			checkState(state == State.CLOSING);
 			closeZoneRefinementTimer.start();
-			state = State.CLOSE_ZONE_REFINING;*/
+			state = State.CLOSE_ZONE_REFINING;
 		}
 
 		public void stopCloseZoneRefinement() {
-			/*checkState(state == State.CLOSE_ZONE_REFINING);
+			checkState(state == State.CLOSE_ZONE_REFINING);
 			closeZoneRefinementTimer.stop();
-			state = State.CLOSING;*/
+			state = State.CLOSING;
 		}
 
 		/*public void checkCoverage() {
@@ -345,14 +317,14 @@ public final class LazyXtaStatistics extends Statistics {
 			coverageSuccesses++;
 		}*/
 
-		public void refineExpl() {
-			/*checkState(state == State.EXPAND_EXPL_REFINING || state == State.CLOSE_EXPL_REFINING);
-			explRefinementSteps++;*/
+		public void refineData() {
+			checkState(state == State.EXPAND_DATA_REFINING || state == State.CLOSE_DATA_REFINING);
+			dataRefinementSteps++;
 		}
 
 		public void refineZone() {
-			//checkState(state == State.EXPAND_ZONE_REFINING || state == State.CLOSE_ZONE_REFINING);
-			//zoneRefinementSteps++;
+			checkState(state == State.EXPAND_ZONE_REFINING || state == State.CLOSE_ZONE_REFINING);
+			zoneRefinementSteps++;
 		}
 
 		public LazyXtaStatistics build() {

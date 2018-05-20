@@ -120,13 +120,13 @@ public class BackwardStrategy implements LazyXtaStrategy<Prod2State<ExprState,Ba
 		BackwardsZoneState zoneToCover = nodeToCover.getState().getState().getState2();
 		ExprState coveringPred=coveringNode.getState().getState().getState1();
 		BackwardsZoneState coveringZone=coveringNode.getState().getState().getState2();
-		stats.startZoneOperation();
+		stats.startCloseZoneRefinement();
 		boolean zoneleq=zoneToCover.isLeq(coveringZone);
-		stats.stopZoneOperation();
+		stats.stopCloseZoneRefinement();
 		//if (zoneleq) System.out.println("Zoneleq");
-		stats.startPredOperation();
+		stats.startCloseDataRefinement();
 		boolean predleq=isPredLeq(predToCover,coveringPred);
-		stats.stopPredOperation();
+		stats.stopCloseDataRefinement();
 		//if (predleq) System.out.println("Predleq");
 		return zoneleq && predleq;
 	}
@@ -140,10 +140,13 @@ public class BackwardStrategy implements LazyXtaStrategy<Prod2State<ExprState,Ba
 
 	@Override
 	public boolean containsInitState(XtaState<Prod2State<ExprState, BackwardsZoneState>> state,
-			Collection<VarDecl<RatType>> clocks) {
-		boolean zonecontains=state.getState().getState2().getZone().isLeq(ZoneState.zero(clocks)) ;
+			Collection<VarDecl<RatType>> clocks, Builder stats) {
+		stats.startExpandZoneRefinement();
+		boolean zonecontains=state.getState().getState2().getZone().isLeq(ZoneState.zero(clocks));
 		if (!zonecontains) return false;
+		stats.stopExpandZoneRefinement();
 		
+		stats.startExpandDataRefinement();
 		solver.pop();
 		solver.push();
 		Expr<BoolType> solverexpr=XtaWeakestPreconditionTransFunc.changeVariables(state.getState().getState1().toExpr(),vars);
@@ -158,7 +161,9 @@ public class BackwardStrategy implements LazyXtaStrategy<Prod2State<ExprState,Ba
 			}
 		}
 		
-		return solver.check().equals(SolverStatus.SAT);
+		boolean result=solver.check().equals(SolverStatus.SAT);
+		stats.stopExpandDataRefinement();
+		return result;
 	}
 
 	@Override

@@ -193,15 +193,15 @@ public final class LuStrategy implements LazyXtaStrategy<Prod2State<ExplState, L
 	}
 
 	@Override
-	public boolean containsInitState(XtaState<Prod2State<ExplState, LuZoneState>> state,
-			Collection<VarDecl<RatType>> clocks) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void setTargetStates(Set<List<Loc>> target) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean containsInitState(XtaState<Prod2State<ExplState, LuZoneState>> state,
+			Collection<VarDecl<RatType>> clocks, Builder stats) {
+		throw new UnsupportedOperationException();
 	}
 
 }

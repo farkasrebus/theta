@@ -94,9 +94,9 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 			Function <XtaState<?>,String> fs= s -> s.getStateLabel();
 			Function<XtaAction,String> fa=a ->a.getLabel();
 			ArgVisualizer<XtaState<?>, XtaAction> viz= ArgVisualizer.create(fs, fa);
-			stats.startAlgorithm();
-
+			
 			init();
+			stats.startAlgorithm();
 			waiting.addAll(arg.getInitNodes());
 			//System.out.println("Init nodes: "+waiting);//TODO
 			while (!waiting.isEmpty()) {
@@ -105,7 +105,7 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 				assert v.isFeasible();
 				//System.out.println("Node feasible");//TODO
 				if (v.isTarget()) {
-					System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));
+					//System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));
 					return SafetyResult.unsafe(ArgTrace.to(v).toTrace(), arg);
 				}
 				close(v);
@@ -120,7 +120,7 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 			}
 
 			stats.stopAlgorithm();
-			System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));
+			//System.out.println(GraphvizWriter.getInstance().writeString(viz.visualize(arg)));
 			final LazyXtaStatistics statistics = stats.build();
 			final SafetyResult<XtaState<S>, XtaAction> result = SafetyResult.safe(arg, statistics);
 			
@@ -134,7 +134,7 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 		}
 
 		private void close(final ArgNode<XtaState<S>, XtaAction> coveree) {
-			//stats.startClosing();
+			stats.startClosing();
 
 			final Iterable<ArgNode<XtaState<S>, XtaAction>> candidates = Lists.reverse(passed.get(coveree));
 			for (final ArgNode<XtaState<S>, XtaAction> coverer : candidates) {
@@ -151,17 +151,17 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 
 					if (coveree.isCovered()) {
 						//stats.successfulCoverage();
-						//stats.stopClosing();
+						stats.stopClosing();
 						return;
 					}
 				}
 			}
 
-			//stats.stopClosing();
+			stats.stopClosing();
 		}
 
 		private void expand(final ArgNode<XtaState<S>, XtaAction> node) {
-			//stats.startExpanding();
+			stats.startExpanding();
 			final XtaState<S> state = node.getState();
 
 			for (final XtaAction action : lts.getEnabledActionsFor(state)) {
@@ -175,7 +175,7 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 						waiting.addAll(uncoveredNodes);
 					} else {
 						final ArgNode<XtaState<S>, XtaAction> succNode = arg.createSuccNode(node, action, succState,
-								algorithmStrategy.containsInitState(node.getState(),system.getClockVars()));
+								algorithmStrategy.containsInitState(node.getState(),system.getClockVars(),stats));
 						//		false);
 						waiting.add(succNode);
 					}
@@ -183,7 +183,7 @@ public final class LazyXtaChecker<S extends State> implements SafetyChecker<XtaS
 			}
 
 			passed.add(node);
-			//stats.stopExpanding();
+			stats.stopExpanding();
 		}
 	}
 
