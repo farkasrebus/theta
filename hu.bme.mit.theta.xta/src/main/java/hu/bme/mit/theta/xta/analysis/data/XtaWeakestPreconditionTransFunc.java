@@ -89,14 +89,14 @@ public class XtaWeakestPreconditionTransFunc implements TransFunc<ExprState, Xta
 		for (Update u:Lists.reverse(recvEdge.getUpdates())) {
 			if (u.isDataUpdate()) {
 				Stmt us=u.asDataUpdate().toStmt();
-				wpstate=wpstate.wp(us);//TODO: melyiket is kéne használni?
+				wpstate=wpstate.wep(us);//TODO: melyiket is kéne használni?
 			}
 		}
 		
 		for (Update u:Lists.reverse(emitEdge.getUpdates())) {
 			if (u.isDataUpdate()) {
 				Stmt us=u.asDataUpdate().toStmt();
-				wpstate=wpstate.wp(us);//TODO: melyiket is kéne használni?
+				wpstate=wpstate.wep(us);//TODO: melyiket is kéne használni?
 			}
 		}
 		
