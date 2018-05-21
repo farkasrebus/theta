@@ -61,14 +61,14 @@ public class XtaModelCheckerBenchmark {
 		System.out.println("Test started");
 		try {
 			XtaReachabilityProblem[] result={
-					//new AndOrModel(false),
-					//new AndOrModel(true),
-					//new BangOlufsenModel(),//No easy way of eliminating stuff TODO: Külön kell kezelni, mert brutális mennyiségû :S
-					//new BocdpModel(), //All configurations would have to be target :S
-					//new BocdpModelFixed(),//All configurations would have to be target :S
-					/*new EngineModel(),//No easy way of eliminating stuff
+					new AndOrModel(false),
+					new AndOrModel(true),
+					/*new BangOlufsenModel(),//No easy way of eliminating stuff TODO: Külön kell kezelni, mert brutális mennyiségû :S
+					new BocdpModel(), //All configurations would have to be target :S
+					new BocdpModelFixed(),//All configurations would have to be target :S
+					new EngineModel(),//No easy way of eliminating stuff
 					new ExSithModel(),//Only nice property
-					new LatchModel(),*///Only nice property
+					new LatchModel(),//Only nice property
 					//new MalerModel(),//Only nice property
 					//new MutExModel(),//No easy way of eliminating stuff
 					//new RootConnectionProtocolModel(), //Liveness :(
@@ -111,7 +111,7 @@ public class XtaModelCheckerBenchmark {
 					/*new TokenRingFDDIModel(1),
 					new TokenRingFDDIModel(2),
 					new TokenRingFDDIModel(3),*/
-					new TrainModel(2),
+					/*new TrainModel(2),
 					new TrainModel(3),
 					new TrainModel(4),
 					new TrainModel(5),

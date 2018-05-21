@@ -151,9 +151,9 @@ public final class LazyXtaStatistics extends Statistics {
 		writer.cell("CloseZoneRefinementTimeInMs");
 		/*writer.cell("CoverageChecks");
 		writer.cell("CoverageAttempts");
-		writer.cell("CoverageSuccesses");*/
+		writer.cell("CoverageSuccesses");
 		writer.cell("DataRefinementSteps");
-		writer.cell("ZoneRefinementSteps");
+		writer.cell("ZoneRefinementSteps");*/
 		writer.cell("ArgDepth");
 		writer.cell("ArgNodes");
 		writer.cell("ArgNodesExpanded");

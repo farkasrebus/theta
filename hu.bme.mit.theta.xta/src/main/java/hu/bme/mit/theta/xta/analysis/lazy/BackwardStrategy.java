@@ -141,10 +141,14 @@ public class BackwardStrategy implements LazyXtaStrategy<Prod2State<ExprState,Ba
 	@Override
 	public boolean containsInitState(XtaState<Prod2State<ExprState, BackwardsZoneState>> state,
 			Collection<VarDecl<RatType>> clocks, Builder stats) {
+		//System.out.println("CIS");
 		stats.startExpandZoneRefinement();
 		boolean zonecontains=state.getState().getState2().getZone().isLeq(ZoneState.zero(clocks));
-		if (!zonecontains) return false;
 		stats.stopExpandZoneRefinement();
+		if (!zonecontains) {
+			return false;
+		}
+		
 		
 		stats.startExpandDataRefinement();
 		solver.pop();
